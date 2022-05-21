@@ -482,7 +482,7 @@ import uploader from "../components/uploader"
                                             [
                                                 [
                                                     "Saturday",
-                                                    "Sunday",
+                                                    // "Sunday",
                                                     "Monday",
                                                     "Teusday",
                                                     "Wednesday",
