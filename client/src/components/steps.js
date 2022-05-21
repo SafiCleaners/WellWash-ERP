@@ -1,4 +1,4 @@
-export default () => {
+const steps = () => {
     return {
         view() {
             return m("div", { "class": "bs-stepper d-none d-md-block" },
@@ -25,7 +25,7 @@ export default () => {
                                             "2"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "Submit Payment"
+                                            "Wait for Pickup"
                                         )
                                     ]
                                 )
@@ -38,7 +38,7 @@ export default () => {
                                             "3"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "A writer works on your paper"
+                                            "Our Team washes, drys and irons your Laundry"
                                         )
                                     ]
                                 )
@@ -51,7 +51,20 @@ export default () => {
                                             "4"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "Download Your Compleated Paper"
+                                            "Await Drop Off"
+                                        )
+                                    ]
+                                )
+                            ),
+                            m("div", { "class": "line" }),
+                            m("div", { "class": "step", "data-target": "#information-part" },
+                                m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "information-part", "id": "information-part-trigger" },
+                                    [
+                                        m("span", { "class": "bs-stepper-circle" },
+                                            "4"
+                                        ),
+                                        m("span", { "class": "bs-stepper-label" },
+                                            "Submit Payment"
                                         )
                                     ]
                                 )
@@ -69,3 +82,5 @@ export default () => {
         }
     }
 }
+
+export default steps
