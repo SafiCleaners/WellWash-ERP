@@ -433,7 +433,11 @@ import uploader from "../components/uploader"
                 get_sources_copy,
                 progressive_deliverly,
                 related_assignent,
-                activeOrder
+                activeOrder,
+
+
+
+                pickupDay
             } = vnode.state
 
 
@@ -470,25 +474,33 @@ import uploader from "../components/uploader"
                                 m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
                                     [
                                         m("label",
-                                            "Academic level:"
+                                            "When would you like your Pickup?"
                                         ),
                                         m("br"),
 
                                         m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                                             [
-                                                academicLevels.map(level => {
-                                                    return m("label", { "class": `btn btn-info ${academicLevel == level ? "active" : ""}` },
+                                                [
+                                                    "Saturday",
+                                                    "Sunday",
+                                                    "Monday",
+                                                    "Teusday",
+                                                    "Wednesday",
+                                                    "Thursday",
+                                                    "Friday"
+                                                ].map(day => {
+                                                    return m("label", { "class": `btn btn-info ${pickupDay == day ? "active" : ""}` },
                                                         [
                                                             m("input", {
                                                                 "type": "radio",
                                                                 "name": "academicLevels",
-                                                                "id": level,
-                                                                "checked": academicLevel == level ? true : false,
+                                                                "id": day,
+                                                                "checked": pickupDay == day ? true : false,
                                                                 onchange: () => {
-                                                                    vnode.state.academicLevel = level
+                                                                    vnode.state.pickupDay = day
                                                                 }
                                                             }),
-                                                            level
+                                                            day
                                                         ]
                                                     )
                                                 }),
