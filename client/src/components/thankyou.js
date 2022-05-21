@@ -7,7 +7,7 @@ export default () => {
                         m("div", { "class": "text-black" },
                             [
                                 m("div", { "class": "d-flex flex-row justify-content-center align-items-center" }, m("img", {
-                                    src: "assets/media/schoolLogo.svg.png",
+                                    src: "assets/media/washer-logo.png",
                                     style: {
                                         "max-width": "30%"
                                     }

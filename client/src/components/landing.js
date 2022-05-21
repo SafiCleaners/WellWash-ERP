@@ -1,4 +1,4 @@
-export default () => {
+const landing = () => {
     return {
         view() {
             return m("div", { "class": "p-5 text-center bg-image rounded-3", "style": { "    background-image": "url('https", "height": "400px" } },
@@ -7,10 +7,12 @@ export default () => {
                         m("div", { "class": "text-black" },
                             [
                                 m("div", { "class": "d-flex flex-row justify-content-center align-items-center" }, m("img", {
-                                    src: "assets/media/schoolLogo.svg.png",
-                                    style: {
-                                        "max-width": "30%"
-                                    }
+                                    src: "assets/media/washer-logo.png",
+                                    // style: {
+
+                                    // },
+                                    // "width": "110", 
+                                    "height": "220"
                                 })),
                                 m("h1", { "class": "mb-3" },
                                     "Laundry Service From Industry Experts"
@@ -37,3 +39,5 @@ export default () => {
         }
     }
 }
+
+export default landing

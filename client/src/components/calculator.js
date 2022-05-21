@@ -21,7 +21,7 @@ import {
 } from "../constants"
 import uploader from "../components/uploader"
 
-export default () => {
+ var calculator = () => {
     var initialData
     var priceMapping = {
         24: 25,
@@ -1488,3 +1488,6 @@ export default () => {
         }
     }
 }
+
+
+export default calculator
