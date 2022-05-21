@@ -1,0 +1,74 @@
+import {
+    url,
+    client_id
+} from "../constants"
+import axios from "axios"
+import google_login from "./google_login"
+
+export default () => {
+    return {
+        view() {
+            return m("div", { "class": "subheader bg-white h-100px", "id": "kt_subheader" },
+                m("div", { "class": "container flex-wrap flex-sm-nowrap" },
+                    [
+                        m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-250px" },
+                            m("a", { "href": "index.html" },
+                                m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/logos/exported_2.png", "width": "150", "height": "30" })
+                            )
+                        ),
+                        m("div", { "class": "subheader-nav nav flex-grow-1" },
+                            [
+                                m("a", {
+                                    "class": "nav-item", href: "#!/order1", 
+                                    onclick() {
+                                        m.route.set("/order1")
+                                    }
+                                },
+                                    m("span", { "class": "nav-label px-10" },
+                                        [
+                                            m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
+                                                "Order Now"
+                                            ),
+                                            m("span", { "class": "nav-desc text-muted" },
+                                                "Order for an essay"
+                                            )
+                                        ]
+                                    )
+                                ),
+                                m("a", { "class": "nav-item active" },
+                                    localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
+                                        [
+                                            // m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
+                                            //     "Sign in"
+                                            // ),
+                                            // m("span", { "class": "nav-desc text-muted" },
+                                            //     "Get into your account"
+                                            // )
+
+                                            [m("div", { "class": "topbar-item mr-3" },
+                                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                                    m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                                        [
+                                                            m("span", { "class": "menu-text font-size-sm" },
+                                                                localStorage.getItem('name')
+                                                            ),
+                                                            m("br"),
+                                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
+                                                        ]
+                                                    )
+                                                )
+                                            )]
+                                        ]
+                                    ) : m("div", { style: { margin: "auto" } }, [
+                                        // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
+                                        m(google_login)
+                                    ])
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
+        }
+    }
+}

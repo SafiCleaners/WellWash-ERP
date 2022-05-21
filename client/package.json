@@ -1,0 +1,59 @@
+{
+  "name": "writters-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/register": "^7.15.3",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "acorn": "^8.4.1",
+    "axios": "^0.21.1",
+    "babel-loader": "^8.2.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "html-minifier": "^4.0.0",
+    "live-server": "^1.2.1",
+    "livereload": "^0.9.3",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.1.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "web-vitals": "^1.0.1",
+    "webpack": "^5.51.1"
+  },
+  "scripts": {
+    "build": "node src/build-prod.js && WEBPACK_ENV=build webpack --config ./prod.config.js",
+    "dev": "WEBPACK_ENV=dev webpack --config ./prod.config.js & nodemon src/build-prod.js & node src/dev-server.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.8.0"
+  }
+}

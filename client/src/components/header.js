@@ -1,0 +1,202 @@
+import {
+    client_id
+} from "../constants"
+import axios from "axios"
+import google_login from "./google_login"
+
+export default {
+    async oncreate() {
+        const params = {
+            client_id: client_id,
+            // cookie_policy: cookiePolicy,
+            // login_hint: loginHint,
+            // hosted_domain: hostedDomain,
+            // fetch_basic_profile: fetchBasicProfile,
+            // discoveryDocs,
+            // ux_mode: uxMode,
+            // redirect_uri: redirectUri,
+            // scope,
+            // access_type: accessType
+        }
+        params.access_type = 'offline'
+        window.gapi.load('auth2', () => {
+            const GoogleAuth = window.gapi.auth2.getAuthInstance()
+            if (!GoogleAuth) {
+                window.gapi.auth2.init(params).then(
+                    res => {
+                        const signedIn = res.isSignedIn.get()
+                        // onAutoLoadFinished(signedIn)
+                        if (signedIn) {
+                            console.log(res.currentUser.get())
+                        }
+                    },
+                    err => {
+                        // setLoaded(true)
+                        // onAutoLoadFinished(false)
+                        // onLoadFailure(err)
+                        console.log(err)
+                    }
+                )
+            }
+        })
+    },
+    view() {
+        return m("div", { "class": "header header-fixed", "id": "kt_header" },
+            m("div", { "class": "container" },
+                [
+                    m("div", { "class": "header-menu-wrapper header-menu-wrapper-left", "id": "kt_header_menu_wrapper" },
+                        m("div", { "class": "header-menu header-menu-left header-menu-mobile header-menu-layout-default", "id": "kt_header_menu" },
+                            m("ul", { "class": "menu-nav" },
+                                [
+                                    m("li", {
+                                        "class": "menu-item" + (
+                                            ["#!/", "/", "", "/order1"].includes(window.location.hash) || window.location.hash.includes("/order2") || window.location.hash.includes("/order1")
+                                                ? " menu-item-active" : ""), "aria-haspopup": "true"
+                                    },
+                                        m("a", { "class": "menu-link", "href": "#!/" },
+                                            m("span", { "class": "menu-text" },
+                                                "Create Order"
+                                            )
+                                        )
+                                    ),
+
+                                    !localStorage.getItem('authToken') ? [
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/discounts" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "Get Discounts"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        ),
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/about" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "About Us"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        ),
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/guarantees" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "Guarantees"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        ),
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/services" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "Services"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        ),
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/sample_essays" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/sample_essays" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "Sample Essays"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        ),
+                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                                [
+                                                    m("span", { "class": "menu-text" },
+                                                        "FAQ"
+                                                    ),
+                                                    m("span", { "class": "menu-desc" })
+                                                ]
+                                            )
+                                        )
+                                    ] : [m("li", { "class": "menu-item" + (window.location.hash.includes("joblist") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("a", { "class": "menu-link", "href": "#!/joblist" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Job Queue"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
+
+                                    localStorage.getItem('role') != "Owner" ? "" : m("li", { "class": "menu-item" + (window.location.hash.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("a", { "class": "menu-link", "href": "#!/users" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "User Management"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    )
+
+                                    ],
+
+
+                                ]
+                            )
+                        )
+                    ),
+                    m("div", { "class": "topbar" }, [
+                        localStorage.getItem('authToken') ? [
+                            m("div", { "class": "topbar-item mr-3" },
+                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                    m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                        [
+                                            m("span", { "class": "menu-text font-size-sm" },
+                                            localStorage.getItem('name')
+                                            ),
+                                            m("br"),
+                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email') + `: role:${localStorage.getItem('role')}`)
+                                        ]
+                                    )
+                                )
+                            ), m("div", { "class": "topbar-item mr-3" },
+                                m("span", { "class": "svg-icon svg-icon-xl" }, [
+                                    m("img", {
+                                        src: localStorage.getItem('imageUrl'),
+                                        style: {
+                                            "max-width": "40%",
+                                            height: "auto"
+                                        }
+                                    })
+                                ])
+                            ), m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
+                                m("a", {
+                                    "class": "btn btn-dropdown btn-fixed-height btn-primary font-weight-bolder font-size-sm px-6", onclick() {
+                                        localStorage.clear()
+
+                                        var auth2 = gapi.auth2.getAuthInstance();
+                                        auth2.signOut().then(function () {
+                                            console.log('User signed out.');
+                                        });
+
+                                        // location.reload()
+                                    }
+                                },
+                                    "SignOut"
+                                )
+                            )
+                        ] : m("div", { style: { margin: "auto" } }, [
+                            // m("div", { "id": "g_id_onload", "data-callback": "handleGoogleCredentialResponse" }),
+                            m(google_login)
+                        ])]
+                    )
+                ]
+            )
+        )
+    }
+}
