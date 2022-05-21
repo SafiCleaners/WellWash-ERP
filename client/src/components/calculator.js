@@ -20,6 +20,7 @@ import {
     serviceTypes
 } from "../constants"
 import uploader from "../components/uploader"
+import map from "./map";
 
 var calculator = () => {
     var initialData
@@ -58,113 +59,6 @@ var calculator = () => {
 
             // paypal
             window.$("html, body").animate({ scrollTop: 0 }, "fast");
-            paypal.Buttons({
-                createOrder: function (data, actions) {
-                    // Set up the transaction
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: vnode.state.calculatePrice()
-                            }
-                        }],
-                        application_context: {
-                            shipping_preference: 'NO_SHIPPING'
-                        }
-                    });
-                },
-                onApprove: async (data, actions) => {
-                    // Authorize the transaction
-                    actions.order.authorize().then(async function (authorization) {
-
-                        // Get the authorization id
-                        var authorizationID = authorization.purchase_units[0]
-                            .payments.authorizations[0].id
-
-                        const {
-                            id,
-                            hrs,
-                            days,
-                            pages,
-                            words,
-                            sources,
-                            powerpoints,
-                            price,
-                            timeLimit,
-                            writerType,
-                            contentLimit,
-                            paymentsType,
-                            academicLevel,
-                            spacingType,
-                            typesMapping,
-                            subjectArea,
-                            articleType,
-                            articleLevel,
-                            paperFormat,
-                            title,
-                            instructions
-                        } = vnode.state
-
-                        const job = {
-                            hrs,
-                            days,
-                            pages,
-                            words,
-                            sources,
-                            powerpoints,
-                            price,
-                            timeLimit,
-                            writerType,
-                            contentLimit,
-                            paymentsType,
-                            academicLevel,
-                            spacingType,
-                            articleType,
-                            articleLevel,
-                            paperFormat,
-                            subjectArea,
-                            title,
-                            instructions
-                        }
-
-                        try {
-                            // Call your server to validate and capture the transaction
-                            await fetch(url + '/payments', {
-                                method: 'post',
-                                headers: {
-                                    'content-type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    jobID: vnode.state.id,
-                                    paypalOrderID: data.orderID,
-                                    authorizationID: authorizationID,
-                                    paypal_cb_data: data
-                                })
-                            });
-
-                            job.partial = false
-                            job.paid = true
-
-                            axios.patch(url + "/jobs/" + id, job).then(function (response) {
-                                vnode.state.lastJobDetails = job
-                                m.route.set("/thankyou")
-                            }).catch(function (error) {
-                                console.error(error);
-                            });
-                        } catch (err) {
-                            job.partial = false
-                            job.paid = false
-
-                            axios.patch(url + "/jobs/" + id, job).then(function (response) {
-                                // console.log(response)
-                                vnode.state.lastJobDetails = job
-                                m.route.set("/thankyou")
-                            }).catch(function (error) {
-                                console.error(error);
-                            });
-                        }
-                    });
-                }
-            }).render(document.getElementById("paypal_button"));
 
         },
         oninit: function (vnode) {
@@ -474,6 +368,27 @@ var calculator = () => {
                                 //             ]
                                 //         )
                                 //     ]),
+                                m("div", { "class": "bs-stepper d-none d-md-block" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "1"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Pickup and DropOff Time"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+
+
+
                                 m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
                                     [
                                         m("label",
@@ -579,37 +494,126 @@ var calculator = () => {
                                     ]
                                 ),
                                 m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
-                                [
-                                    m("label",
-                                        "Time of DropOff:"
-                                    ),
-                                    m("div", { "class": "dropdown" },
-                                        [
-                                            m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                vnode.state.dropOffTime
-                                            ),
-                                            m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                                [
+                                    [
+                                        m("label",
+                                            "Time of DropOff:"
+                                        ),
+                                        m("div", { "class": "dropdown" },
+                                            [
+                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                    vnode.state.dropOffTime
+                                                ),
+                                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                     [
-                                                        "7am - 8am"
-                                                    ].map(time => {
-                                                        return m("a", {
-                                                            style: { "z-index": 10000 },
-                                                            onclick() {
-                                                                vnode.state.dropOffTime = time
+                                                        [
+                                                            "7am - 8am"
+                                                        ].map(time => {
+                                                            return m("a", {
+                                                                style: { "z-index": 10000 },
+                                                                onclick() {
+                                                                    vnode.state.dropOffTime = time
+                                                                },
+                                                                "class": "dropdown-item",
                                                             },
-                                                            "class": "dropdown-item",
-                                                        },
-                                                            time
+                                                                time
+                                                            )
+                                                        })
+                                                    ]
+                                                )
+                                            ]
+                                        )
+                                    ]),
+
+
+                                m("div", { "class": "bs-stepper d-none d-md-block" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "2"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Where to collect"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+                                m("div", { "class": "form-group row" },
+                                    [
+                                        // maps component here. geofence area that we dont service
+                                        m(map)]),
+
+                                m("div", { "class": "form-group row" },
+                                    [
+                                
+                                        m("div", { "class": "col-lg-12" },
+                                            [
+                                                m("label",
+                                                    "Appartment Name:"
+                                                ),
+                                                m("div", { "class": "input-group" },
+                                                    [
+                                                        m("input", { "class": "form-control", "type": "text", "placeholder": "Title to your paper" }),
+                                                        m("div", { "class": "input-group-append" },
+                                                            m("span", { "class": "input-group-text" },
+                                                                m("i", { "class": "la la-align-center" })
+                                                            )
                                                         )
-                                                    })
+                                                    ]
+                                                ),
+                                                m("span", { "class": "form-text text-muted" },
+                                                    "The name of the appartment to find"
+                                                )
+                                            ]
+                                        ),
+                                        m("div", { "class": "col-lg-12" },
+                                            m("div", { "class": "form-group mb-1" },
+                                                [
+                                                    m("label", { "for": "exampleTextarea" },
+                                                        "More Detailss"
+                                                    ),
+                                                    m("textarea", { "class": "form-control", "id": "exampleTextarea", "rows": "12", "spellcheck": "true" })
                                                 ]
                                             )
-                                        ]
-                                    )
-                                ]),
+                                        ),
+                                        m("br"),
+                                        m("br"),
+                                        m("div", { "class": "col-lg-12" },
+                                            m("div", { "class": "alert alert-custom alert-default", "role": "alert" },
+                                                [
+                                                    m("div", { "class": "alert-icon" },
+                                                        m("span", { "class": "svg-icon svg-icon-primary svg-icon-xl" },
+                                                            m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                    [
+                                                                        m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        m("path", { "d": "M7.07744993,12.3040451 C7.72444571,13.0716094 8.54044565,13.6920474 9.46808594,14.1079953 L5,23 L4.5,18 L7.07744993,12.3040451 Z M14.5865511,14.2597864 C15.5319561,13.9019016 16.375416,13.3366121 17.0614026,12.6194459 L19.5,18 L19,23 L14.5865511,14.2597864 Z M12,3.55271368e-14 C12.8284271,3.53749572e-14 13.5,0.671572875 13.5,1.5 L13.5,4 L10.5,4 L10.5,1.5 C10.5,0.671572875 11.1715729,3.56793164e-14 12,3.55271368e-14 Z", "fill": "#000000", "opacity": "0.3" }),
+                                                                        m("path", { "d": "M12,10 C13.1045695,10 14,9.1045695 14,8 C14,6.8954305 13.1045695,6 12,6 C10.8954305,6 10,6.8954305 10,8 C10,9.1045695 10.8954305,10 12,10 Z M12,13 C9.23857625,13 7,10.7614237 7,8 C7,5.23857625 9.23857625,3 12,3 C14.7614237,3 17,5.23857625 17,8 C17,10.7614237 14.7614237,13 12,13 Z", "fill": "#000000", "fill-rule": "nonzero" })
+                                                                    ]
+                                                                )
+                                                            )
+                                                        )
+                                                    ),
+                                                    // m("div", { "class": "alert-text" },
+                                                    //     [
+                                                    //         "PLEASE DON'T INCLUDE YOUR ",
+                                                    //         m("code",
+                                                    //             "PERSONAL INFORMATION (Phone Number, Email Address) in the instructions section"
+                                                    //         ),
+                                                    //         ". The information is always kept private and we won't share it"
+                                                    //     ]
+                                                    // )
+                                                ]
+                                            )
+                                        ),
 
-
+                                    ]
+                                )
                             ]
                         ),
 

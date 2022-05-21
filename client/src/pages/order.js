@@ -13,7 +13,7 @@ import steps from "../components/steps"
 import axios from "axios"
 import uploader from "../components/uploader"
 
-export default {
+const order = {
     oninit(vnode) {
         const {
             id,
@@ -78,112 +78,6 @@ export default {
         } = vnode.state
 
         window.$("html, body").animate({ scrollTop: 0 }, "fast");
-        paypal.Buttons({
-            createOrder: function (data, actions) {
-                // Set up the transaction
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: price
-                        }
-                    }],
-                    application_context: {
-                        shipping_preference: 'NO_SHIPPING'
-                    }
-                });
-            },
-            onApprove: async (data, actions) => {
-                // Authorize the transaction
-                actions.order.authorize().then(async function (authorization) {
-
-                    // Get the authorization id
-                    var authorizationID = authorization.purchase_units[0]
-                        .payments.authorizations[0].id
-
-                    const {
-                        id,
-                        hrs,
-                        days,
-                        pages,
-                        words,
-                        sources,
-                        powerpoints,
-                        price,
-                        timeLimit,
-                        writerType,
-                        contentLimit,
-                        paymentsType,
-                        academicLevel,
-                        spacingType,
-                        typesMapping,
-                        subjectArea,
-                        articleType,
-                        articleLevel,
-                        paperFormat,
-                        title,
-                        instructions
-                    } = vnode.state
-
-                    const job = {
-                        hrs,
-                        days,
-                        pages,
-                        words,
-                        sources,
-                        powerpoints,
-                        price,
-                        timeLimit,
-                        writerType,
-                        contentLimit,
-                        paymentsType,
-                        academicLevel,
-                        spacingType,
-                        articleType,
-                        articleLevel,
-                        paperFormat,
-                        subjectArea,
-                        title,
-                        instructions
-                    }
-
-                    try {
-                        // Call your server to validate and capture the transaction
-                        await fetch(url + '/payments', {
-                            method: 'post',
-                            headers: {
-                                'content-type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                jobID: vnode.state.id,
-                                paypalOrderID: data.orderID,
-                                authorizationID: authorizationID
-                            })
-                        });
-
-                        job.partial = false
-                        job.paid = true
-
-                        axios.patch(url + "/jobs/" + id, job).then(function (response) {
-                            vnode.state.lastJobDetails = job
-                            m.route.set("/thankyou")
-                        }).catch(function (error) {
-                            console.error(error);
-                        });
-                    } catch (err) {
-                        job.partial = false
-                        job.paid = false
-
-                        axios.patch(url + "/jobs/" + id, job).then(function (response) {
-                            console.log(response)
-                            vnode.state.lastJobDetails = job
-                            m.route.set("/thankyou")
-                        }).catch(function (error) {
-                            console.error(error);
-                        });
-                    }
-                });
-            }
-        }).render(document.getElementById("paypal_button"));
     },
     view: function (vnode) {
         const {
@@ -670,3 +564,6 @@ export default {
         ])
     }
 }
+
+
+export default order
