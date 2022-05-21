@@ -13,7 +13,7 @@ export default () => {
                     [
                         m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-250px" },
                             m("a", { "href": "index.html" },
-                                m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/logos/exported_2.png", "width": "150", "height": "30" })
+                                m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/logos/logo-8.png", "width": "220", "height": "150" })
                             )
                         ),
                         m("div", { "class": "subheader-nav nav flex-grow-1" },
@@ -30,7 +30,7 @@ export default () => {
                                                 "Order Now"
                                             ),
                                             m("span", { "class": "nav-desc text-muted" },
-                                                "Order for an essay"
+                                                "Order for Laundry Pickup"
                                             )
                                         ]
                                     )
