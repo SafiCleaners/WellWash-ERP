@@ -438,6 +438,7 @@ var calculator = () => {
 
 
                 pickupDay,
+                dropOffDay,
                 pickupTime,
                 dropOffTime
             } = vnode.state
@@ -558,15 +559,15 @@ var calculator = () => {
                                                     "Thursday",
                                                     "Friday"
                                                 ].map(day => {
-                                                    return m("label", { "class": `btn btn-info ${pickupDay == day ? "active" : ""}` },
+                                                    return m("label", { "class": `btn btn-info ${dropOffDay == day ? "active" : ""}` },
                                                         [
                                                             m("input", {
                                                                 "type": "radio",
                                                                 "name": "academicLevels",
                                                                 "id": day,
-                                                                "checked": pickupDay == day ? true : false,
+                                                                "checked": dropOffDay == day ? true : false,
                                                                 onchange: () => {
-                                                                    vnode.state.pickupDay = day
+                                                                    vnode.state.dropOffDay = day
                                                                 }
                                                             }),
                                                             day
