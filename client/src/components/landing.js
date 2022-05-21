@@ -12,7 +12,7 @@ const landing = () => {
 
                                     // },
                                     // "width": "110", 
-                                    "height": "220"
+                                    "height": "170"
                                 })),
                                 m("h1", { "class": "mb-3" },
                                     "Laundry Service From Industry Experts"
@@ -23,7 +23,8 @@ const landing = () => {
                                 m("h4", { "class": "mb-3" },
                                     "Laundry Service for people who want to see results fast!"
                                 ),
-                                m("a", {
+                                m("button", {
+                                    type:"button",
                                     "class": "btn btn-info btn-lg", "role": "button",
                                     onclick() {
                                         m.route.set("/order1")

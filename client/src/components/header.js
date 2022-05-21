@@ -4,7 +4,7 @@ import {
 import axios from "axios"
 import google_login from "./google_login"
 
-export default {
+const header = {
     async oncreate() {
         const params = {
             client_id: client_id,
@@ -101,16 +101,7 @@ export default {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/sample_essays" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/sample_essays" },
-                                                [
-                                                    m("span", { "class": "menu-text" },
-                                                        "Sample Essays"
-                                                    ),
-                                                    m("span", { "class": "menu-desc" })
-                                                ]
-                                            )
-                                        ),
+                                        
                                         m("li", { "class": "menu-item" + (window.location.hash == "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/FAQ" },
                                                 [
@@ -200,3 +191,5 @@ export default {
         )
     }
 }
+
+export default header
