@@ -13,13 +13,13 @@ export default () => {
                                     }
                                 })),
                                 m("h1", { "class": "mb-3" },
-                                    "Essays From Industry Experts"
+                                    "Laundry Service From Industry Experts"
                                 ),
                                 m("h4", { "class": "mb-3" },
-                                    "Hire Your Personal Essay Writer Today"
+                                    "Make an order for Laundry Pickup Today"
                                 ),
                                 m("h4", { "class": "mb-3" },
-                                    "Essay writing service for students who want to see results fast!"
+                                    "Laundry Service for people who want to see results fast!"
                                 ),
                                 m("a", {
                                     "class": "btn btn-info btn-lg", "role": "button",
@@ -27,7 +27,7 @@ export default () => {
                                         m.route.set("/order1")
                                     }
                                 },
-                                    "Write my paper!"
+                                    "Pick up my Laundry!"
                                 )
                             ]
                         )
