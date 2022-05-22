@@ -368,7 +368,7 @@ var calculator = () => {
                                 //             ]
                                 //         )
                                 //     ]),
-                                m("div", { "class": "bs-stepper d-none d-md-block" },
+                                m("div", { "class": "bs-stepper d-md-block" },
                                     [
                                         m("div", { "class": "bs-stepper-header", "role": "tablist" },
                                             [
@@ -389,7 +389,7 @@ var calculator = () => {
 
 
 
-                                m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
+                                m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your Pickup? (12st May - 26th May) "
@@ -401,10 +401,10 @@ var calculator = () => {
                                                 [
                                                     "Saturday",
                                                     // "Sunday",
-                                                    "Monday",
-                                                    "Teusday",
-                                                    "Wednesday",
-                                                    "Thursday",
+                                                    "Mon",
+                                                    "Teu",
+                                                    "Wed",
+                                                    "Thur",
                                                     "Friday"
                                                 ].map(day => {
                                                     return m("label", { "class": `btn btn-info ${pickupDay == day ? "active" : ""}` },
@@ -456,7 +456,7 @@ var calculator = () => {
                                             ]
                                         )
                                     ]),
-                                m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
+                                m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your DropOff? (12st May - 26th May)"
@@ -468,10 +468,10 @@ var calculator = () => {
                                                 [
                                                     "Saturday",
                                                     // "Sunday",
-                                                    "Monday",
-                                                    "Teusday",
-                                                    "Wednesday",
-                                                    "Thursday",
+                                                    "Mon",
+                                                    "Teu",
+                                                    "Wed",
+                                                    "Thur",
                                                     "Friday"
                                                 ].map(day => {
                                                     return m("label", { "class": `btn btn-info ${dropOffDay == day ? "active" : ""}` },
@@ -525,7 +525,7 @@ var calculator = () => {
                                     ]),
 
 
-                                m("div", { "class": "bs-stepper d-none d-md-block" },
+                                m("div", { "class": "bs-stepper" },
                                     [
                                         m("div", { "class": "bs-stepper-header", "role": "tablist" },
                                             [
@@ -536,7 +536,7 @@ var calculator = () => {
                                                                 "2"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
-                                                                "Where to collect"
+                                                                "Where to pickup and drop off"
                                                             )
                                                         ]
                                                     )
