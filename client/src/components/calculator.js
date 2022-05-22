@@ -392,7 +392,7 @@ var calculator = () => {
                                 m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
                                     [
                                         m("label",
-                                            "When would you like your Pickup?"
+                                            "When would you like your Pickup? (12st May - 26th May) "
                                         ),
                                         m("br"),
 
@@ -459,7 +459,7 @@ var calculator = () => {
                                 m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
                                     [
                                         m("label",
-                                            "When would you like your DropOff?"
+                                            "When would you like your DropOff? (12st May - 26th May)"
                                         ),
                                         m("br"),
 
@@ -543,14 +543,11 @@ var calculator = () => {
                                                 )]
                                         )]
                                 ),
-                                m("div", { "class": "form-group row" },
-                                    [
-                                        // maps component here. geofence area that we dont service
-                                        m(map)]),
+                               
 
                                 m("div", { "class": "form-group row" },
                                     [
-                                
+                                        m(map),
                                         m("div", { "class": "col-lg-12" },
                                             [
                                                 m("label",
