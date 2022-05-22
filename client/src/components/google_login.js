@@ -3,7 +3,7 @@ import {
 } from "../constants"
 import axios from "axios"
 
-export default {
+const google_login = {
     view() {
         return m("button", {
             "class": "btn btn-danger btn-lg",
@@ -59,3 +59,5 @@ export default {
         )
     }
 }
+
+export default google_login
