@@ -2,7 +2,7 @@ const map = {
     oncreate: function (vnode) {
         console.log("initialize component")
 
-        // const shopLocation = { lat: -1.1542309, lng: 36.9225647 }
+        const shopLocation = { lat: -1.1542309, lng: 36.9225647 }
 
         const google = window.google
         let map, infoWindow;
@@ -38,7 +38,7 @@ const map = {
 
 
         var mapBounds = new google.maps.LatLngBounds();
-        const shopLocation = { lat: -1.1688730326561672, lng: 36.83084871056846 }
+        // const shopLocation = { lat: -1.1688730326561672, lng: 36.83084871056846 }
 
         // new google.maps.Marker({
         //     position: shopLocation,
@@ -60,22 +60,59 @@ const map = {
                     // infoWindow.setContent("You");
                     // infoWindow.open(map);
 
-                    var markerList = [shopLocation, pos]
+                    var markerList = [
+
+                        pos
+                    ]
+
+                    const image =
+                        "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
+                    const imageList = [
+                        shopLocation
+                    ]
+
+                    // draw markers
+                    // imageList.map(position => {
+                    //     new google.maps.Marker({
+                    //         position,
+                    //         map,
+                    //         // title: "Hello World!",
+                    //         icon: image
+                    //     });
+                    // })
 
                     // draw markers
                     markerList.map(position => {
                         new google.maps.Marker({
                             position,
                             map,
-                            // title: "Hello World!",
+                            title: "You are here...",
                         });
                     })
 
+              
+                    var allPoints = [...markerList, ...imageList]
+
                     // zoom out to points
-                    for (var i = 0; i < markerList.length; i++) {
-                        var point = new google.maps.LatLng(markerList[i].lat, markerList[i].lng)
+                    for (var i = 0; i < allPoints.length; i++) {
+                        var point = new google.maps.LatLng(allPoints[i].lat, allPoints[i].lng)
                         mapBounds.extend(point);
                     }
+
+                    // draw cicle around shop
+                    // Add circle overlay and bind to marker
+                    var circle = new google.maps.Circle({
+                        map: map,
+                        radius: (16093/5),    // 10 miles in metres
+                        fillColor: '#AA0000'
+                    });
+                    circle.bindTo('center', new google.maps.Marker({
+                        position: shopLocation,
+                        map,
+                        title: "Safi washers...",
+                        icon: image
+                    }), 'position');
 
                     // map.setCenter(mapBounds.getCenter());
 
