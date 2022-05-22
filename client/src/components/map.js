@@ -1,5 +1,5 @@
 const image =
-"https://safi-washers.netlify.app/assets/media/washer-logo-map-size.png";
+    "https://safi-washers.netlify.app/assets/media/washer-logo-map-size.png";
 
 
 const map = {
@@ -103,14 +103,35 @@ const map = {
                     // infoWindow.open(map);
 
                     var markerList = [
-
                         pos
                     ]
 
-                 
+
                     const imageList = [
                         shopLocation
                     ]
+
+                    // calculate distance between them
+                    var rad = function (x) {
+                        return x * Math.PI / 180;
+                    };
+
+                    var getDistance = function (p1, p2) {
+                        var R = 6378137; // Earth’s mean radius in meter
+                        var dLat = rad(p2.lat - p1.lat);
+                        var dLong = rad(p2.lng - p1.lng);
+                        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                            Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+                            Math.sin(dLong / 2) * Math.sin(dLong / 2);
+                        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        var d = R * c;
+                        return d; // returns the distance in meter
+                    };
+
+                    const distance = getDistance(shopLocation, pos)
+                    console.log({ distance })
+
+                    vnode.state.distanceOfUserFromShop = distance
 
                     // draw markers
                     // imageList.map(position => {
@@ -176,10 +197,13 @@ const map = {
 
         console.log(map)
     },
-    view() {
-        return [
-            m('#mapdiv', { style: { "padding-right": "10px", width: "750px", height: "250px" } })
-        ]
+    view(vnode) {
+        return m("div", { style: { "padding": "10px" } }, [
+            m('#mapdiv', { style: { height: "250px" } }),
+            // vnode.state.distanceOfUserFromShop && vnode.state.distanceOfUserFromShop > (16093 / 5) 
+            //     ? m("h3"," you seem to be too far away from us. we dont service deliveries that far")
+            //     : `You seem to be close by. Free delivery and pickup is available ${Math.floor(Number(vnode.state.distanceOfUserFromShop))} meters`
+        ])
     }
 }
 
