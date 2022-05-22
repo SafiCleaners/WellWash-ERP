@@ -21,6 +21,7 @@ import {
 } from "../constants"
 import uploader from "../components/uploader"
 import map from "./map";
+import input from "./input";
 
 var calculator = () => {
     var initialData
@@ -543,7 +544,7 @@ var calculator = () => {
                                                 )]
                                         )]
                                 ),
-                               
+
 
                                 m("div", { "class": "form-group row" },
                                     [
@@ -555,7 +556,7 @@ var calculator = () => {
                                                 ),
                                                 m("div", { "class": "input-group" },
                                                     [
-                                                        m("input", { "class": "form-control", "type": "text", "placeholder": "What is your apprtment commonly called?" }),
+                                                        m("input", { "class": "form-control", "type": "text", "placeholder": "What is your appartment commonly called?" }),
                                                         m("div", { "class": "input-group-append" },
                                                             m("span", { "class": "input-group-text" },
                                                                 m("i", { "class": "la la-align-center" })
@@ -630,7 +631,132 @@ var calculator = () => {
                                         // ),
 
                                     ]
-                                )
+                                ),
+
+                                m("div", { "class": "bs-stepper" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "3"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Pricing and Laundry Load Details"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+
+
+                                m("div", { "class": "form-group row" },
+                                    [
+                                        m(input, {
+                                            name: 'Curtains',
+                                            value: 0,
+                                            charge: 200
+                                        }),
+                                        m(input, {
+                                            name: 'Blankets',
+                                            value: 0,
+                                            charge: 350
+                                        }),
+                                        m(input, {
+                                            name: 'Duvet',
+                                            value: 0,
+                                            charge: 700
+                                        }),
+                                        m(input, {
+                                            name: 'General Clothes in Kgs',
+                                            value: 0,
+                                            charge: 99
+                                        })
+                                    ]),
+
+
+                                m("div", { "class": "bs-stepper" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "4"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Laundry service Status"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+
+
+                                m("div", { "class": "alert alert-custom alert-default", "role": "alert" },
+                                    [
+                                        m("div", { "class": "alert-icon" },
+                                            m("span", { "class": "svg-icon svg-icon-primary svg-icon-xl" },
+                                                m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                    m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                        [
+                                                            m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                            m("path", { "d": "M7.07744993,12.3040451 C7.72444571,13.0716094 8.54044565,13.6920474 9.46808594,14.1079953 L5,23 L4.5,18 L7.07744993,12.3040451 Z M14.5865511,14.2597864 C15.5319561,13.9019016 16.375416,13.3366121 17.0614026,12.6194459 L19.5,18 L19,23 L14.5865511,14.2597864 Z M12,3.55271368e-14 C12.8284271,3.53749572e-14 13.5,0.671572875 13.5,1.5 L13.5,4 L10.5,4 L10.5,1.5 C10.5,0.671572875 11.1715729,3.56793164e-14 12,3.55271368e-14 Z", "fill": "#000000", "opacity": "0.3" }),
+                                                            m("path", { "d": "M12,10 C13.1045695,10 14,9.1045695 14,8 C14,6.8954305 13.1045695,6 12,6 C10.8954305,6 10,6.8954305 10,8 C10,9.1045695 10.8954305,10 12,10 Z M12,13 C9.23857625,13 7,10.7614237 7,8 C7,5.23857625 9.23857625,3 12,3 C14.7614237,3 17,5.23857625 17,8 C17,10.7614237 14.7614237,13 12,13 Z", "fill": "#000000", "fill-rule": "nonzero" })
+                                                        ]
+                                                    )
+                                                )
+                                            )
+                                        ),
+                                        m("div", { "class": "alert-text" },
+                                            [
+                                                "AWAITING PICKUP...,",
+                                                m("code",
+                                                    "Please wait... you might recieve a call from our team member")
+                                            ]
+                                        )
+                                    ]
+                                ),
+
+
+                                m("div", { "class": "bs-stepper" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "5"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Payment"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+
+                                m("div", { "class": "form-group row", style: { "padding": "10px" } },
+                                    [
+                                        m("label",
+                                            "You will complete your payment once the laundry is delivered"
+                                        ),
+                                        m("a", { "class": "btn btn-success", "href": "#", disabled: true },
+                                            [
+                                                m("i", { "class": "flaticon-grid-menu" }),
+                                                " Start Your Mpesa Payment... "
+                                            ]
+                                        )
+                                    ])
+
+
                             ]
                         ),
 
