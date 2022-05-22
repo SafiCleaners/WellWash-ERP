@@ -14,6 +14,7 @@ const map = {
         var opts = opts = {
             center: new google.maps.LatLng(0, 0),
             zoom: 12,
+            disableDefaultUI: true,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         }
         map = new google.maps.Map(document.getElementById("mapdiv"), opts)
@@ -178,7 +179,7 @@ const map = {
                     // map.setCenter(mapBounds.getCenter());
 
                     console.log(markerList, mapBounds)
-                    // map.setCenter(pos);
+                    map.setCenter(shopLocation);
                     map.fitBounds(mapBounds);
                 },
                 () => {
@@ -199,7 +200,7 @@ const map = {
     },
     view(vnode) {
         return m("div", { style: { "padding": "10px" } }, [
-            m('#mapdiv', { style: { height: "250px" } }),
+            m('#mapdiv', { style: { height: "300px" } }),
             // vnode.state.distanceOfUserFromShop && vnode.state.distanceOfUserFromShop > (16093 / 5) 
             //     ? m("h3"," you seem to be too far away from us. we dont service deliveries that far")
             //     : `You seem to be close by. Free delivery and pickup is available ${Math.floor(Number(vnode.state.distanceOfUserFromShop))} meters`
