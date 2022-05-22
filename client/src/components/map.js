@@ -1,3 +1,7 @@
+const image =
+"https://safi-washers.netlify.app/assets/media/washer-logo-map-size.png";
+
+
 const map = {
     oncreate: function (vnode) {
         console.log("initialize component")
@@ -9,7 +13,7 @@ const map = {
 
         var opts = opts = {
             center: new google.maps.LatLng(0, 0),
-            zoom: 15,
+            zoom: 12,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         }
         map = new google.maps.Map(document.getElementById("mapdiv"), opts)
@@ -19,13 +23,51 @@ const map = {
         const locationButton = document.createElement("button");
 
         function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-            infoWindow.setPosition(pos);
-            infoWindow.setContent(
-                browserHasGeolocation
-                    ? "Error: The Geolocation service failed."
-                    : "Error: Your browser doesn't support geolocation."
-            );
-            infoWindow.open(map);
+            infoWindow.setPosition(shopLocation);
+            // infoWindow.setContent(
+            //     browserHasGeolocation
+            //         ? "Error: The Geolocation service failed."
+            //         : "Error: Your browser doesn't support geolocation."
+            // );
+            // infoWindow.open(map);
+
+            const imageList = [
+                shopLocation
+            ]
+
+            // draw markers
+            // imageList.map(position => {
+            //     new google.maps.Marker({
+            //         position,
+            //         map,
+            //         // title: "Hello World!",
+            //         icon: image
+            //     });
+            // })
+
+            // draw markers
+            // imageList.map(position => {
+            //     new google.maps.Marker({
+            //         position,
+            //         map,
+            //     });
+            // })
+
+            // draw cicle around shop
+            // Add circle overlay and bind to marker
+            var circle = new google.maps.Circle({
+                map: map,
+                radius: (16093 / 5),    // 10 miles in metres
+                fillColor: '#66B4ED'
+            });
+            circle.bindTo('center', new google.maps.Marker({
+                position: shopLocation,
+                map,
+                title: "Safi washers...",
+                icon: image
+            }), 'position');
+
+            map.setCenter(shopLocation);
         }
 
 
@@ -65,9 +107,7 @@ const map = {
                         pos
                     ]
 
-                    const image =
-                        "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
-
+                 
                     const imageList = [
                         shopLocation
                     ]
@@ -91,7 +131,7 @@ const map = {
                         });
                     })
 
-              
+
                     var allPoints = [...markerList, ...imageList]
 
                     // zoom out to points
@@ -104,8 +144,8 @@ const map = {
                     // Add circle overlay and bind to marker
                     var circle = new google.maps.Circle({
                         map: map,
-                        radius: (16093/5),    // 10 miles in metres
-                        fillColor: '#AA0000'
+                        radius: (16093 / 5),    // 10 miles in metres
+                        fillColor: '#66B4ED'
                     });
                     circle.bindTo('center', new google.maps.Marker({
                         position: shopLocation,
