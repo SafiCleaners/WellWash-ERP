@@ -9,20 +9,22 @@ import m from "mithril"
 import uploader from "../components/uploader"
 import map from "./map";
 import input from "./input";
+import dayRangeCalculator from "../dateCalculator";
+import moment from "moment"
+
+
+const operationTimes = [
+    "7am - 8am",
+    "8am - 9am",
+    "10am - 11am",
+    "12am - 1pm",
+    "1pm - 2pm",
+    "3pm - 4pm",
+    "5pm - 6pm",
+    "7pm - 8pm"
+]
 
 var calculator = () => {
-    var initialData
-    var priceMapping = {
-        24: 25,
-        72: 18,
-    }
-
-    var timeLimit = timeTypeDay
-    var contentLimit = contentTypePage
-
-    var days = 1
-    var pages = 1
-
     return {
         oncreate(vnode) {
             // Datetimepicker
@@ -50,14 +52,13 @@ var calculator = () => {
 
         },
         oninit: function (vnode) {
-            var priceString = priceMapping[24]
             var cost = 0
             var price = 0
             vnode.state = Object.assign(vnode.state, {
                 // select today automatically
-                pickupDay: 'Teu',
+                pickupDay: moment(new Date()).format('L'),
                 // select tommorow automatically
-                dropOffDay: 'Wed',
+                dropOffDay: moment(new Date()).add(1, 'days').format('L'),
                 pickupTime: '7am-8am',
                 dropOffTime: '10am-11am',
                 appartmentName: '',
@@ -68,6 +69,7 @@ var calculator = () => {
                 duvets: 0,
                 generalKgs: 0,
                 mpesaPhoneNumber: 0,
+                mpesaConfirmationCode: '',
                 calculatePrice() {
                     if (vnode.state.paypalTestMode) {
                         return 2
@@ -203,9 +205,9 @@ var calculator = () => {
             if (!activeOrderId) {
                 const order = {
                     // select today automatically
-                    pickupDay: 'Teu',
+                    pickupDay: moment(new Date()).format('L'),
                     // select tommorow automatically
-                    dropOffDay: 'Wed',
+                    dropOffDay: moment(new Date()).add(1, 'days').format('L'),
                     pickupTime: '7am-8am',
                     dropOffTime: '10am-11am',
                     appartmentName: '',
@@ -216,6 +218,7 @@ var calculator = () => {
                     duvets: 0,
                     generalKgs: 0,
                     mpesaPhoneNumber: 0,
+                    mpesaConfirmationCode: '',
                     partial: true
                 }
 
@@ -274,7 +277,8 @@ var calculator = () => {
                 blankets,
                 duvets,
                 generalKgs,
-                mpesaPhoneNumber
+                mpesaPhoneNumber,
+                mpesaConfirmationCode,
             } = vnode.state
 
             return m("div", { "class": "card-body" },
@@ -330,36 +334,40 @@ var calculator = () => {
                                 m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
                                     [
                                         m("label",
-                                            "When would you like your Pickup? (12st May - 26th May) "
+                                            "When would you like your Pickup? "
                                         ),
                                         m("br"),
 
                                         m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                                             [
-                                                [
-                                                    "Saturday",
-                                                    // "Sunday",
-                                                    "Mon",
-                                                    "Teu",
-                                                    "Wed",
-                                                    "Thur",
-                                                    "Friday"
-                                                ].map(day => {
-                                                    return m("label", { "class": `btn btn-info ${pickupDay == day ? "active" : ""}` },
-                                                        [
-                                                            m("input", {
-                                                                "type": "radio",
-                                                                "name": "academicLevels",
-                                                                "id": day,
-                                                                "checked": pickupDay == day ? true : false,
-                                                                onchange: () => {
-                                                                    vnode.state.pickupDay = day
-                                                                }
-                                                            }),
-                                                            day
-                                                        ]
-                                                    )
-                                                }),
+                                                dayRangeCalculator()
+                                                    .map((time) => {
+                                                        const { dayName, day, nth, date } = time
+                               
+                                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "active" : ""}` },
+                                                            [
+                                                                m("input", {
+                                                                    "type": "radio",
+                                                                    "name": "pickupDay",
+                                                                    "id": pickupDay,
+                                                                    disabled: date.day() == 0,
+                                                                    "checked": pickupDay == date.format('L') ? true : false,
+                                                                    onchange: () => {
+                                                                        vnode.state.pickupDay = date.format('L')
+
+                                                                        let daysToAdd = 1
+                                                                        // increment time here to set drop off
+                                                                        if(moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0){
+                                                                            daysToAdd = 2
+                                                                        }
+                                                                        
+                                                                        vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
+                                                                    }
+                                                                }),
+                                                                dayName + " " + day + nth
+                                                            ]
+                                                        )
+                                                    }),
                                             ]
                                         )
                                     ]
@@ -372,13 +380,11 @@ var calculator = () => {
                                         m("div", { "class": "dropdown" },
                                             [
                                                 m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                    vnode.state.pickupTime
+                                                    pickupTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                     [
-                                                        [
-                                                            "7am - 8am"
-                                                        ].map(time => {
+                                                        operationTimes.map(time => {
                                                             return m("a", {
                                                                 style: { "z-index": 10000 },
                                                                 onclick() {
@@ -397,36 +403,31 @@ var calculator = () => {
                                 m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
                                     [
                                         m("label",
-                                            "When would you like your DropOff? (12st May - 26th May)"
+                                            "When would you like your DropOff?"
                                         ),
                                         m("br"),
 
                                         m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                                             [
-                                                [
-                                                    "Saturday",
-                                                    // "Sunday",
-                                                    "Mon",
-                                                    "Teu",
-                                                    "Wed",
-                                                    "Thur",
-                                                    "Friday"
-                                                ].map(day => {
-                                                    return m("label", { "class": `btn btn-info ${dropOffDay == day ? "active" : ""}` },
-                                                        [
-                                                            m("input", {
-                                                                "type": "radio",
-                                                                "name": "academicLevels",
-                                                                "id": day,
-                                                                "checked": dropOffDay == day ? true : false,
-                                                                onchange: () => {
-                                                                    vnode.state.dropOffDay = day
-                                                                }
-                                                            }),
-                                                            day
-                                                        ]
-                                                    )
-                                                }),
+                                                dayRangeCalculator(vnode.state.pickupDay)
+                                                    .map((time) => {
+                                                        const { dayName, day, nth, date } = time
+                                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "active" : ""}` },
+                                                            [
+                                                                m("input", {
+                                                                    "type": "radio",
+                                                                    "name": "dropOffDay",
+                                                                    "id": dropOffDay,
+                                                                    "checked": dropOffDay === date.format('L') ? true : false,
+                                                                    disabled: moment(vnode.state.pickupDay).day() == 0,
+                                                                    onchange: () => {
+                                                                        vnode.state.dropOffDay = date.format('L')
+                                                                    }
+                                                                }),
+                                                                dayName + " " + day + nth
+                                                            ]
+                                                        )
+                                                    }),
                                             ]
                                         )
                                     ]
@@ -439,13 +440,11 @@ var calculator = () => {
                                         m("div", { "class": "dropdown" },
                                             [
                                                 m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                    vnode.state.dropOffTime
+                                                    dropOffTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                     [
-                                                        [
-                                                            "7am - 8am"
-                                                        ].map(time => {
+                                                        operationTimes.map(time => {
                                                             return m("a", {
                                                                 style: { "z-index": 10000 },
                                                                 onclick() {
@@ -701,15 +700,75 @@ var calculator = () => {
 
                                 m("div", { "class": "form-group row", style: { "padding": "10px" } },
                                     [
+                                        m("div", { "class": "col-lg-12" },
+                                            [
+                                                m("label",
+                                                    "Mpesa Number To be used for the payment"
+                                                ),
+                                                m("div", { "class": "input-group" },
+                                                    [
+                                                        m("input", {
+                                                            oninput: (e) => {
+                                                                vnode.state.mpesaPhoneNumber = e.target.value
+                                                            },
+                                                            value: mpesaPhoneNumber,
+                                                            "class": "form-control",
+                                                            "type": "text",
+                                                            "placeholder": "What phone number will we get teh payment from?"
+                                                        }),
+                                                        m("div", { "class": "input-group-append" },
+                                                            m("span", { "class": "input-group-text" },
+                                                                m("i", { "class": "la la-align-center" })
+                                                            )
+                                                        )
+                                                    ]
+                                                ),
+                                                m("span", { "class": "form-text text-muted" },
+                                                    "The phone number that will be used for payment"
+                                                )
+                                            ]
+                                        ),
                                         m("label",
                                             "You will complete your payment once the laundry is delivered"
                                         ),
-                                        m("a", { "class": "btn btn-success", "href": "#", disabled: true },
+
+                                        m("div", {
+                                            style: {
+                                                "padding": "30px"
+                                            }
+                                        }, [
+                                            m("a", { "class": "btn btn-success", "href": "#", disabled: true },
+                                                [
+                                                    m("i", { "class": "flaticon-grid-menu" }),
+                                                    " Start Your Mpesa Payment... "
+                                                ]
+                                            ),
+                                        ]),
+
+
+                                        m("div", { "class": "col-lg-12" },
                                             [
-                                                m("i", { "class": "flaticon-grid-menu" }),
-                                                " Start Your Mpesa Payment... "
+                                                m("div", { "class": "form-group mb-1" },
+                                                    [
+                                                        m("label", { "for": "exampleTextarea" },
+                                                            "Mpesa Confirmation message"
+                                                        ),
+                                                        m("textarea", {
+                                                            oninput: (e) => {
+                                                                vnode.state.mpesaConfirmationCode = e.target.value
+                                                            },
+                                                            value: mpesaConfirmationCode,
+                                                            "class": "form-control",
+                                                            "id": "exampleTextarea",
+                                                            "rows": "12",
+                                                            "spellcheck": "true"
+                                                        })
+                                                    ]
+                                                )
                                             ]
-                                        )
+                                        ),
+
+
                                     ])
 
 
