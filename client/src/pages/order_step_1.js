@@ -1,6 +1,7 @@
 import price_calculator from "../components/calculator"
 import steps from "../components/steps"
-import Order from "./order";
+import m from "mithril"
+// import Order from "./order";
 
 export default () => {
     return {

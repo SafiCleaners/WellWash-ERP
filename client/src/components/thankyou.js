@@ -1,3 +1,4 @@
+import m from "mithril"
 export default () => {
     return {
         view() {

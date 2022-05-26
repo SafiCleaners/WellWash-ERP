@@ -9,6 +9,7 @@ import {
     paperFormats,
     url
 } from "../constants"
+import m from "mithril"
 import steps from "../components/steps"
 import axios from "axios"
 import uploader from "../components/uploader"

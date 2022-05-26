@@ -1,3 +1,4 @@
+import m from "mithril"
 const image =
     "https://safi-washers.netlify.app/assets/media/washer-logo-map-size.png";
 

@@ -1,13 +1,16 @@
+import m from "mithril"
 const input = {
     oninit(vnode) {
-        vnode.state.value = 0
+        const { value, onChange } = vnode.attrs
+        vnode.state.value = value
     },
     view(vnode) {
+        const { value, onChange, name } = vnode.attrs
         return m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
             [
                 // powerpoint slides
                 m("label",
-                    vnode.attrs.name
+                    name
                 ),
 
                 m("div", { "class": "form-group" }, [
@@ -20,6 +23,8 @@ const input = {
                                     onclick() {
                                         if (Number(vnode.state.value) - 1 >= 0) {
                                             vnode.state.value = Number(vnode.state.value) - 1
+
+                                            onChange(vnode.state.value)
                                         }
                                     }
                                 },
@@ -30,9 +35,10 @@ const input = {
                                 "class": "form-control", "type": "number", "placeholder": `No. of PowerPoint Slides`, "aria-describedby": "button-addon1",
                                 value: vnode.state.value,
                                 oninput(e) {
-                                
+
                                     if (Math.sign(Number(e.target.value)) === 1) {
                                         vnode.state.value = Number(e.target.value)
+                                        onChange(vnode.state.value)
                                     }
                                 }
                             }),
@@ -41,6 +47,7 @@ const input = {
                                     "class": "btn btn-outline-secondary", "type": "button", "id": "button-addon1",
                                     onclick() {
                                         vnode.state.value = Number(vnode.state.value) + 1
+                                        onChange(vnode.state.value)
                                     }
                                 },
                                     "+"

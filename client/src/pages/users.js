@@ -4,6 +4,7 @@ import {
     url
 } from "../constants"
 
+import m from "mithril"
 import {
     timeLimit,
     timeTypeDay,

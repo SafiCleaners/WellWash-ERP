@@ -1,11 +1,12 @@
 import {
     client_id
 } from "../constants"
+import m from "mithril"
 import axios from "axios"
 import google_login from "./google_login"
 
 const header = {
-    async oncreate() {
+    async x_oncreate() {
         const params = {
             client_id,
             // cookie_policy: cookiePolicy,
@@ -21,23 +22,25 @@ const header = {
         params.access_type = 'offline'
         window.gapi.load('auth2', () => {
             const GoogleAuth = window.gapi.auth2.getAuthInstance()
-            if (!GoogleAuth) {
-                window.gapi.auth2.init(params).then(
-                    res => {
-                        const signedIn = res.isSignedIn.get()
-                        // onAutoLoadFinished(signedIn)
-                        if (signedIn) {
-                            console.log(res.currentUser.get())
-                        }
-                    },
-                    err => {
-                        // setLoaded(true)
-                        // onAutoLoadFinished(false)
-                        // onLoadFailure(err)
-                        console.log(err)
-                    }
-                )
-            }
+
+            console.log(GoogleAuth)
+            // if (!GoogleAuth) {
+            //     window.gapi.auth2.init(params).then(
+            //         res => {
+            //             const signedIn = res.isSignedIn.get()
+            //             // onAutoLoadFinished(signedIn)
+            //             if (signedIn) {
+            //                 console.log(res.currentUser.get())
+            //             }
+            //         },
+            //         err => {
+            //             // setLoaded(true)
+            //             // onAutoLoadFinished(false)
+            //             // onLoadFailure(err)
+            //             console.log(err)
+            //         }
+            //     )
+            // }
         })
     },
     view() {

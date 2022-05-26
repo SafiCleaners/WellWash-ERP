@@ -9,6 +9,7 @@ import {
     timeTypeDay,
     timeTypeHr
 } from "../constants"
+import m from "mithril"
 
 import loader from "../components/loader"
 

@@ -1,24 +1,11 @@
 import axios from "axios";
 import {
-    typesMapping,
-
-    academicLevels,
-    paymentTypes,
-
     timeTypeDay,
     timeTypeHr,
-    paperFormats,
-    pricepage,
-
-    contentTypeWords,
-    subjectAreaMapping,
     contentTypePage,
-    writerType,
-    contentSpacingTypeSingle,
-    contentSpacingTypeDouble,
     url,
-    serviceTypes
 } from "../constants"
+import m from "mithril"
 import uploader from "../components/uploader"
 import map from "./map";
 import input from "./input";
@@ -67,30 +54,20 @@ var calculator = () => {
             var cost = 0
             var price = 0
             vnode.state = Object.assign(vnode.state, {
-                activeOrder: {},
-                hrs: 0,
-                days,
-                pages,
-                words: 0,
-                sources: 0,
-                powerpoints: 0,
-                price: priceString,
-                timeLimit,
-                writerType,
-                contentLimit,
-                paymentsType: paymentTypes[0],
-                academicLevel: academicLevels[0],
-                spacingType: contentSpacingTypeDouble,
-                typesMapping,
-                articleType: {
-                    type: typesMapping[1][0]
-                },
-                serviceType: serviceTypes[0],
-                paperFormat: paperFormats[0],
-                // deadline,
-                subjectAreaMapping,
-                articleLevel: "High School",
-                paypalTestMode: false,
+                // select today automatically
+                pickupDay: 'Teu',
+                // select tommorow automatically
+                dropOffDay: 'Wed',
+                pickupTime: '7am-8am',
+                dropOffTime: '10am-11am',
+                appartmentName: '',
+                houseNumber: '',
+                moreDetails: '',
+                curtains: 0,
+                blankets: 0,
+                duvets: 0,
+                generalKgs: 0,
+                mpesaPhoneNumber: 0,
                 calculatePrice() {
                     if (vnode.state.paypalTestMode) {
                         return 2
@@ -200,7 +177,7 @@ var calculator = () => {
                     vnode.state.uploading = true
                     axios.request(options).then(function (response) {
                         vnode.state.activeOrder = order
-                        localStorage.setItem("activeOrder", JSON.stringify(order))
+                        localStorage.setItem("activeOrder", JSON.stringify(order, null, '\t'))
 
                         vnode.state.uploading = false
                         vnode.state.saved = false
@@ -225,28 +202,20 @@ var calculator = () => {
 
             if (!activeOrderId) {
                 const order = {
-                    hrs: 0,
-                    days,
-                    pages,
-                    words: 0,
-                    sources: 0,
-                    powerpoints: 0,
-                    price: priceString,
-                    timeLimit,
-                    writerType,
-                    contentLimit,
-                    paymentsType: paymentTypes[0],
-                    academicLevel: academicLevels[0],
-                    spacingType: contentSpacingTypeDouble,
-                    typesMapping,
-                    articleType: {
-                        type: typesMapping[1][0]
-                    },
-                    serviceType: serviceTypes[0],
-                    paperFormat: paperFormats[0],
-                    // deadline,
-                    subjectAreaMapping,
-                    articleLevel: "High School",
+                    // select today automatically
+                    pickupDay: 'Teu',
+                    // select tommorow automatically
+                    dropOffDay: 'Wed',
+                    pickupTime: '7am-8am',
+                    dropOffTime: '10am-11am',
+                    appartmentName: '',
+                    houseNumber: '',
+                    moreDetails: '',
+                    curtains: 0,
+                    blankets: 0,
+                    duvets: 0,
+                    generalKgs: 0,
+                    mpesaPhoneNumber: 0,
                     partial: true
                 }
 
@@ -294,51 +263,19 @@ var calculator = () => {
         },
         view(vnode) {
             var {
-                hrs,
-                days,
-                pages,
-                words,
-                sources,
-                powerpoints,
-                price: priceString,
-                timeLimit,
-                writerType,
-                contentLimit,
-                paymentsType,
-                academicLevel,
-                spacingType,
-                typesMapping,
-                deadline,
-                articleType: {
-                    type,
-                    point
-                },
-                articleLevel,
-                uploading,
-
-                price,
-
-                articleType,
-                paperFormat,
-
-                title,
-                instructions,
-                writer_id,
-                writer_samples,
-                get_sources_copy,
-                progressive_deliverly,
-                related_assignent,
-                activeOrder,
-
-
-
                 pickupDay,
                 dropOffDay,
                 pickupTime,
-                dropOffTime
+                dropOffTime,
+                appartmentName,
+                houseNumber,
+                moreDetails,
+                curtains,
+                blankets,
+                duvets,
+                generalKgs,
+                mpesaPhoneNumber
             } = vnode.state
-
-
 
             return m("div", { "class": "card-body" },
 
@@ -556,7 +493,15 @@ var calculator = () => {
                                                 ),
                                                 m("div", { "class": "input-group" },
                                                     [
-                                                        m("input", { "class": "form-control", "type": "text", "placeholder": "What is your appartment commonly called?" }),
+                                                        m("input", {
+                                                            oninput: (e) => {
+                                                                vnode.state.appartmentName = e.target.value
+                                                            },
+                                                            value: appartmentName,
+                                                            "class": "form-control",
+                                                            "type": "text",
+                                                            "placeholder": "What is your appartment commonly called?"
+                                                        }),
                                                         m("div", { "class": "input-group-append" },
                                                             m("span", { "class": "input-group-text" },
                                                                 m("i", { "class": "la la-align-center" })
@@ -576,7 +521,15 @@ var calculator = () => {
                                                 ),
                                                 m("div", { "class": "input-group" },
                                                     [
-                                                        m("input", { "class": "form-control", "type": "text", "placeholder": "Whats the house number?" }),
+                                                        m("input", {
+                                                            oninput: (e) => {
+                                                                vnode.state.houseNumber = e.target.value
+                                                            },
+                                                            value: houseNumber,
+                                                            "class": "form-control",
+                                                            "type": "text",
+                                                            "placeholder": "Whats the house number?"
+                                                        }),
                                                         m("div", { "class": "input-group-append" },
                                                             m("span", { "class": "input-group-text" },
                                                                 m("i", { "class": "la la-align-center" })
@@ -595,7 +548,16 @@ var calculator = () => {
                                                     m("label", { "for": "exampleTextarea" },
                                                         "Any more details you would like us to know about the pickup and dropoff?"
                                                     ),
-                                                    m("textarea", { "class": "form-control", "id": "exampleTextarea", "rows": "12", "spellcheck": "true" })
+                                                    m("textarea", {
+                                                        oninput: (e) => {
+                                                            vnode.state.moreDetails = e.target.value
+                                                        },
+                                                        value: moreDetails,
+                                                        "class": "form-control",
+                                                        "id": "exampleTextarea",
+                                                        "rows": "12",
+                                                        "spellcheck": "true"
+                                                    })
                                                 ]
                                             )
                                         ),
@@ -658,22 +620,38 @@ var calculator = () => {
                                         m(input, {
                                             name: 'Curtains',
                                             value: 0,
-                                            charge: 200
+                                            charge: 200,
+                                            value: curtains,
+                                            onChange(value) {
+                                                vnode.state.curtains = value
+                                            }
                                         }),
                                         m(input, {
                                             name: 'Blankets',
                                             value: 0,
-                                            charge: 350
+                                            charge: 350,
+                                            value: curtains,
+                                            onChange(value) {
+                                                vnode.state.curtains = value
+                                            }
                                         }),
                                         m(input, {
                                             name: 'Duvet',
                                             value: 0,
-                                            charge: 700
+                                            charge: 700,
+                                            value: duvets,
+                                            onChange(value) {
+                                                vnode.state.duvets = value
+                                            }
                                         }),
                                         m(input, {
                                             name: 'General Clothes in Kgs',
                                             value: 0,
-                                            charge: 99
+                                            charge: 99,
+                                            value: generalKgs,
+                                            onChange(value) {
+                                                vnode.state.generalKgs = value
+                                            }
                                         })
                                     ]),
 

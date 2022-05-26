@@ -1,3 +1,4 @@
+import m from "mithril"
 const landing = () => {
     return {
         view() {
