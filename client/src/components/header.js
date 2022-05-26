@@ -7,7 +7,7 @@ import google_login from "./google_login"
 const header = {
     async oncreate() {
         const params = {
-            client_id: client_id,
+            client_id,
             // cookie_policy: cookiePolicy,
             // login_hint: loginHint,
             // hosted_domain: hostedDomain,

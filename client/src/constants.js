@@ -114,7 +114,8 @@ var writerType = "Standard"
 var contentSpacingTypeSingle = "Single"
 var contentSpacingTypeDouble = "Double"
 let url = 'https://smartpaperwriters.herokuapp.com'
-let client_id = "190204922213-2lnpmsqmio1dc0n6vdarb78ofcttlkvk.apps.googleusercontent.com"
+// let client_id = "190204922213-2lnpmsqmio1dc0n6vdarb78ofcttlkvk.apps.googleusercontent.com"
+var client_id = "414476019901-l317cghtkh9imel5bq1n5vrc41r423ot.apps.googleusercontent.com";
 
 // if(location.href.includes("127.0.0.1")){
 //     url = 'http://127.0.0.1:8002'
