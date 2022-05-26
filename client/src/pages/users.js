@@ -13,7 +13,7 @@ import {
 
 import loader from "../components/loader"
 
-export default {
+const users = {
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.loading = true
@@ -246,3 +246,5 @@ export default {
         )
     }
 }
+
+export default users

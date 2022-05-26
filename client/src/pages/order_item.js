@@ -10,7 +10,7 @@ import {
 } from "../constants"
 import uploader from "../components/uploader"
 
-export default {
+const order_item = {
     oninit(vnode) {
         vnode.state.jobs = []
     },
@@ -426,3 +426,5 @@ export default {
         ]
     }
 }
+
+export default order_item

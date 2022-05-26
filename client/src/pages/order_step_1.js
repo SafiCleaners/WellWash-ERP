@@ -3,7 +3,7 @@ import steps from "../components/steps"
 import m from "mithril"
 // import Order from "./order";
 
-export default () => {
+const step = () => {
     return {
         view() {
             return m("div", { "class": "row d-flex h-100" },
@@ -17,3 +17,5 @@ export default () => {
         }
     }
 }
+
+export default step

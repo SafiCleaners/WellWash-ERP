@@ -13,7 +13,7 @@ import m from "mithril"
 
 import loader from "../components/loader"
 
-export default {
+const orders = {
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.loading = true
@@ -256,3 +256,5 @@ export default {
         )
     }
 }
+
+export default orders
