@@ -4,11 +4,34 @@ import {
 import axios from "axios"
 import m from "mithril"
 
+import createAuth0Client from '@auth0/auth0-spa-js';
+
 const google_login = {
+    async oncreate() {
+        //with async/await
+        const auth0 = await createAuth0Client({
+            domain: 'localhost',
+            client_id: 'Rh1IviNqvnuubqFKoC9FVESpgUFb6Ka8',
+            redirect_uri: '<MY_CALLBACK_URL>'
+        });
+
+        // const isAuthenticated = await auth0.isAuthenticated();
+
+        // if (isAuthenticated) {
+        //     console.log("> User is authenticated");
+
+        //     return;
+        // }
+    },
     view() {
         return m("button", {
             "class": "btn btn-danger btn-lg",
             onclick() {
+                // try Oauth
+                return login()
+
+
+                // 
                 const GoogleAuth = window.gapi.auth2.getAuthInstance()
                 const options = {
                     prompt: "consent"

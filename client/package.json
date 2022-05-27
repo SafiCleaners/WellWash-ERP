@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@auth0/auth0-spa-js": "^1.22.0",
     "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.0",
     "@babel/node": "^7.14.9",
@@ -19,6 +20,7 @@
     "babel-register": "^6.26.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "fetch": "^1.1.0",
     "html-minifier": "^4.0.0",
     "live-server": "^1.2.1",
     "livereload": "^0.9.3",

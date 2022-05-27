@@ -9,6 +9,7 @@ const axios = require('axios')
 aws.config.loadFromPath('./creds.json');
 var jwt = require('jsonwebtoken');
 var querystring = require('querystring');
+const { join } = require("path");
 
 const app = express();
 
@@ -60,6 +61,11 @@ const routes = async (client) => {
     // Routes
     app.use('/health', (req, res) => {
         res.send({ status: "ok" })
+    });
+
+    // Endpoint to serve the configuration file
+    app.get("/auth_config.json", (req, res) => {
+        res.sendFile(join(__dirname, "auth_config.json"));
     });
 
     app.get('/jobs', authMiddleware, (req, res) => {

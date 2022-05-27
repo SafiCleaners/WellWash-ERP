@@ -281,6 +281,8 @@ var calculator = () => {
                 mpesaConfirmationCode,
             } = vnode.state
 
+            console.log(vnode.state)
+
             return m("div", { "class": "card-body" },
 
                 m("form",
