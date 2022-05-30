@@ -8,20 +8,30 @@ const google_login = {
     async oncreate() {
         //with async/await
 
-        const auth0 = await createAuth0Client({
-            domain: window.location.hostname,
-            //   client_id: "Rh1IviNqvnuubqFKoC9FVESpgUFb6Ka8",
-            client_id,
-            // redirect_uri: "<MY_CALLBACK_URL>",
-        });
+        function init() {
+            window.gapi.load("auth2", async () {
+                console.log("this is gapi>>>>>>>>>>>>>>>>>>", window.gapi.auth2);
+                //all auth stuff needing gapi.auth2
 
-        const isAuthenticated = await auth0.isAuthenticated();
+                //initialise gapi
+                window.gapi.auth2.init({
+                    client_id,
+                });
 
-        if (isAuthenticated) {
-            console.log("> User is authenticated");
+                const isAuthenticated = await window.gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse();
 
-            return;
+                if (isAuthenticated) {
+                    console.log("> User is authenticated", { isAuthenticated });
+
+                    return;
+                }
+
+            })
         }
+
+        init()
+
+
     },
     view() {
         return m(
@@ -38,12 +48,12 @@ const google_login = {
 
                             //initialise gapi
                             window.gapi.auth2.init({
-                                client_id: client_id,
+                                client_id,
                             });
                             const GoogleAuth = window.gapi.auth2.getAuthInstance();
 
                             const options = {
-                                prompt: "consent",
+                                // prompt: "consent",
                             };
 
                             GoogleAuth.signIn(options).then(
