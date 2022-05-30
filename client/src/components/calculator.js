@@ -1,8 +1,5 @@
 import axios from "axios";
 import {
-    timeTypeDay,
-    timeTypeHr,
-    contentTypePage,
     url,
 } from "../constants"
 import m from "mithril"
@@ -71,69 +68,7 @@ var calculator = () => {
                 mpesaPhoneNumber: 0,
                 mpesaConfirmationCode: '',
                 calculatePrice() {
-                    if (vnode.state.paypalTestMode) {
-                        return 2
-                    }
-
-                    var {
-                        hrs,
-                        days,
-                        pages,
-                        words,
-                        price: priceString,
-                        timeLimit,
-                        contentLimit
-                    } = vnode.state
-
-                    if (timeLimit === timeTypeHr) {
-                        if (hrs >= 25 && hrs <= 49) {
-                            price = 18
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        } else if (hrs < 25) {
-                            price = 13
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        } else {
-                            price = 15
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        }
-                    } else if (timeLimit === timeTypeDay) {
-                        hrs = 24 * Number(days)
-
-                        if (hrs >= 25 && hrs <= 49) {
-                            price = 18
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        } else if (hrs < 25) {
-                            price = 13
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        } else {
-                            price = 15
-                            if (contentLimit === contentTypePage) {
-                                cost = price * Number(pages)
-                            } else {
-                                cost = price * Number(words)
-                            }
-                        }
-                    }
+                    
 
                     return cost
                 },

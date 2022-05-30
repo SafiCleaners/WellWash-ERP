@@ -5,12 +5,6 @@ import {
 } from "../constants"
 
 import m from "mithril"
-import {
-    timeLimit,
-    timeTypeDay,
-    timeTypeHr
-} from "../constants"
-
 import loader from "../components/loader"
 
 const users = {

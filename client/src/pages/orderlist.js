@@ -4,11 +4,7 @@ import {
     url
 } from "../constants"
 
-import {
-    timeLimit,
-    timeTypeDay,
-    timeTypeHr
-} from "../constants"
+
 import m from "mithril"
 
 import loader from "../components/loader"
@@ -178,11 +174,11 @@ const orders = {
                                                                         ),
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                    m("span", { "class": "text-muted font-weight-500" },
-                                                                        timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
-                                                                    )
-                                                                ),
+                                                                // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                //     m("span", { "class": "text-muted font-weight-500" },
+                                                                //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
+                                                                //     )
+                                                                // ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
                                                                     m("span", { "class": "label label-lg label-light-info label-inline" },
                                                                         academicLevel

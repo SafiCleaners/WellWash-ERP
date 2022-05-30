@@ -3,11 +3,7 @@ import {
 } from "../constants"
 import axios from "axios";
 import m from "mithril"
-import {
-    timeLimit,
-    timeTypeDay,
-    timeTypeHr
-} from "../constants"
+
 import uploader from "../components/uploader"
 
 const order_item = {
@@ -158,11 +154,7 @@ const order_item = {
                                                                     ),
                                                                 ]
                                                             ),
-                                                            m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", },
-                                                                m("span", { "class": "text-muted font-weight-500" },
-                                                                    timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
-                                                                )
-                                                            ),
+                                                           
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", },
                                                                 m("span", { "class": "label label-lg label-light-info label-inline" },
                                                                     academicLevel
