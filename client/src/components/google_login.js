@@ -1,4 +1,4 @@
-import { url } from "../constants";
+import { url, client_id } from "../constants";
 import axios from "axios";
 import m from "mithril";
 
@@ -37,7 +37,7 @@ const google_login = {
 
               //initialise gapi
               window.gapi.auth2.init({
-                client_id: "Rh1IviNqvnuubqFKoC9FVESpgUFb6Ka8",
+                client_id: client_id,
               });
               const GoogleAuth = window.gapi.auth2.getAuthInstance();
 
