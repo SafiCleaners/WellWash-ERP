@@ -9,7 +9,7 @@ const google_login = {
         //with async/await
 
         function init() {
-            window.gapi.load("auth2", async () {
+            window.gapi.load("auth2", async () => {
                 console.log("this is gapi>>>>>>>>>>>>>>>>>>", window.gapi.auth2);
                 //all auth stuff needing gapi.auth2
 
