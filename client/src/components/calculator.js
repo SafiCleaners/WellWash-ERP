@@ -792,17 +792,28 @@ var calculator = () => {
                                             [
 
                                                 m("div", {
-                                                    class:"float-right",
+                                                    class: "float-right",
                                                     style: {
                                                         "padding": "30px"
                                                     }
                                                 }, [
-                                                    m("button", { type: "button", "class": "btn btn-info", "href": "#" },
-                                                        [
-                                                            m("i", { "class": "flaticon2-mail-1" }),
-                                                            " Save My order and clear"
-                                                        ]
-                                                    ),
+                                                    m("button", {
+                                                        type: "button",
+                                                        "class": "btn btn-info",
+                                                        onclick() {
+                                                            // alert("saving order")
+
+                                                            vnode.state.saved = true
+                                                            setTimeout(() => {
+                                                                localStorage.removeItem("activeOrderId")
+                                                                localStorage.removeItem("activeOrder")
+                                                                location.reload()
+                                                            }, 2000)
+                                                        }
+                                                    }, [
+                                                        m("i", { "class": "flaticon2-mail-1" }),
+                                                        " Save My order and clear"
+                                                    ]),
                                                 ]),
                                             ])
 
