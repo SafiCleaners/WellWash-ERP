@@ -68,7 +68,7 @@ var calculator = () => {
                 mpesaPhoneNumber: 0,
                 mpesaConfirmationCode: '',
                 calculatePrice() {
-                    
+
 
                     return cost
                 },
@@ -213,7 +213,9 @@ var calculator = () => {
                 duvets,
                 generalKgs,
                 mpesaPhoneNumber,
+                phone,
                 mpesaConfirmationCode,
+                name
             } = vnode.state
 
             console.log(vnode.state)
@@ -224,6 +226,86 @@ var calculator = () => {
                     [
                         m("div", { "class": "form-group row" },
                             [
+                                m("div", { "class": "bs-stepper" },
+                                    [
+                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                            [
+                                                m("div", { "class": "step", "data-target": "#logins-part" },
+                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                                        [
+                                                            m("span", { "class": "bs-stepper-circle" },
+                                                                "1"
+                                                            ),
+                                                            m("span", { "class": "bs-stepper-label" },
+                                                                "Your Details"
+                                                            )
+                                                        ]
+                                                    )
+                                                )]
+                                        )]
+                                ),
+
+                                m("div", { "class": "col-lg-6" },
+                                    [
+                                        m("label",
+                                            "What is your name"
+                                        ),
+                                        m("div", { "class": "input-group" },
+                                            [
+                                                m("input", {
+                                                    oninput: (e) => {
+                                                        vnode.state.name = e.target.value
+                                                    },
+                                                    value: name,
+                                                    "class": "form-control",
+                                                    "type": "text",
+                                                    "placeholder": "What name is used to refer to you?"
+                                                }),
+                                                m("div", { "class": "input-group-append" },
+                                                    m("span", { "class": "input-group-text" },
+                                                        m("i", { "class": "la la-align-center" })
+                                                    )
+                                                )
+                                            ]
+                                        ),
+                                        m("span", { "class": "form-text text-muted" },
+                                            "The Name that will be used to refer to you during messaging"
+                                        )
+                                    ]
+                                ),
+
+                                m("div", { "class": "col-lg-6" },
+                                    [
+                                        m("label",
+                                            "Mpesa Number To be used for the payment"
+                                        ),
+                                        m("div", { "class": "input-group" },
+                                            [
+                                                m("input", {
+                                                    oninput: (e) => {
+                                                        vnode.state.phone = e.target.value
+                                                    },
+                                                    value: phone,
+                                                    "class": "form-control",
+                                                    "type": "text",
+                                                    "placeholder": "What phone number will we get the payment from?"
+                                                }),
+                                                m("div", { "class": "input-group-append" },
+                                                    m("span", { "class": "input-group-text" },
+                                                        m("i", { "class": "la la-align-center" })
+                                                    )
+                                                )
+                                            ]
+                                        ),
+                                        m("span", { "class": "form-text text-muted" },
+                                            "The phone number that will be used for messaging"
+                                        )
+                                    ]
+                                ),
+
+
+
+
                                 // m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
                                 //     [
                                 //         m("label",
@@ -255,7 +337,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "1"
+                                                                "2"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Pickup and DropOff Time"
@@ -280,7 +362,7 @@ var calculator = () => {
                                                 dayRangeCalculator()
                                                     .map((time) => {
                                                         const { dayName, day, nth, date } = time
-                               
+
                                                         return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "active" : ""}` },
                                                             [
                                                                 m("input", {
@@ -294,10 +376,10 @@ var calculator = () => {
 
                                                                         let daysToAdd = 1
                                                                         // increment time here to set drop off
-                                                                        if(moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0){
+                                                                        if (moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0) {
                                                                             daysToAdd = 2
                                                                         }
-                                                                        
+
                                                                         vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
                                                                     }
                                                                 }),
@@ -407,7 +489,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "2"
+                                                                "3"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Where to pickup and drop off"
@@ -510,7 +592,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "3"
+                                                                "4"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Pricing and Laundry Load Details"
@@ -578,7 +660,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "4"
+                                                                "5"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Laundry service Status"
@@ -624,7 +706,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "5"
+                                                                "6"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Payment"
@@ -665,22 +747,22 @@ var calculator = () => {
                                                 )
                                             ]
                                         ),
-                                        m("label",
-                                            "You will complete your payment once the laundry is delivered"
-                                        ),
+                                        // m("label",
+                                        //     "You will complete your payment once the laundry is delivered"
+                                        // ),
 
-                                        m("div", {
-                                            style: {
-                                                "padding": "30px"
-                                            }
-                                        }, [
-                                            m("a", { "class": "btn btn-success", "href": "#", disabled: true },
-                                                [
-                                                    m("i", { "class": "flaticon-grid-menu" }),
-                                                    " Start Your Mpesa Payment... "
-                                                ]
-                                            ),
-                                        ]),
+                                        // m("div", {
+                                        //     style: {
+                                        //         "padding": "30px"
+                                        //     }
+                                        // }, [
+                                        //     m("a", { "class": "btn btn-success", "href": "#", disabled: true },
+                                        //         [
+                                        //             m("i", { "class": "flaticon-grid-menu" }),
+                                        //             " Start Your Mpesa Payment... "
+                                        //         ]
+                                        //     ),
+                                        // ]),
 
 
                                         m("div", { "class": "col-lg-12" },
@@ -704,6 +786,25 @@ var calculator = () => {
                                                 )
                                             ]
                                         ),
+
+
+                                        m("div", { "class": "col-lg-12" },
+                                            [
+
+                                                m("div", {
+                                                    class:"float-right",
+                                                    style: {
+                                                        "padding": "30px"
+                                                    }
+                                                }, [
+                                                    m("button", { type: "button", "class": "btn btn-info", "href": "#" },
+                                                        [
+                                                            m("i", { "class": "flaticon2-mail-1" }),
+                                                            " Save My order and clear"
+                                                        ]
+                                                    ),
+                                                ]),
+                                            ])
 
 
                                     ])
