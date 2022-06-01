@@ -5,8 +5,8 @@ const input = {
         vnode.state.value = value
     },
     view(vnode) {
-        const { value, onChange, name, label } = vnode.attrs
-        return m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
+        const { value, onChange, name, label, size="6" } = vnode.attrs
+        return m("div", { "class": `col-lg-${size} col-md-${size} col-sm-${size * 2}` },
             [
                 // powerpoint slides
                 m("label",
