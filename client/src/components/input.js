@@ -5,7 +5,7 @@ const input = {
         vnode.state.value = value
     },
     view(vnode) {
-        const { value, onChange, name } = vnode.attrs
+        const { value, onChange, name, label } = vnode.attrs
         return m("div", { "class": "col-lg-6 col-md-6 col-sm-12" },
             [
                 // powerpoint slides
@@ -32,7 +32,7 @@ const input = {
                                 )
                             ),
                             m("input", {
-                                "class": "form-control", "type": "number", "placeholder": `No. of PowerPoint Slides`, "aria-describedby": "button-addon1",
+                                "class": "form-control", "type": "number", "aria-describedby": "button-addon1",
                                 value: vnode.state.value,
                                 oninput(e) {
 
@@ -55,7 +55,7 @@ const input = {
                             )
                         ]
                     ),
-                    m("label", [
+                    label ? m("label", label) : m("label", [
                         `We Charge:`,
                         m("b", ` KSH :${Number(vnode.attrs.charge)}`),
                         ` Each, and thus will cost you `,

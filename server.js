@@ -56,7 +56,7 @@ const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => 
 })
 
 const routes = async (client) => {
-    const db = await client.db("SmartPaperWriters")
+    const db = await client.db("WellAutoWashers")
 
     // Routes
     app.use('/health', (req, res) => {
@@ -96,7 +96,10 @@ const routes = async (client) => {
     });
 
     app.post('/jobs', (req, res) => {
-        req.body.deleted = false
+        Object.assign(req.body, {
+            deleted: false
+        })
+
         db.collection('jobs').insertOne(req.body, function (err, result) {
             if (err) throw err
 
@@ -105,11 +108,23 @@ const routes = async (client) => {
     });
 
     app.patch('/jobs/:id', (req, res) => {
-        db.collection('jobs').updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body }, { upsert: true }, function (err, result) {
-            if (err) throw err
+        db.collection('jobs').findOne({
+            _id: ObjectId(req.params.id),
+            deleted: false
+        }, function (err, result) {
 
-            res.send(result)
+            if (!result)
+                Object.assign(req.body, {
+                    deleted: false
+                })
+
+            db.collection('jobs').updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body }, { upsert: true }, function (err, result) {
+                if (err) throw err
+
+                res.send(result)
+            })
         })
+
     });
 
     app.delete('/jobs/:id', authMiddleware, (req, res) => {
