@@ -4,10 +4,10 @@ import m from "mithril";
 import jwt_decode from "jwt-decode";
 
 import createAuth0Client from "@auth0/auth0-spa-js";
-import { decode } from "jsonwebtoken";
+// import { decode } from "jsonwebtoken";
 
 //provide global vars for token , decodedToken which is the token object and the google auth client as gClient
-var token, gClient, decodedToken;
+let token, gClient, decodedToken;
 
 const google_login = {
   // remove eslint errors on global googlee
