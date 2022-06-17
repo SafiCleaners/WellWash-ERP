@@ -7,32 +7,26 @@ import createAuth0Client from "@auth0/auth0-spa-js";
 const google_login = {
   async oncreate() {
     //with async/await
-
-    function init() {
-      window.gapi.load("auth2", async () => {
-        console.log("this is gapi>>>>>>>>>>>>>>>>>>", window.gapi.auth2);
-        //all auth stuff needing gapi.auth2
-
-        //initialise gapi
-        window.gapi.auth2.init({
-          client_id,
-        });
-
-        const isAuthenticated = await window.gapi.auth2
-          .getAuthInstance()
-          .currentUser.get()
-          .getAuthResponse();
-
-        if (isAuthenticated) {
-          console.log("> User is authenticated", { isAuthenticated });
-          console.log("user>>>>>>>>>>>>>");
-
-          return;
-        }
-      });
-    }
-
-    init();
+    // function init() {
+    //   window.gapi.load("auth2", async () => {
+    //     console.log("this is gapi>>>>>>>>>>>>>>>>>>", window.gapi.auth2);
+    //     //all auth stuff needing gapi.auth2
+    //     //initialise gapi
+    //     window.gapi.auth2.init({
+    //       client_id,
+    //     });
+    //     const isAuthenticated = await window.gapi.auth2
+    //       .getAuthInstance()
+    //       .currentUser.get()
+    //       .getAuthResponse();
+    //     if (isAuthenticated) {
+    //       console.log("> User is authenticated", { isAuthenticated });
+    //       console.log("user>>>>>>>>>>>>>");
+    //       return;
+    //     }
+    //   });
+    // }
+    // init();
   },
   view() {
     return m(
