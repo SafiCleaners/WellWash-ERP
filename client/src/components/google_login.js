@@ -25,6 +25,7 @@ const google_login = {
     //show the right side google loggin prompt all sexy-like
     google.accounts.id.prompt();
 
+    //set stuff to storage
     const setStorage = () => {
       localStorage.setItem("authToken", token);
       localStorage.setItem("name", decodedToken.name);
