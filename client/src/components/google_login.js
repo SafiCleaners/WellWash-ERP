@@ -1,11 +1,37 @@
 import { url, client_id } from "../constants";
 import axios from "axios";
 import m from "mithril";
+import jwt_decode from "jwt-decode";
 
 import createAuth0Client from "@auth0/auth0-spa-js";
+import { decode } from "jsonwebtoken";
+
+//provide global vars for token , decodedToken which is the token object and the google auth client as gClient
+var token, gClient, decodedToken;
 
 const google_login = {
-  async oncreate() {
+  // remove eslint errors on global googlee
+  /*global google */
+
+  oncreate() {
+    gClient = google.accounts.id.initialize({
+      client_id: client_id,
+      callback: (response) => {
+        token = response.credential;
+        decodedToken = jwt_decode(response.credential);
+        setStorage();
+      },
+    });
+    //show the right side google loggin prompt all sexy-like
+    google.accounts.id.prompt();
+
+    const setStorage = () => {
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("name", decodedToken.name);
+      localStorage.setItem("imageUrl", decodedToken.picture);
+      localStorage.setItem("email", decodedToken.email);
+    };
+
     //with async/await
     // function init() {
     //   window.gapi.load("auth2", async () => {
