@@ -21,33 +21,35 @@ const operationTimes = [
     "7pm - 8pm"
 ]
 
+const datepicker = {
+    oncreate(vnode) {
+        $('#kt_datepicker_1').datetimepicker({
+            pickerPosition: 'bottom-left',
+            todayHighlight: true,
+            autoclose: true
+        });
+    },
+    view(vnode) {
+        return m("div", { "class": "form-group row" },
+            [
+                m("label", { "class": "col-form-label text-right col-lg-3 col-sm-12" },
+                    "Drop off date"
+                ),
+                m("div", { "class": "col-lg-4 col-md-9 col-sm-12" },
+                    m("input", {
+                        "class": "form-control", "type": "text", "id": "kt_datepicker_1", "readonly": "readonly", "placeholder": "Select date",
+                        oninput: (e) => {
+                            vnode.state.dropOffDate = e.target.value
+                        },
+                    })
+                )
+            ]
+        )
+    }
+}
+
 var calculator = () => {
     return {
-        oncreate(vnode) {
-            // Datetimepicker
-            $('#kt_datetimepicker_1').datetimepicker({
-                pickerPosition: 'bottom-left',
-                todayHighlight: true,
-                autoclose: true
-            });
-
-            $('#kt_datetimepicker_1').on('change.datetimepicker', function (e) {
-                var deadline = $("#kt_datetimepicker_1").find("input").val();
-                vnode.state.deadline = deadline
-
-                const startTime = moment(new Date())
-                const end = moment(deadline)
-                var duration = moment.duration(end.diff(startTime));
-                var hours = duration.asHours();
-                // console.log({ hours })
-                vnode.state.hrs = Math.floor(hours)
-                m.redraw()
-            });
-
-            // paypal
-            window.$("html, body").animate({ scrollTop: 0 }, "fast");
-
-        },
         oninit: function (vnode) {
             var cost = 0
             var price = 0
@@ -306,47 +308,25 @@ var calculator = () => {
 
 
 
-                                // m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
+                                
+                                // m("div", { "class": "bs-stepper d-md-block" },
                                 //     [
-                                //         m("label",
-                                //             "Academic Level:"
-                                //         ),
-                                //         m("div", { "class": "dropdown" },
+                                //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
                                 //             [
-                                //                 m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                //                     vnode.state.academicLevel
-                                //                 ),
-                                //                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                //                     academicLevels.map(level => m("a", {
-                                //                         "class": "dropdown-item",
-                                //                         onclick() {
-                                //                             vnode.state.academicLevel = level
-                                //                         },
-                                //                     },
-                                //                         level
-                                //                     ))
-                                //                 )
-                                //             ]
-                                //         )
-                                //     ]),
-                                m("div", { "class": "bs-stepper d-md-block" },
-                                    [
-                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                            [
-                                                m("div", { "class": "step", "data-target": "#logins-part" },
-                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                        [
-                                                            m("span", { "class": "bs-stepper-circle" },
-                                                                "2"
-                                                            ),
-                                                            m("span", { "class": "bs-stepper-label" },
-                                                                "Pickup and DropOff Time"
-                                                            )
-                                                        ]
-                                                    )
-                                                )]
-                                        )]
-                                ),
+                                //                 m("div", { "class": "step", "data-target": "#logins-part" },
+                                //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                //                         [
+                                //                             m("span", { "class": "bs-stepper-circle" },
+                                //                                 "2"
+                                //                             ),
+                                //                             m("span", { "class": "bs-stepper-label" },
+                                //                                 "Pickup and DropOff Time"
+                                //                             )
+                                //                         ]
+                                //                     )
+                                //                 )]
+                                //         )]
+                                // ),
 
 
 
@@ -500,10 +480,12 @@ var calculator = () => {
                                         )]
                                 ),
 
+                                m(datepicker),
+
 
                                 m("div", { "class": "form-group row" },
                                     [
-                                        m(map),
+                                        // m(map),
                                         m("div", { "class": "col-lg-12" },
                                             [
                                                 m("label",

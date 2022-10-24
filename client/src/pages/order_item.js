@@ -149,7 +149,7 @@ const order_item = {
     },
     view(vnode) {
 
-        console.log(vnode.state)
+        console.log(vnode.state.job)
 
         const {
             whites,
@@ -157,7 +157,8 @@ const order_item = {
             blacks,
             black_wash_units,
             coloured,
-            coloured_wash_units
+            coloured_wash_units,
+            job
         } = vnode.state
 
         const {
@@ -176,7 +177,6 @@ const order_item = {
             mpesaPhoneNumber,
             phone,
             mpesaConfirmationCode,
-            name,
             timeDroppedOffFromNow,
             timePickedUpFromNow,
 
@@ -193,8 +193,10 @@ const order_item = {
             ironing=0,
             ironing_trousers=0,
             generalKgs=0,
-        } = vnode.state.job
+        } = job
 
+
+        const { name } = vnode.state.job
 
         const calculatePrice = () => {
             return (duvet_size_1 * 600) +
@@ -606,7 +608,6 @@ const order_item = {
                         [
                             m(".row", [
                                 m(".col-xl-8", [
-                                    console.log(vnode.state.black_wash_units),
                                     vnode.state.black_wash_units == 0 ? [] : Array(Number(vnode.state.black_wash_units))
                                         .fill().map((e, i) => {
                                             return m(input, {
