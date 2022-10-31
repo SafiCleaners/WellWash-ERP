@@ -71,17 +71,8 @@ const google_login = {
               window.gapi.auth2.init({
                 client_id: client_id,
               });
-              console.log(
-                "this is gapi>>>>>>>>>>>>>>>>>>",
-                window.gapi.auth2.getBasicProfile()
-              );
-              const GoogleAuth = window.gapi.auth2.getAuthInstance();
 
-              const options = {
-                // prompt: "consent",
-              };
-
-              GoogleAuth.signIn(options).then(
+              Promise.resolve(window.gapi.auth2.getAuthInstance().signIn()).then(
                 (googleUser) => {
                   let profile = googleUser.getBasicProfile();
                   localStorage.setItem("authToken", profile.getId());
