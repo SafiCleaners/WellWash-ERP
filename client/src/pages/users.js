@@ -156,7 +156,7 @@ const users = {
                                                                                                     // vnode.state.user = e
                                                                                                     const options = {
                                                                                                         method: 'PATCH',
-                                                                                                        url: url + `/users/${id}`,
+                                                                                                        url: url + `/users/${email}`,
                                                                                                         headers: { 
                                                                                                             'Content-Type': 'application/json',
                                                                                                             'authorization': localStorage.getItem('token')
@@ -166,7 +166,7 @@ const users = {
 
                                                                                                     axios.request(options).then(function (response) {
                                                                                                         console.log(response.data);
-                                                                                                        location.reload()
+                                                                                                        window.location.reload()
                                                                                                     }).catch(function (error) {
                                                                                                         console.error(error);
                                                                                                     });
@@ -188,7 +188,7 @@ const users = {
                                                                             "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                 const options = { 
                                                                                     method: 'DELETE', 
-                                                                                    url: `${url}/users/${id}`,
+                                                                                    url: `${url}/users/${email}`,
                                                                                     headers: { 
                                                                                         'Content-Type': 'application/json',
                                                                                         'authorization': localStorage.getItem('token')
@@ -197,7 +197,7 @@ const users = {
 
                                                                                 axios.request(options).then(function (response) {
                                                                                     console.log(response.data);
-                                                                                    location.reload()
+                                                                                    window.location.reload()
                                                                                 }).catch(function (error) {
                                                                                     console.error(error);
                                                                                 });

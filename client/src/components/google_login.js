@@ -19,6 +19,7 @@ const google_login = {
       callback: (response) => {
         token = response.credential;
         decodedToken = jwt_decode(response.credential);
+        console.log(Object.keys(decodedToken))
         setStorage();
       },
     });
@@ -27,12 +28,60 @@ const google_login = {
 
     //set stuff to storage
     const setStorage = () => {
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("name", decodedToken.name);
-      localStorage.setItem("imageUrl", decodedToken.picture);
-      localStorage.setItem("email", decodedToken.email);
-      // reload the page after successfull login
-      window.location.reload()
+
+      // fetch user using email, set the role to local storage
+      axios
+        .request({
+          method: "GET",
+          url: url + "/users/" + decodedToken.email,
+          headers: {
+            "Content-Type": "application/json",
+            // 'authorization': localStorage.getItem('token')
+          },
+        })
+        .then(function (user) {
+
+          console.log({ user })
+          localStorage.setItem("role", user.role);
+
+          localStorage.setItem("authToken", token);
+          localStorage.setItem("name", decodedToken.name);
+          localStorage.setItem("imageUrl", decodedToken.picture);
+          localStorage.setItem("email", decodedToken.email);
+
+          const userData = {
+            name: decodedToken.name,
+            imageUrl: decodedToken.picture,
+            email: decodedToken.email,
+          };
+          // reload the page after successfull login
+          const options = {
+            method: "POST",
+            url: url + "/users",
+            headers: {
+              "Content-Type": "application/json",
+              // 'authorization': localStorage.getItem('token')
+            },
+            data: userData,
+          };
+
+          axios
+            .request(options)
+            .then(function (response) {
+              // alert(JSON.stringify(response.data));
+              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("role", response.data.user.role);
+              window.location.reload();
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+
+          window.location.reload()
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
     };
   },
   view() {
@@ -69,27 +118,27 @@ const google_login = {
     //               };
 
     //               // refresh after successfull login
-    //               const options = {
-    //                 method: "POST",
-    //                 url: url + "/users",
-    //                 headers: {
-    //                   "Content-Type": "application/json",
-    //                   // 'authorization': localStorage.getItem('token')
-    //                 },
-    //                 data: userData,
-    //               };
+    // const options = {
+    //   method: "POST",
+    //   url: url + "/users",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     // 'authorization': localStorage.getItem('token')
+    //   },
+    //   data: userData,
+    // };
 
-    //               axios
-    //                 .request(options)
-    //                 .then(function (response) {
-    //                   // alert(JSON.stringify(response.data));
-    //                   localStorage.setItem("token", response.data.token);
-    //                   localStorage.setItem("role", response.data.user.role);
-    //                   location.reload();
-    //                 })
-    //                 .catch(function (error) {
-    //                   console.error(error);
-    //                 });
+    // axios
+    //   .request(options)
+    //   .then(function (response) {
+    //     // alert(JSON.stringify(response.data));
+    //     localStorage.setItem("token", response.data.token);
+    //     localStorage.setItem("role", response.data.user.role);
+    //     location.reload();
+    //   })
+    //   .catch(function (error) {
+    //     console.error(error);
+    //   });
     //             },
     //             (err) => {
     //               console.error(err);

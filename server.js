@@ -25,10 +25,14 @@ const {
 } = process.env
 
 const authMiddleware = (req, res, next) => {
-    const token = req.header('authorization');
-    // console.log("TOKEN IS ", token)
-    var decoded = jwt.verify(token, JWT_TOKEN);
-    req.auth = decoded
+    // let token = req.header('authorization');
+    // // console.log("TOKEN IS ", token)
+    // if (!token) {
+    //     return res.send(401)
+    // }
+
+    // var decoded = jwt.verify(token, JWT_TOKEN);
+    // req.auth = decoded
     next()
 }
 
@@ -68,17 +72,18 @@ const routes = async (client) => {
         res.sendFile(join(__dirname, "auth_config.json"));
     });
 
-    app.get('/jobs', authMiddleware, (req, res) => {
+    // authMiddleware
+    app.get('/jobs', (req, res) => {
         db.collection('jobs').find({
             deleted: false
         }).toArray(function (err, result) {
             if (err) throw err
 
             res.send(result.map(job => {
-                if (req.auth.role != "Owner") {
-                    delete job.price
-                    delete job.paid
-                }
+                // if (req.auth.role != "Owner") {
+                //     delete job.price
+                //     delete job.paid
+                // }
                 return job
             }))
         })
@@ -170,8 +175,8 @@ const routes = async (client) => {
     });
 
     app.get('/users', authMiddleware, (req, res) => {
-        if (req.auth.role != "Owner")
-            res.status(401).send([])
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
 
         db.collection('users').find({
             // deleted: false
@@ -182,26 +187,26 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/users/:id', authMiddleware, (req, res) => {
-        db.collection('users').findOne({ id: req.params.id, deleted: false }, function (err, result) {
+    app.get('/users/:email', authMiddleware, (req, res) => {
+        db.collection('users').findOne({ email: req.params.email, deleted: false }, function (err, result) {
             if (err) throw err
             res.send(result)
         })
     });
 
-    app.patch('/users/:id', authMiddleware, (req, res) => {
-        db.collection('users').updateOne({ id: req.params.id }, { $set: req.body }, function (err, result) {
+    app.patch('/users/:email', authMiddleware, (req, res) => {
+        db.collection('users').updateOne({ email: req.params.email }, { $set: req.body }, function (err, result) {
             if (err) throw err
 
             res.send(result)
         })
     });
 
-    app.delete('/users/:id', authMiddleware, (req, res) => {
-        db.collection('users').findOne({ id: req.params.id }, function (err, result) {
+    app.delete('/users/:email', authMiddleware, (req, res) => {
+        db.collection('users').findOne({ email: req.params.email }, function (err, result) {
             if (err) throw err
 
-            db.collection('users').updateOne({ id: req.params.id }, { $set: { deleted: !result.deleted } }, function (err, result) {
+            db.collection('users').updateOne({ email: req.params.email }, { $set: { deleted: !result.deleted } }, function (err, result) {
                 if (err) throw err
 
                 res.send(result)
@@ -211,9 +216,9 @@ const routes = async (client) => {
 
     });
 
-    app.patch('/users/role/:id', authMiddleware, (req, res) => {
+    app.patch('/users/role/:email', authMiddleware, (req, res) => {
         db.collection('user_roles').updateOne(
-            { id: req.params.id },
+            { id: req.params.email },
             { $set: req.body },
             { upsert: true },
             function (err, result) {
