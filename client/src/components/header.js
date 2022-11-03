@@ -173,12 +173,12 @@ const header = {
                                     "class": "btn btn-dropdown btn-fixed-height btn-primary font-weight-bolder font-size-sm px-6", onclick() {
                                         localStorage.clear()
 
-                                        var auth2 = gapi.auth2.getAuthInstance();
-                                        auth2.signOut().then(function () {
+                                        Promise.resolve(window.gapi.auth2.getAuthInstance().signOut()).then(function () {
                                             console.log('User signed out.');
+                                            window.location.reload()
                                         });
 
-                                        // location.reload()
+                                        window.location.reload()
                                     }
                                 },
                                     "SignOut"
