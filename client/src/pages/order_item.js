@@ -397,376 +397,376 @@ const order_item = {
 
 
 
-            m("div", { "class": "card card-custom gutter-b" },
-                [
+            // m("div", { "class": "card card-custom gutter-b" },
+            //     [
 
-                    m("div", { "class": "card-body pt-0 pb-4" },
-                        // content id
-                        [
-                            m(".row", [
-                                m(input, {
-                                    name: "Duvet Size 1",
-                                    // label: "The number of single units that are washable",
-                                    value: duvet_size_1,
-                                    size: 4,
-                                    charge: 600,
-                                    onChange(value) {
-                                        vnode.state.job.duvet_size_1 = value
-                                    }
-                                }),
+            //         m("div", { "class": "card-body pt-0 pb-4" },
+            //             // content id
+            //             [
+            //                 m(".row", [
+            //                     m(input, {
+            //                         name: "Duvet Size 1",
+            //                         // label: "The number of single units that are washable",
+            //                         value: duvet_size_1,
+            //                         size: 4,
+            //                         charge: 600,
+            //                         onChange(value) {
+            //                             vnode.state.job.duvet_size_1 = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: "Duvet Size 2",
-                                    // label: "The number of single units that are washable",
-                                    value: duvet_size_2,
-                                    size: 4,
-                                    charge: 600,
-                                    onChange(value) {
-                                        vnode.state.job.duvet_size_1 = value
-                                    }
-                                }),
+            //                     m(input, {
+            //                         name: "Duvet Size 2",
+            //                         // label: "The number of single units that are washable",
+            //                         value: duvet_size_2,
+            //                         size: 4,
+            //                         charge: 600,
+            //                         onChange(value) {
+            //                             vnode.state.job.duvet_size_1 = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Coats/Hoods',
-                                    // label: "The number of single units that are washable",
-                                    value: coat_hoodie,
-                                    size: 4,
-                                    charge: 50,
-                                    onChange(value) {
-                                        vnode.state.job.coat_hoodie = value
-                                    }
-                                }),
-                            ]),
+            //                     m(input, {
+            //                         name: 'Coats/Hoods',
+            //                         // label: "The number of single units that are washable",
+            //                         value: coat_hoodie,
+            //                         size: 4,
+            //                         charge: 50,
+            //                         onChange(value) {
+            //                             vnode.state.job.coat_hoodie = value
+            //                         }
+            //                     }),
+            //                 ]),
 
-                            m(".row", [
-                                m(input, {
-                                    name: 'Blankets',
-                                    // label: "The number of single units that are washable",
-                                    value: blankets,
-                                    size: 4,
-                                    charge: 500,
-                                    onChange(value) {
-                                        vnode.state.job.blankets = value
-                                    }
-                                }),
+            //                 m(".row", [
+            //                     m(input, {
+            //                         name: 'Blankets',
+            //                         // label: "The number of single units that are washable",
+            //                         value: blankets,
+            //                         size: 4,
+            //                         charge: 500,
+            //                         onChange(value) {
+            //                             vnode.state.job.blankets = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Furry Blankets',
-                                    // label: "The number of single units that are washable",
-                                    value: furry_blankets,
-                                    size: 4,
-                                    charge: 600,
-                                    onChange(value) {
-                                        vnode.state.job.furry_blankets = value
-                                    }
-                                }),
+            //                     m(input, {
+            //                         name: 'Furry Blankets',
+            //                         // label: "The number of single units that are washable",
+            //                         value: furry_blankets,
+            //                         size: 4,
+            //                         charge: 600,
+            //                         onChange(value) {
+            //                             vnode.state.job.furry_blankets = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Bed Sheets',
-                                    // label: "The number of single units that are washable",
-                                    value: bed_sheets,
-                                    size: 4,
-                                    charge: 200,
-                                    onChange(value) {
-                                        vnode.state.job.bed_sheets = value
-                                    }
-                                }),
-                            ]),
+            //                     m(input, {
+            //                         name: 'Bed Sheets',
+            //                         // label: "The number of single units that are washable",
+            //                         value: bed_sheets,
+            //                         size: 4,
+            //                         charge: 200,
+            //                         onChange(value) {
+            //                             vnode.state.job.bed_sheets = value
+            //                         }
+            //                     }),
+            //                 ]),
 
-                            m(".row", [
-                                m(input, {
-                                    name: 'Curtains',
-                                    // label: "The number of single units that are washable",
-                                    value: curtains,
-                                    size: 4,
-                                    charge: 200,
-                                    onChange(value) {
-                                        vnode.state.job.curtains = value
-                                    }
-                                }),
+            //                 m(".row", [
+            //                     m(input, {
+            //                         name: 'Curtains',
+            //                         // label: "The number of single units that are washable",
+            //                         value: curtains,
+            //                         size: 4,
+            //                         charge: 200,
+            //                         onChange(value) {
+            //                             vnode.state.job.curtains = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Towels',
-                                    // label: "The number of single units that are washable",
-                                    value: towels,
-                                    size: 4,
-                                    charge: 70,
-                                    onChange(value) {
-                                        vnode.state.job.towels = value
-                                    }
-                                }),
+            //                     m(input, {
+            //                         name: 'Towels',
+            //                         // label: "The number of single units that are washable",
+            //                         value: towels,
+            //                         size: 4,
+            //                         charge: 70,
+            //                         onChange(value) {
+            //                             vnode.state.job.towels = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Suits Type 1',
-                                    // label: "The number of single units that are washable",
-                                    value: suits_type1,
-                                    size: 4,
-                                    charge: 350,
-                                    onChange(value) {
-                                        vnode.state.job.suits_type1 = value
-                                    }
-                                }),
-                            ]),
+            //                     m(input, {
+            //                         name: 'Suits Type 1',
+            //                         // label: "The number of single units that are washable",
+            //                         value: suits_type1,
+            //                         size: 4,
+            //                         charge: 350,
+            //                         onChange(value) {
+            //                             vnode.state.job.suits_type1 = value
+            //                         }
+            //                     }),
+            //                 ]),
 
-                            m(".row", [
-                                m(input, {
-                                    name: 'Suits Type 2',
-                                    // label: "The number of single units that are washable",
-                                    value: suits_type2,
-                                    size: 4,
-                                    charge: 350,
-                                    onChange(value) {
-                                        vnode.state.job.suits_type2 = value
-                                    }
-                                }),
-                                m(input, {
-                                    name: 'Clothes In KGs',
-                                    // label: "The number of single units that are washable",
-                                    value: generalKgs,
-                                    size: 4,
-                                    charge: 99,
-                                    onChange(value) {
-                                        vnode.state.job.generalKgs = value
-                                    }
-                                }),
+            //                 m(".row", [
+            //                     m(input, {
+            //                         name: 'Suits Type 2',
+            //                         // label: "The number of single units that are washable",
+            //                         value: suits_type2,
+            //                         size: 4,
+            //                         charge: 350,
+            //                         onChange(value) {
+            //                             vnode.state.job.suits_type2 = value
+            //                         }
+            //                     }),
+            //                     m(input, {
+            //                         name: 'Clothes In KGs',
+            //                         // label: "The number of single units that are washable",
+            //                         value: generalKgs,
+            //                         size: 4,
+            //                         charge: 99,
+            //                         onChange(value) {
+            //                             vnode.state.job.generalKgs = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Ironing Shirts',
-                                    // label: "The number of single units that are washable",
-                                    value: ironing,
-                                    size: 4,
-                                    charge: 50,
-                                    onChange(value) {
-                                        vnode.state.job.ironing_shirts = value
-                                    }
-                                }),
+            //                     m(input, {
+            //                         name: 'Ironing Shirts',
+            //                         // label: "The number of single units that are washable",
+            //                         value: ironing,
+            //                         size: 4,
+            //                         charge: 50,
+            //                         onChange(value) {
+            //                             vnode.state.job.ironing_shirts = value
+            //                         }
+            //                     }),
 
-                                m(input, {
-                                    name: 'Ironing Trousers',
-                                    // label: "The number of single units that are washable",
-                                    value: ironing_trousers,
-                                    size: 4,
-                                    charge: 70,
-                                    onChange(value) {
-                                        vnode.state.ironing_trousers = value
-                                    }
-                                }),
-                            ])
-                        ]
-                    ),
+            //                     m(input, {
+            //                         name: 'Ironing Trousers',
+            //                         // label: "The number of single units that are washable",
+            //                         value: ironing_trousers,
+            //                         size: 4,
+            //                         charge: 70,
+            //                         onChange(value) {
+            //                             vnode.state.ironing_trousers = value
+            //                         }
+            //                     }),
+            //                 ])
+            //             ]
+            //         ),
 
-                ]
-            ),
+            //     ]
+            // ),
 
-            m("div", { "class": "card card-custom gutter-b" },
-                [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Blacks Laundry Split"
-                                    ),
-                                    m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
-                                        "Record how this load wll be split for the wash process queue"
-                                    )
-                                ]
-                            )
-                        ]
-                    ),
+            // m("div", { "class": "card card-custom gutter-b" },
+            //     [
+            //         m("div", { "class": "card-header border-0 pt-7" },
+            //             [
+            //                 m("h3", { "class": "card-title align-items-start flex-column" },
+            //                     [
+            //                         m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+            //                             "Blacks Laundry Split"
+            //                         ),
+            //                         m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
+            //                             "Record how this load wll be split for the wash process queue"
+            //                         )
+            //                     ]
+            //                 )
+            //             ]
+            //         ),
 
-                    // content id
-                    m("div", { "class": "card-body d-flex align-items-center" },
-                        [
-                            m(input, {
-                                name: 'KGs of Blacks',
-                                label: "The amount of black clothes on this load in kgs",
-                                value: 0,
-                                value: blacks,
-                                onChange(value) {
-                                    vnode.state.blacks = value
-                                }
-                            }),
+            //         // content id
+            //         m("div", { "class": "card-body d-flex align-items-center" },
+            //             [
+            //                 m(input, {
+            //                     name: 'KGs of Blacks',
+            //                     label: "The amount of black clothes on this load in kgs",
+            //                     value: 0,
+            //                     value: blacks,
+            //                     onChange(value) {
+            //                         vnode.state.blacks = value
+            //                     }
+            //                 }),
 
-                            m(input, {
-                                name: 'How many washes do you estimate this will need',
-                                label: "The number of single units that are washable",
-                                value: 0,
-                                value: black_wash_units,
-                                onChange(value) {
-                                    vnode.state.black_wash_units = value
-                                }
-                            }),
-
-
-
-
-                        ]
-                    ),
-
-                    m("div", { "class": "card-body align-items-center" },
-                        [
-                            m(".row", [
-                                m(".col-xl-8", [
-                                    vnode.state.black_wash_units == 0 ? [] : Array(Number(vnode.state.black_wash_units))
-                                        .fill().map((e, i) => {
-                                            return m(input, {
-                                                name: 'Wash ' + ++i,
-                                                label: "The number of kgs that will be washed on this wash",
-                                                value: vnode.state[`black_wash_unit_${i}_kgs`] || 0,
-                                                onChange(value) {
-                                                    vnode.state[`black_wash_unit_${i}_kgs`] = value
-                                                }
-                                            })
-                                        })
-                                ]),
-                                m(".col-xl-6", [
-
-                                ])
-                            ])
-                        ])
-
-                ]
-            ),
-
-
-            m("div", { "class": "card card-custom gutter-b" },
-                [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Whites Laundry Split"
-                                    ),
-                                    m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
-                                        "Record how this load wll be split for the wash process queue"
-                                    )
-                                ]
-                            )
-                        ]
-                    ),
-
-                    // content id
-                    m("div", { "class": "card-body d-flex align-items-center" },
-                        [
-                            m(input, {
-                                name: 'KGs of Coloured',
-                                label: "The amount of black clothes on this load in kgs",
-                                value: 0,
-                                value: whites,
-                                onChange(value) {
-                                    vnode.state.whites = value
-                                }
-                            }),
-
-                            m(input, {
-                                name: 'How many washes do you estimate this will need',
-                                label: "The number of single units that are washable",
-                                value: 0,
-                                value: whites_wash_units,
-                                onChange(value) {
-                                    vnode.state.whites_wash_units = value
-                                }
-                            }),
-                        ]
-                    ),
-
-                    m("div", { "class": "card-body align-items-center" },
-                        [
-                            m(".row", [
-                                m(".col-xl-8", [
-                                    vnode.state.whites_wash_units == 0 ? [] : Array(Number(vnode.state.whites_wash_units))
-                                        .fill().map((e, i) => {
-                                            return m(input, {
-                                                name: 'Wash ' + ++i,
-                                                label: "The number of kgs that will be washed on this wash",
-                                                value: vnode.state[`whites_wash_unit_${i}_kgs`] || 0,
-                                                onChange(value) {
-                                                    vnode.state[`whites_wash_unit_${i}_kgs`] = value
-                                                }
-                                            })
-                                        })
-                                ]),
-                                m(".col-xl-6", [
-
-                                ])
-                            ])
-                        ])
-
-                ]
-            ),
-
-            m("div", { "class": "card card-custom gutter-b" },
-                [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Coloured Laundry Split"
-                                    ),
-                                    m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
-                                        "Record how this load wll be split for the wash process queue"
-                                    )
-                                ]
-                            )
-                        ]
-                    ),
-
-                    // content id
-                    m("div", { "class": "card-body d-flex align-items-center" },
-                        [
-                            m(input, {
-                                name: 'KGs of Whites',
-                                label: "The amount of black clothes on this load in kgs",
-                                value: 0,
-                                value: coloured,
-                                onChange(value) {
-                                    vnode.state.coloured = value
-                                }
-                            }),
-
-                            m(input, {
-                                name: 'How many washes do you estimate this will need',
-                                label: "The number of single units that are washable",
-                                value: 0,
-                                value: coloured_wash_units,
-                                onChange(value) {
-                                    vnode.state.coloured_wash_units = value
-                                }
-                            }),
+            //                 m(input, {
+            //                     name: 'How many washes do you estimate this will need',
+            //                     label: "The number of single units that are washable",
+            //                     value: 0,
+            //                     value: black_wash_units,
+            //                     onChange(value) {
+            //                         vnode.state.black_wash_units = value
+            //                     }
+            //                 }),
 
 
 
 
-                        ]
-                    ),
+            //             ]
+            //         ),
 
-                    m("div", { "class": "card-body align-items-center" },
-                        [
-                            m(".row", [
-                                m(".col-xl-8", [
-                                    vnode.state.coloured_wash_units == 0 ? [] : Array(Number(vnode.state.coloured_wash_units))
-                                        .fill().map((e, i) => {
-                                            return m(input, {
-                                                name: 'Wash ' + ++i,
-                                                label: "The number of kgs that will be washed on this wash",
-                                                value: vnode.state[`coloured_wash_unit_${i}_kgs`] || 0,
-                                                onChange(value) {
-                                                    vnode.state[`coloured_wash_unit_${i}_kgs`] = value
-                                                }
-                                            })
-                                        })
-                                ]),
-                                m(".col-xl-6", [
+            //         m("div", { "class": "card-body align-items-center" },
+            //             [
+            //                 m(".row", [
+            //                     m(".col-xl-8", [
+            //                         vnode.state.black_wash_units == 0 ? [] : Array(Number(vnode.state.black_wash_units))
+            //                             .fill().map((e, i) => {
+            //                                 return m(input, {
+            //                                     name: 'Wash ' + ++i,
+            //                                     label: "The number of kgs that will be washed on this wash",
+            //                                     value: vnode.state[`black_wash_unit_${i}_kgs`] || 0,
+            //                                     onChange(value) {
+            //                                         vnode.state[`black_wash_unit_${i}_kgs`] = value
+            //                                     }
+            //                                 })
+            //                             })
+            //                     ]),
+            //                     m(".col-xl-6", [
 
-                                ])
-                            ])
-                        ])
+            //                     ])
+            //                 ])
+            //             ])
 
-                ]
-            ),
+            //     ]
+            // ),
+
+
+            // m("div", { "class": "card card-custom gutter-b" },
+            //     [
+            //         m("div", { "class": "card-header border-0 pt-7" },
+            //             [
+            //                 m("h3", { "class": "card-title align-items-start flex-column" },
+            //                     [
+            //                         m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+            //                             "Whites Laundry Split"
+            //                         ),
+            //                         m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
+            //                             "Record how this load wll be split for the wash process queue"
+            //                         )
+            //                     ]
+            //                 )
+            //             ]
+            //         ),
+
+            //         // content id
+            //         m("div", { "class": "card-body d-flex align-items-center" },
+            //             [
+            //                 m(input, {
+            //                     name: 'KGs of Coloured',
+            //                     label: "The amount of black clothes on this load in kgs",
+            //                     value: 0,
+            //                     value: whites,
+            //                     onChange(value) {
+            //                         vnode.state.whites = value
+            //                     }
+            //                 }),
+
+            //                 m(input, {
+            //                     name: 'How many washes do you estimate this will need',
+            //                     label: "The number of single units that are washable",
+            //                     value: 0,
+            //                     value: whites_wash_units,
+            //                     onChange(value) {
+            //                         vnode.state.whites_wash_units = value
+            //                     }
+            //                 }),
+            //             ]
+            //         ),
+
+            //         m("div", { "class": "card-body align-items-center" },
+            //             [
+            //                 m(".row", [
+            //                     m(".col-xl-8", [
+            //                         vnode.state.whites_wash_units == 0 ? [] : Array(Number(vnode.state.whites_wash_units))
+            //                             .fill().map((e, i) => {
+            //                                 return m(input, {
+            //                                     name: 'Wash ' + ++i,
+            //                                     label: "The number of kgs that will be washed on this wash",
+            //                                     value: vnode.state[`whites_wash_unit_${i}_kgs`] || 0,
+            //                                     onChange(value) {
+            //                                         vnode.state[`whites_wash_unit_${i}_kgs`] = value
+            //                                     }
+            //                                 })
+            //                             })
+            //                     ]),
+            //                     m(".col-xl-6", [
+
+            //                     ])
+            //                 ])
+            //             ])
+
+            //     ]
+            // ),
+
+            // m("div", { "class": "card card-custom gutter-b" },
+            //     [
+            //         m("div", { "class": "card-header border-0 pt-7" },
+            //             [
+            //                 m("h3", { "class": "card-title align-items-start flex-column" },
+            //                     [
+            //                         m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+            //                             "Coloured Laundry Split"
+            //                         ),
+            //                         m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
+            //                             "Record how this load wll be split for the wash process queue"
+            //                         )
+            //                     ]
+            //                 )
+            //             ]
+            //         ),
+
+            //         // content id
+            //         m("div", { "class": "card-body d-flex align-items-center" },
+            //             [
+            //                 m(input, {
+            //                     name: 'KGs of Whites',
+            //                     label: "The amount of black clothes on this load in kgs",
+            //                     value: 0,
+            //                     value: coloured,
+            //                     onChange(value) {
+            //                         vnode.state.coloured = value
+            //                     }
+            //                 }),
+
+            //                 m(input, {
+            //                     name: 'How many washes do you estimate this will need',
+            //                     label: "The number of single units that are washable",
+            //                     value: 0,
+            //                     value: coloured_wash_units,
+            //                     onChange(value) {
+            //                         vnode.state.coloured_wash_units = value
+            //                     }
+            //                 }),
+
+
+
+
+            //             ]
+            //         ),
+
+            //         m("div", { "class": "card-body align-items-center" },
+            //             [
+            //                 m(".row", [
+            //                     m(".col-xl-8", [
+            //                         vnode.state.coloured_wash_units == 0 ? [] : Array(Number(vnode.state.coloured_wash_units))
+            //                             .fill().map((e, i) => {
+            //                                 return m(input, {
+            //                                     name: 'Wash ' + ++i,
+            //                                     label: "The number of kgs that will be washed on this wash",
+            //                                     value: vnode.state[`coloured_wash_unit_${i}_kgs`] || 0,
+            //                                     onChange(value) {
+            //                                         vnode.state[`coloured_wash_unit_${i}_kgs`] = value
+            //                                     }
+            //                                 })
+            //                             })
+            //                     ]),
+            //                     m(".col-xl-6", [
+
+            //                     ])
+            //                 ])
+            //             ])
+
+            //     ]
+            // ),
 
             m(".row", [
                 m("div", { "class": "card card-custom gutter-b" },

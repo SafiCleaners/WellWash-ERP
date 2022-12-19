@@ -1,6 +1,6 @@
 import m from "mithril"
 const image =
-    "https://safi-washers.netlify.app/assets/media/washer-logo-map-size.png";
+    "https://wellwash.netlify.app/assets/media/washer-logo-map-size.png";
 
 
 const map = {
@@ -65,7 +65,7 @@ const map = {
             circle.bindTo('center', new google.maps.Marker({
                 position: shopLocation,
                 map,
-                title: "Safi washers...",
+                title: "WellWash...",
                 icon: image
             }), 'position');
 

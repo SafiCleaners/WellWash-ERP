@@ -577,7 +577,7 @@ var calculator = () => {
                                                                 "4"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
-                                                                "Pricing and Laundry Load Details"
+                                                                "Theoretical Calculator Pricing"
                                                             )
                                                         ]
                                                     )
@@ -607,7 +607,7 @@ var calculator = () => {
                                             }
                                         }),
                                         m(input, {
-                                            name: 'Duvet',
+                                            name: 'Duvets',
                                             value: 0,
                                             charge: 700,
                                             value: duvets,
@@ -618,7 +618,7 @@ var calculator = () => {
                                         m(input, {
                                             name: 'General Clothes in Kgs',
                                             value: 0,
-                                            charge: 99,
+                                            charge: 150,
                                             value: generalKgs,
                                             onChange(value) {
                                                 vnode.state.generalKgs = value
@@ -680,55 +680,55 @@ var calculator = () => {
                                 ),
 
 
-                                m("div", { "class": "bs-stepper" },
-                                    [
-                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                            [
-                                                m("div", { "class": "step", "data-target": "#logins-part" },
-                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                        [
-                                                            m("span", { "class": "bs-stepper-circle" },
-                                                                "6"
-                                                            ),
-                                                            m("span", { "class": "bs-stepper-label" },
-                                                                "Payment"
-                                                            )
-                                                        ]
-                                                    )
-                                                )]
-                                        )]
-                                ),
+                                // m("div", { "class": "bs-stepper" },
+                                //     [
+                                //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                //             [
+                                //                 m("div", { "class": "step", "data-target": "#logins-part" },
+                                //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                //                         [
+                                //                             m("span", { "class": "bs-stepper-circle" },
+                                //                                 "6"
+                                //                             ),
+                                //                             m("span", { "class": "bs-stepper-label" },
+                                //                                 "Payment"
+                                //                             )
+                                //                         ]
+                                //                     )
+                                //                 )]
+                                //         )]
+                                // ),
 
                                 m("div", { "class": "form-group row", style: { "padding": "10px" } },
                                     [
-                                        m("div", { "class": "col-lg-12" },
-                                            [
-                                                m("label",
-                                                    "Mpesa Number To be used for the payment"
-                                                ),
-                                                m("div", { "class": "input-group" },
-                                                    [
-                                                        m("input", {
-                                                            oninput: (e) => {
-                                                                vnode.state.mpesaPhoneNumber = e.target.value
-                                                            },
-                                                            value: mpesaPhoneNumber,
-                                                            "class": "form-control",
-                                                            "type": "text",
-                                                            "placeholder": "What phone number will we get teh payment from?"
-                                                        }),
-                                                        m("div", { "class": "input-group-append" },
-                                                            m("span", { "class": "input-group-text" },
-                                                                m("i", { "class": "la la-align-center" })
-                                                            )
-                                                        )
-                                                    ]
-                                                ),
-                                                m("span", { "class": "form-text text-muted" },
-                                                    "The phone number that will be used for payment"
-                                                )
-                                            ]
-                                        ),
+                                        // m("div", { "class": "col-lg-12" },
+                                        //     [
+                                        //         m("label",
+                                        //             "Mpesa Number To be used for the payment"
+                                        //         ),
+                                        //         m("div", { "class": "input-group" },
+                                        //             [
+                                        //                 m("input", {
+                                        //                     oninput: (e) => {
+                                        //                         vnode.state.mpesaPhoneNumber = e.target.value
+                                        //                     },
+                                        //                     value: mpesaPhoneNumber,
+                                        //                     "class": "form-control",
+                                        //                     "type": "text",
+                                        //                     "placeholder": "What phone number will we get teh payment from?"
+                                        //                 }),
+                                        //                 m("div", { "class": "input-group-append" },
+                                        //                     m("span", { "class": "input-group-text" },
+                                        //                         m("i", { "class": "la la-align-center" })
+                                        //                     )
+                                        //                 )
+                                        //             ]
+                                        //         ),
+                                        //         m("span", { "class": "form-text text-muted" },
+                                        //             "The phone number that will be used for payment"
+                                        //         )
+                                        //     ]
+                                        // ),
                                         // m("label",
                                         //     "You will complete your payment once the laundry is delivered"
                                         // ),
@@ -747,27 +747,27 @@ var calculator = () => {
                                         // ]),
 
 
-                                        m("div", { "class": "col-lg-12" },
-                                            [
-                                                m("div", { "class": "form-group mb-1" },
-                                                    [
-                                                        m("label", { "for": "exampleTextarea" },
-                                                            "Mpesa Confirmation message"
-                                                        ),
-                                                        m("textarea", {
-                                                            oninput: (e) => {
-                                                                vnode.state.mpesaConfirmationCode = e.target.value
-                                                            },
-                                                            value: mpesaConfirmationCode,
-                                                            "class": "form-control",
-                                                            "id": "exampleTextarea",
-                                                            "rows": "12",
-                                                            "spellcheck": "true"
-                                                        })
-                                                    ]
-                                                )
-                                            ]
-                                        ),
+                                        // m("div", { "class": "col-lg-12" },
+                                        //     [
+                                        //         m("div", { "class": "form-group mb-1" },
+                                        //             [
+                                        //                 m("label", { "for": "exampleTextarea" },
+                                        //                     "Mpesa Confirmation message"
+                                        //                 ),
+                                        //                 m("textarea", {
+                                        //                     oninput: (e) => {
+                                        //                         vnode.state.mpesaConfirmationCode = e.target.value
+                                        //                     },
+                                        //                     value: mpesaConfirmationCode,
+                                        //                     "class": "form-control",
+                                        //                     "id": "exampleTextarea",
+                                        //                     "rows": "12",
+                                        //                     "spellcheck": "true"
+                                        //                 })
+                                        //             ]
+                                        //         )
+                                        //     ]
+                                        // ),
 
 
                                         m("div", { "class": "col-lg-12" },
