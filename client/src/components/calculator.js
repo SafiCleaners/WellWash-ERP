@@ -480,7 +480,7 @@ var calculator = () => {
                                         )]
                                 ),
 
-                                m(datepicker),
+                                // m(datepicker),
 
 
                                 m("div", { "class": "form-group row" },
