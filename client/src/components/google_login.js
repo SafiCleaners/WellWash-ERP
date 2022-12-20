@@ -30,6 +30,11 @@ const google_login = {
     //set stuff to storage
     const setStorage = ({ decodedToken, token }) => {
 
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("name", decodedToken.name);
+      localStorage.setItem("imageUrl", decodedToken.picture);
+      localStorage.setItem("email", decodedToken.email);
+
       // fetch user using email, set the role to local storage
       axios
         .request({
@@ -44,11 +49,6 @@ const google_login = {
 
           console.log({ user })
           localStorage.setItem("role", user.role);
-
-          localStorage.setItem("authToken", token);
-          localStorage.setItem("name", decodedToken.name);
-          localStorage.setItem("imageUrl", decodedToken.picture);
-          localStorage.setItem("email", decodedToken.email);
 
           const userData = {
             name: decodedToken.name,
