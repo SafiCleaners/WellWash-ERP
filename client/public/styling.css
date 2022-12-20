@@ -12269,26 +12269,3 @@ fieldset:disabled .btn {
     width: 4rem;
     font-size: 2rem;
 }
-
-
-.float{
-	position:fixed;
-    right: auto;
-	width:60px;
-	height:60px;
-	bottom:40px;
-	left:30px;
-	background-color:#25d366;
-	color:#FFF;
-	border-radius:50px;
-	text-align:center;
-    font-size:30px;
-	box-shadow: 2px 2px 3px #999;
-    z-index:100;
-    margin-left: -15px;
-    margin-bottom: -20px;
-}
-
-.my-float{
-	margin-top:20px;
-}
