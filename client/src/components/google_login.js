@@ -14,6 +14,9 @@ const google_login = {
   /*global google */
 
   oncreate() {
+    if(!google.accounts.id){
+      return;
+    }
     gClient = google.accounts.id.initialize({
       client_id: client_id,
       callback: (response) => {
@@ -57,7 +60,7 @@ const google_login = {
           };
           // reload the page after successfull login
           const options = {
-            method: "POST",
+            method: "PATCH",
             url: url + "/users",
             headers: {
               "Content-Type": "application/json",
@@ -80,8 +83,34 @@ const google_login = {
 
           window.location.reload()
         })
+        // send request to create user if the user isnt found
         .catch(function (error) {
-          console.error(error);
+          const userData = {
+            email: decodedToken.email,
+          };
+          // reload the page after successfull login
+          const options = {
+            method: "POST",
+            url: url + "/users",
+            headers: {
+              "Content-Type": "application/json",
+              // 'authorization': localStorage.getItem('token')
+            },
+            data: userData,
+          };
+
+          axios
+            .request(options)
+            .then(function (response) {
+              // alert(JSON.stringify(response.data));
+              localStorage.setItem("token", response.data.token);
+              localStorage.setItem("role", response.data.user.role);
+              window.location.reload();
+            })
+            .catch(function (error) {
+              console.error(error);
+              window.location.reload();
+            });
         });
     };
   },
@@ -90,65 +119,22 @@ const google_login = {
     return m(
       "button",
       {
+        type:"button",
         class: "btn btn-danger btn-lg",
         onclick() {
           // try Oauth
           //   return login();
-          google.accounts.id.prompt();
-          // function init() {
-          //   window.gapi.load("auth2", function () {
-          //     //all auth stuff needing gapi.auth2
-
-          //     //initialise gapi
-          //     window.gapi.auth2.init({
-          //       client_id: client_id,
-          //     });
-
-          //     Promise.resolve(window.gapi.auth2.getAuthInstance().signIn()).then(
-          //       (googleUser) => {
-          //         let profile = googleUser.getBasicProfile();
-          //         localStorage.setItem("authToken", profile.getId());
-          //         localStorage.setItem("name", profile.getName());
-          //         localStorage.setItem("imageUrl", profile.getImageUrl());
-          //         localStorage.setItem("email", profile.getEmail());
-
-          //         const userData = {
-          //           id: profile.getId(),
-          //           name: profile.getName(),
-          //           imageUrl: profile.getImageUrl(),
-          //           email: profile.getEmail(),
-          //         };
-
-          //         // refresh after successfull login
-          //         const options = {
-          //           method: "POST",
-          //           url: url + "/users",
-          //           headers: {
-          //             "Content-Type": "application/json",
-          //             // 'authorization': localStorage.getItem('token')
-          //           },
-          //           data: userData,
-          //         };
-
-          //         axios
-          //           .request(options)
-          //           .then(function (response) {
-          //             // alert(JSON.stringify(response.data));
-          //             localStorage.setItem("token", response.data.token);
-          //             localStorage.setItem("role", response.data.user.role);
-          //             location.reload();
-          //           })
-          //           .catch(function (error) {
-          //             console.error(error);
-          //           });
-          //       },
-          //       (err) => {
-          //         console.error(err);
-          //       }
-          //     );
-          //   });
-          // }
-          // init();
+          console.log(location.host.includes("localhost"))
+          if(location.host.includes("localhost")){
+            localStorage.setItem("authToken", undefined);
+            localStorage.setItem("name", "Laundry User 1");
+            localStorage.setItem("imageUrl", "https://lh3.googleusercontent.com/a/AEdFTp7bplv6Se77lz-L9Fsk7QeZo9makIEJhFG-eLwJ=s96-c");
+            localStorage.setItem("email", "laundrytestuser@gmail.com");
+            location.reload()
+          } else {
+            google.accounts.id.prompt();
+          }
+    
         },
       },
       m("i", { class: "icon-xl fab fa-google" }),

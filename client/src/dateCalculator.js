@@ -13,7 +13,7 @@ const nth = function (d) {
 }
 
 const dayRangeCalculator = (start=new Date()) => {
-    const daysForward = 7
+    const daysForward = 6
     const days = []
 
     for (let index = 0; index < daysForward; index++) {
@@ -25,18 +25,24 @@ const dayRangeCalculator = (start=new Date()) => {
         var dayIndex = new_date.day()
 
         const dayNames = [
-            "Sunday",
             "Mon",
             "Tue",
             "Wed",
             "Thur",
             "Friday",
             "Saturday",
+            "Sunday",
         ]
 
-        days.push({
-            dayIndex, nth: nth(day), dayName: dayNames[dayIndex], day, month, year, date:new_date
-        })
+        if(dayNames[dayIndex] === 'Sunday'){
+            // do nothing
+        } else {
+            days.push({
+                dayIndex, nth: nth(day), dayName: dayNames[dayIndex], day, month, year, date:new_date
+            })
+        }
+
+       
     }
 
     console.log(days)

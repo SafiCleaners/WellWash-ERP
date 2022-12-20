@@ -25,7 +25,7 @@ const subheader = () => {
                                         m.route.set("/order1")
                                     }
                                 },
-                                    m("span", { "class": "nav-label px-10" },
+                                    !localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
                                         [
                                             m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
                                                 "Order Now"
@@ -34,37 +34,41 @@ const subheader = () => {
                                                 "Order for Laundry Pickup"
                                             )
                                         ]
+                                    ) : m("span", { "class": "nav-label px-10" },
+                                        [
+                                            m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
+                                                "Welcome " + localStorage.getItem('name')
+                                            ),
+                                            m("span", { "class": "nav-desc text-muted" },
+                                                "Order for Laundry Pickup below"
+                                            )
+                                        ]
                                     )
                                 ),
-                                m("a", { "class": "nav-item active" },
-                                    localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
-                                        [
-                                            // m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
-                                            //     "Sign in"
-                                            // ),
-                                            // m("span", { "class": "nav-desc text-muted" },
-                                            //     "Get into your account"
-                                            // )
+                                // m("a", { "class": "nav-item active" },
+                                //     localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
+                                //         [
+                                          
 
-                                            [m("div", { "class": "topbar-item mr-3" },
-                                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                                    m("a", { "class": "menu-link", "href": "#!/FAQ" },
-                                                        [
-                                                            m("span", { "class": "menu-text font-size-sm" },
-                                                                localStorage.getItem('name')
-                                                            ),
-                                                            m("br"),
-                                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
-                                                        ]
-                                                    )
-                                                )
-                                            )]
-                                        ]
-                                    ) : m("div", { style: { margin: "auto" } }, [
-                                        // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
-                                        m(google_login)
-                                    ])
-                                )
+                                //             m("div", { "class": "topbar-item mr-3" },
+                                //                 m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                //                     m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                //                         [
+                                //                             m("span", { "class": "menu-text font-size-sm" },
+                                //                                 "Welcome " + localStorage.getItem('name')
+                                //                             ),
+                                //                             m("br"),
+                                //                             m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
+                                //                         ]
+                                //                     )
+                                //                 )
+                                //             )
+                                //         ]
+                                //     ) : m("div", { style: { margin: "auto" } }, [
+                                //         // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
+                                //         m(google_login)
+                                //     ])
+                                // )
                             ]
                         )
                     ]
