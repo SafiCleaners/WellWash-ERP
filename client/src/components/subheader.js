@@ -42,19 +42,38 @@ const subheader = () => {
                                                         m("img", {
                                                             src: localStorage.getItem('imageUrl'),
                                                             style: {
-                                                                // "max-width": "10%",
+                                                                "max-width": "10%",
                                                                 height: "auto"
                                                             }
                                                         })
                                                     // ]),
                                                 ]),
-                                                m(".col-8", [
+                                                m(".col-4", [
                                                     m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
                                                         "Welcome " + localStorage.getItem('name')
                                                     ),
                                                     m("br"),
                                                     m("span", { "class": "nav-desc text-muted" },
                                                         "Order for Laundry Pickup below"
+                                                    )
+                                                ]),
+                                                m(".col-3",[
+                                                    m("button", {
+                                                        type: "button",
+                                                        "class": "btn btn-info btn-sm", 
+                                                        onclick() {
+                                                            localStorage.clear()
+                    
+                                                            if(window.gapi.auth2)
+                                                                Promise.resolve(window.gapi.auth2.getAuthInstance().signOut()).then(function () {
+                                                                    console.log('User signed out.');
+                                                                    window.location.reload()
+                                                                });
+                    
+                                                            window.location.reload()
+                                                        }
+                                                    },
+                                                        "SignOut"
                                                     )
                                                 ])
                                             ])
