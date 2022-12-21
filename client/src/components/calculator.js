@@ -485,7 +485,7 @@ var calculator = () => {
 
                                 m("div", { "class": "form-group row" },
                                     [
-                                        // m(map),
+                                        
                                         m("div", { "class": "col-lg-12" },
                                             [
                                                 m("label",
@@ -566,6 +566,8 @@ var calculator = () => {
                                     ]
                                 ),
 
+                                
+
                                 m("div", { "class": "bs-stepper" },
                                     [
                                         m("div", { "class": "bs-stepper-header", "role": "tablist" },
@@ -645,6 +647,8 @@ var calculator = () => {
 
 
                                     ]),
+
+                                    m(map),
 
                                 m("div", { "class": "bs-stepper" },
                                     [
