@@ -37,18 +37,18 @@ const subheader = () => {
                                     ) : m("span", { "class": "nav-label px-10" },
                                         [
                                             m(".row", [
-                                                m(".col-3", [
+                                                m(".col-2.d-block d-md-none", [
                                                     // m("span", { "class": "svg-icon svg-icon-xl" }, [
                                                         m("img", {
                                                             src: localStorage.getItem('imageUrl'),
                                                             style: {
-                                                                "max-width": "10%",
+                                                                "max-width": "100%",
                                                                 height: "auto"
                                                             }
                                                         })
                                                     // ]),
                                                 ]),
-                                                m(".col-4", [
+                                                m(".col-6", [
                                                     m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
                                                         "Welcome " + localStorage.getItem('name')
                                                     ),
@@ -57,7 +57,7 @@ const subheader = () => {
                                                         "Order for Laundry Pickup below"
                                                     )
                                                 ]),
-                                                m(".col-3",[
+                                                m(".col-3.d-block d-md-none",[
                                                     m("button", {
                                                         type: "button",
                                                         "class": "btn btn-info btn-sm", 
