@@ -247,7 +247,7 @@ var calculator = () => {
                                         )]
                                 ),
 
-                               localStorage.getItem('authToken')? []: m("div", { "class": "col-lg-6" },
+                                localStorage.getItem('authToken') ? [] : m("div", { "class": "col-lg-6" },
                                     [
                                         m("label",
                                             "What is your name"
@@ -276,12 +276,12 @@ var calculator = () => {
                                     ]
                                 ),
 
-                               
 
 
 
 
-                                
+
+
                                 // m("div", { "class": "bs-stepper d-md-block" },
                                 //     [
                                 //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
@@ -351,7 +351,7 @@ var calculator = () => {
                                         ),
                                         m("div", { "class": "dropdown" },
                                             [
-                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                m("button", { "class": "btn btn-secondary dropdown-toggle btn-lg", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                                     pickupTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
@@ -379,7 +379,10 @@ var calculator = () => {
                                         ),
                                         m("br"),
 
-                                        m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
+                                        m("div", {
+                                            "class": "btn-group btn-group-toggle",
+                                            "data-toggle": "buttons"
+                                        },
                                             [
                                                 dayRangeCalculator(vnode.state.pickupDay)
                                                     .map((time) => {
@@ -411,7 +414,7 @@ var calculator = () => {
                                         ),
                                         m("div", { "class": "dropdown" },
                                             [
-                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                                     dropOffTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
@@ -433,34 +436,34 @@ var calculator = () => {
                                         )
                                     ]),
 
-                                    m("div", { "class": "col-lg-6" },
-                                [
-                                    m("label",
-                                        "What phone number can we reach you on?"
-                                    ),
-                                    m("div", { "class": "input-group" },
-                                        [
-                                            m("input", {
-                                                oninput: (e) => {
-                                                    vnode.state.phone = e.target.value
-                                                },
-                                                value: phone,
-                                                "class": "form-control",
-                                                "type": "text",
-                                                "placeholder": "ie 07...."
-                                            }),
-                                            m("div", { "class": "input-group-append" },
-                                                m("span", { "class": "input-group-text" },
-                                                    m("i", { "class": "la la-align-center" })
+                                m("div", { "class": "col-lg-6" },
+                                    [
+                                        m("label",
+                                            "What phone number can we reach you on?"
+                                        ),
+                                        m("div", { "class": "input-group" },
+                                            [
+                                                m("input", {
+                                                    oninput: (e) => {
+                                                        vnode.state.phone = e.target.value
+                                                    },
+                                                    value: phone,
+                                                    "class": "form-control",
+                                                    "type": "text",
+                                                    "placeholder": "ie 07...."
+                                                }),
+                                                m("div", { "class": "input-group-append" },
+                                                    m("span", { "class": "input-group-text" },
+                                                        m("i", { "class": "la la-align-center" })
+                                                    )
                                                 )
-                                            )
-                                        ]
-                                    ),
-                                    // m("span", { "class": "form-text text-muted" },
-                                    //     "The phone number that will be used for messaging"
-                                    // )
-                                ]
-                            ),
+                                            ]
+                                        ),
+                                        // m("span", { "class": "form-text text-muted" },
+                                        //     "The phone number that will be used for messaging"
+                                        // )
+                                    ]
+                                ),
 
 
                                 m("div", { "class": "bs-stepper" },
@@ -482,14 +485,14 @@ var calculator = () => {
                                         )]
                                 ),
 
-                                
+
 
                                 // m(datepicker),
 
 
                                 m("div", { "class": "form-group row" },
                                     [
-                                        
+
                                         m("div", { "class": "col-lg-12" },
                                             [
                                                 m("label",
@@ -570,7 +573,7 @@ var calculator = () => {
                                     ]
                                 ),
 
-                                
+
 
                                 m("div", { "class": "bs-stepper" },
                                     [
@@ -619,40 +622,40 @@ var calculator = () => {
 
                                 m("div", { "class": "form-group row", style: { "padding": "10px" } },
                                     [
-                                     
+
                                         // m("div", { "class": "col-lg-12" },
                                         //     [
 
-                                                m("div", {
-                                                    class: "float-right",
-                                                    // style: {
-                                                    //     "padding": "30px"
-                                                    // }
-                                                }, [
-                                                    m("button", {
-                                                        type: "button",
-                                                        "class": "btn btn-lg btn-info",
-                                                        onclick() {
-                                                            // alert("saving order")
+                                        m("div", {
+                                            class: "float-right",
+                                            // style: {
+                                            //     "padding": "30px"
+                                            // }
+                                        }, [
+                                            m("button", {
+                                                type: "button",
+                                                "class": "btn btn-lg btn-info",
+                                                onclick() {
+                                                    // alert("saving order")
 
-                                                            vnode.state.saved = true
-                                                            setTimeout(() => {
-                                                                localStorage.removeItem("activeOrderId")
-                                                                localStorage.removeItem("activeOrder")
-                                                                location.reload()
-                                                            }, 2000)
-                                                        }
-                                                    }, [
-                                                        m("i", { "class": "flaticon2-mail-1" }),
-                                                        " Save My order"
-                                                    ]),
-                                                ]),
-                                            // ])
+                                                    vnode.state.saved = true
+                                                    setTimeout(() => {
+                                                        localStorage.removeItem("activeOrderId")
+                                                        localStorage.removeItem("activeOrder")
+                                                        location.reload()
+                                                    }, 2000)
+                                                }
+                                            }, [
+                                                m("i", { "class": "flaticon2-mail-1" }),
+                                                " Save My order"
+                                            ]),
+                                        ]),
+                                        // ])
 
 
                                     ]),
 
-                                    m(map),
+                                m(map),
 
                                 m("div", { "class": "bs-stepper" },
                                     [
@@ -722,7 +725,7 @@ var calculator = () => {
                                     ]),
 
 
-                                
+
 
 
                                 // m("div", { "class": "bs-stepper" },
@@ -744,7 +747,7 @@ var calculator = () => {
                                 //         )]
                                 // ),
 
-                                
+
 
 
                             ]
