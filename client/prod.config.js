@@ -1,6 +1,7 @@
 const path = require('path')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const webpack = require('webpack')
+const { BugsnagSourceMapUploaderPlugin } = require('webpack-bugsnag-plugins')
 const env = process.env.WEBPACK_ENV
 
 // Simply configure those 4 variables:
@@ -24,7 +25,15 @@ const { plugins, outputfile, mode, watch } = env == 'build'
   }
   : {
     plugins: [
-      new webpack.BannerPlugin(COPYRIGHT)
+      new webpack.BannerPlugin(COPYRIGHT),
+      new BugsnagSourceMapUploaderPlugin({
+        apiKey: 'd626c9610aa4d6ab8b09d922475c57d1',
+        appVersion: '1.2.3',
+        metadata: {
+          "buildServer": "build1",
+          "buildReason": "Working on auth and order flow"
+        }
+      })
     ],
     outputfile: OUTPUT_FILE,
     watch: true,
