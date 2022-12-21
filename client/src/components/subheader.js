@@ -36,19 +36,36 @@ const subheader = () => {
                                         ]
                                     ) : m("span", { "class": "nav-label px-10" },
                                         [
-                                            m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
-                                                "Welcome " + localStorage.getItem('name')
-                                            ),
-                                            m("span", { "class": "nav-desc text-muted" },
-                                                "Order for Laundry Pickup below"
-                                            )
+                                            m(".row", [
+                                                m(".col-3", [
+                                                    // m("span", { "class": "svg-icon svg-icon-xl" }, [
+                                                        m("img", {
+                                                            src: localStorage.getItem('imageUrl'),
+                                                            style: {
+                                                                // "max-width": "10%",
+                                                                height: "auto"
+                                                            }
+                                                        })
+                                                    // ]),
+                                                ]),
+                                                m(".col-8", [
+                                                    m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
+                                                        "Welcome " + localStorage.getItem('name')
+                                                    ),
+                                                    m("br"),
+                                                    m("span", { "class": "nav-desc text-muted" },
+                                                        "Order for Laundry Pickup below"
+                                                    )
+                                                ])
+                                            ])
+
                                         ]
                                     )
                                 ),
                                 // m("a", { "class": "nav-item active" },
                                 //     localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
                                 //         [
-                                          
+
 
                                 //             m("div", { "class": "topbar-item mr-3" },
                                 //                 m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
