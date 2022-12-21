@@ -247,7 +247,7 @@ var calculator = () => {
                                         )]
                                 ),
 
-                                m("div", { "class": "col-lg-6" },
+                               localStorage.getItem('authToken')? []: m("div", { "class": "col-lg-6" },
                                     [
                                         m("label",
                                             "What is your name"
@@ -276,34 +276,7 @@ var calculator = () => {
                                     ]
                                 ),
 
-                                m("div", { "class": "col-lg-6" },
-                                    [
-                                        m("label",
-                                            "Mpesa Number To be used for the payment"
-                                        ),
-                                        m("div", { "class": "input-group" },
-                                            [
-                                                m("input", {
-                                                    oninput: (e) => {
-                                                        vnode.state.phone = e.target.value
-                                                    },
-                                                    value: phone,
-                                                    "class": "form-control",
-                                                    "type": "text",
-                                                    "placeholder": "What phone number will we get the payment from?"
-                                                }),
-                                                m("div", { "class": "input-group-append" },
-                                                    m("span", { "class": "input-group-text" },
-                                                        m("i", { "class": "la la-align-center" })
-                                                    )
-                                                )
-                                            ]
-                                        ),
-                                        // m("span", { "class": "form-text text-muted" },
-                                        //     "The phone number that will be used for messaging"
-                                        // )
-                                    ]
-                                ),
+                               
 
 
 
@@ -460,6 +433,35 @@ var calculator = () => {
                                         )
                                     ]),
 
+                                    m("div", { "class": "col-lg-6" },
+                                [
+                                    m("label",
+                                        "What phone number can we reach you on?"
+                                    ),
+                                    m("div", { "class": "input-group" },
+                                        [
+                                            m("input", {
+                                                oninput: (e) => {
+                                                    vnode.state.phone = e.target.value
+                                                },
+                                                value: phone,
+                                                "class": "form-control",
+                                                "type": "text",
+                                                "placeholder": "ie 07...."
+                                            }),
+                                            m("div", { "class": "input-group-append" },
+                                                m("span", { "class": "input-group-text" },
+                                                    m("i", { "class": "la la-align-center" })
+                                                )
+                                            )
+                                        ]
+                                    ),
+                                    // m("span", { "class": "form-text text-muted" },
+                                    //     "The phone number that will be used for messaging"
+                                    // )
+                                ]
+                            ),
+
 
                                 m("div", { "class": "bs-stepper" },
                                     [
@@ -479,6 +481,8 @@ var calculator = () => {
                                                 )]
                                         )]
                                 ),
+
+                                
 
                                 // m(datepicker),
 
