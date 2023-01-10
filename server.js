@@ -112,25 +112,36 @@ const routes = async (client) => {
         })
     });
 
-    app.patch('/jobs/:id', (req, res) => {
-        db.collection('jobs').findOne({
-            _id: ObjectId(req.params.id),
+    app.patch('/jobs/:id', async (req, res) => {
+        try {
+          let jobId = req.params.id;
+          // check if id provided is 'null'
+          if(jobId === 'null'){
+            jobId = new ObjectId();
+          }
+          // Find the job by its id, if it exists
+          const job = await db.collection('jobs').findOne({
+            _id: ObjectId(jobId),
             deleted: false
-        }, function (err, result) {
+          });
+          if(!job){
+            const newJobData = Object.assign(req.body, {_id: jobId, deleted: false});
+            const newJob = await db.collection('jobs').insertOne(newJobData);
+            return res.status(201).send({id: jobId});
+          }
+          // update job
+          const updatedJob = await db.collection('jobs').updateOne(
+            { _id: ObjectId(jobId) },
+            { $set: req.body }
+          );
+          res.status(200).send({id: jobId});
+        } catch (err) {
+          console.log(err);
+          res.status(500).send({ message: 'Server error' });
+        }
+      });
+    
 
-            if (!result)
-                Object.assign(req.body, {
-                    deleted: false
-                })
-
-            db.collection('jobs').updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body }, { upsert: true }, function (err, result) {
-                if (err) throw err
-
-                res.send(result)
-            })
-        })
-
-    });
 
     app.delete('/jobs/:id', authMiddleware, (req, res) => {
         db.collection('jobs').updateOne({ _id: ObjectId(req.params.id) }, { $set: { deleted: true } }, function (err, result) {

@@ -45,7 +45,7 @@ const dayRangeCalculator = (start=new Date()) => {
        
     }
 
-    console.log(days)
+    // console.log(days)
 
     return days
 }

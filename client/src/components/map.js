@@ -98,7 +98,7 @@ const map = {
                         lng: position.coords.longitude,
                     };
 
-                    console.log(pos)
+                    // console.log(pos)
 
                     // infoWindow.setPosition(pos);
                     // infoWindow.setContent("You");
@@ -131,7 +131,7 @@ const map = {
                     };
 
                     const distance = getDistance(shopLocation, pos)
-                    console.log({ distance })
+                    // console.log({ distance })
 
                     vnode.state.distanceOfUserFromShop = distance
 
@@ -179,7 +179,7 @@ const map = {
 
                     // map.setCenter(mapBounds.getCenter());
 
-                    console.log(markerList, mapBounds)
+                    // console.log(markerList, mapBounds)
                     map.setCenter(shopLocation);
                     map.fitBounds(mapBounds);
                 },

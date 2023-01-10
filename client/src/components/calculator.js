@@ -1,4 +1,5 @@
 import axios from "axios";
+var equal = require('deep-equal');
 import {
     url,
 } from "../constants"
@@ -50,7 +51,7 @@ const datepicker = {
 
 var calculator = () => {
     return {
-        oninit: function (vnode) {
+        oninitX: function (vnode) {
             var cost = 0
             var price = 0
             vnode.state = Object.assign(vnode.state, {
@@ -91,6 +92,7 @@ var calculator = () => {
 
             const updateOrderOnServerPeriodically = (period) => {
                 setInterval(() => {
+                    console.log("Running updateOrderOnServerPeriodically", vnode.state)
                     // console.log(vnode.state.activeOrder)
                     const order = Object.assign({}, vnode.state, {
                         typesMapping: undefined,
@@ -100,6 +102,14 @@ var calculator = () => {
                         view: undefined,
                         activeOrder: undefined
                     })
+
+                    // check if the order has changed before sending it to the server
+                    const orderString = JSON.stringify(order);
+                    const activeOrderString = localStorage.getItem("activeOrder");
+                    if (orderString === activeOrderString) {
+                        console.log("Order has not changed. Not sending request to server.");
+                        return;
+                    }
 
                     // console.log(order)
 
@@ -122,7 +132,7 @@ var calculator = () => {
                         vnode.state.saved = false
                         vnode.state.lastSyncTime = new Date()
                         // add toastr notification
-                        // m.route.set("/order2", {
+                        // m.route.set("/order2", { 
                         //     order
                         // })
                     }).catch(function (error) {
@@ -201,6 +211,143 @@ var calculator = () => {
                 updateOrderOnServerPeriodically(3000)
             }
         },
+        oninit: function (vnode) {
+            var cost = 0
+            var price = 0
+            vnode.state = Object.assign(vnode.state, {
+                activeOrder: {
+                    // select today automatically
+                    pickupDay: moment(new Date()).format('L'),
+                    // select tommorow automatically
+                    dropOffDay: moment(new Date()).add(1, 'days').format('L'),
+                    pickupTime: '10am-11am',
+                    dropOffTime: '10am-11am',
+                    appartmentName: '',
+                    houseNumber: '',
+                    moreDetails: '',
+                    curtains: 0,
+                    blankets: 0,
+                    duvets: 0,
+                    generalKgs: 0,
+                    mpesaPhoneNumber: 0,
+                    mpesaConfirmationCode: '',
+                    calculatePrice() {
+                        return cost
+                    },
+                    uploading: false,
+                }
+            }, {
+                activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
+            })
+
+            // create an order if there was not one already running
+            // cache order in local storage even accross refreshes
+            let activeOrderId = localStorage.getItem("activeOrderId")
+
+            // if (!activeOrderId) {
+            //     activeOrderId = new ObjectId()
+            //     localStorage.setItem("activeOrderId", activeOrderId)
+            // }
+            vnode.state.id = activeOrderId
+
+            
+
+            // function to update order on the server
+            const updateOrderOnServer = () => {
+                console.log("Running updateOrderOnServer", vnode.state)
+
+                let order = {};
+
+                var {
+                    pickupDay,
+                    dropOffDay,
+                    pickupTime,
+                    dropOffTime,
+                    appartmentName,
+                    houseNumber,
+                    moreDetails,
+                    curtains,
+                    blankets,
+                    duvets,
+                    generalKgs,
+                    mpesaPhoneNumber,
+                    phone,
+                    mpesaConfirmationCode,
+                    name
+                } = vnode.state
+
+                Object.assign(order, vnode.state.activeOrder, {
+                    pickupDay,
+                    dropOffDay,
+                    pickupTime,
+                    dropOffTime,
+                    appartmentName,
+                    houseNumber,
+                    moreDetails,
+                    curtains,
+                    blankets,
+                    duvets,
+                    generalKgs,
+                    mpesaPhoneNumber,
+                    phone,
+                    mpesaConfirmationCode,
+                    name
+                });
+
+                // check if the order has changed before sending it to the server
+                // const orderString = JSON.stringify(order);
+                const activeOrder = JSON.parse(localStorage.getItem("activeOrder"));
+                const cleanOrder = JSON.parse(JSON.stringify(order))
+                if (equal(cleanOrder, activeOrder)) {
+                    console.log("Order has not changed. Not sending request to server.");
+                    return;
+                } else {
+                    console.log("Order has changed, updating the backend", order, activeOrder)
+                }
+
+                let activeOrderId = localStorage.getItem("activeOrderId")
+                // send request to server
+                const options = {
+                    method: 'PATCH',
+                    url: url + "/jobs/" + activeOrderId,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'authorization': localStorage.getItem('token')
+                    },
+                    data: order
+                };
+                vnode.state.uploading = true
+                axios.request(options).then(function (response) {
+                    //save orderId from server response to local storage
+                    const orderIdFromServer = response.data.id;
+                    if (!localStorage.getItem("activeOrderId")) {
+                        localStorage.setItem("activeOrderId", orderIdFromServer);
+                    }
+                    vnode.state.activeOrder = order
+                    localStorage.setItem("activeOrder", JSON.stringify(order, null, '\t'))
+                    vnode.state.uploading = false
+                }).catch(function (error) {
+                    console.log(error)
+                    vnode.state.uploading = false
+                }).catch(function (error) {
+                    order.id = null
+                    order.retry_innitial_send = true
+                    // vnode.state.activeOrder = order
+                    vnode.state.uploading = false
+                    vnode.state.saved = false
+                    // m.route.set("/order2", {
+                    //     order
+                    // })
+                });
+            }
+
+            // call updateOrderOnServer function once 
+            updateOrderOnServer();
+            // call updateOrderOnServerPeriodically function with a suitable time period 
+            setInterval(updateOrderOnServer, 2000);
+            // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
+
+        },
         view(vnode) {
             var {
                 pickupDay,
@@ -220,7 +367,7 @@ var calculator = () => {
                 name
             } = vnode.state
 
-            console.log(vnode.state)
+            // console.log(vnode.state)
 
             return m("div", { "class": "card-body" },
 
@@ -640,10 +787,10 @@ var calculator = () => {
 
                                                     vnode.state.saved = true
                                                     setTimeout(() => {
-                                                        localStorage.removeItem("activeOrderId")
-                                                        localStorage.removeItem("activeOrder")
+                                                        // localStorage.removeItem("activeOrderId")
+                                                        // localStorage.removeItem("activeOrder")
                                                         location.reload()
-                                                    }, 2000)
+                                                    }, 6000)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),
