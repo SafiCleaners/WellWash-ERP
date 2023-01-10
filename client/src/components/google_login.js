@@ -17,51 +17,52 @@ const setStorage = ({ decodedToken, token }) => {
 const google_login = {
   async oncreate() {
     // window.google.addEventListener("load", async () => {
-      // if (!window.google || !window.google.accounts || !window.google.accounts.id) {
-      //   console.error('window.google Auth client not found!');
-      //   return;
-      // }
-      try {
-        console.log(client_id)
-        gClient = await window.google.accounts.id.initialize({
-          client_id: client_id,
-          callback: (response) => {
-            token = response.credential;
-            decodedToken = jwtDecode(response.credential);
-            setStorage({ decodedToken, token });
-          },
-        });
-        console.log({ gClient })
-        await window.google.accounts.id.prompt();
+    // if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+    //   console.error('window.google Auth client not found!');
+    //   return;
+    // }
+    try {
+      console.log(client_id)
+      gClient = await window.google.accounts.id.initialize({
+        client_id: client_id,
+        callback: (response) => {
+          token = response.credential;
+          decodedToken = jwtDecode(response.credential);
+          setStorage({ decodedToken, token });
+          window.location.reload()
+        },
+      });
+      console.log({ gClient })
+      await window.google.accounts.id.prompt();
+      const options = {
+        method: 'GET',
+        url: `${url}/users/${decodedToken.email}`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      const user = await axios.request(options);
+      localStorage.setItem('role', user.data.role);
+      window.location.reload();
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        const userData = { email: decodedToken.email };
         const options = {
-          method: 'GET',
-          url: `${url}/users/${decodedToken.email}`,
+          method: 'POST',
+          url: `${url}/users`,
           headers: {
             'Content-Type': 'application/json',
           },
+          data: userData,
         };
-        const user = await axios.request(options);
-        localStorage.setItem('role', user.data.role);
+        const res = await axios.request(options);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('role', res.data.user.role);
         window.location.reload();
-      } catch (err) {
-        if (err.response && err.response.status === 404) {
-          const userData = { email: decodedToken.email };
-          const options = {
-            method: 'POST',
-            url: `${url}/users`,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            data: userData,
-          };
-          const res = await axios.request(options);
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('role', res.data.user.role);
-          window.location.reload();
-        } else {
-          console.error(err);
-        }
+      } else {
+        console.error(err);
       }
+    }
     // })
   },
   view() {
