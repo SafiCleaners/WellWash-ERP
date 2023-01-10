@@ -17,14 +17,6 @@ const { plugins, outputfile, mode, watch } = env == 'build'
   ? {
     plugins: [
       new UglifyJSPlugin(),
-      new webpack.BannerPlugin(COPYRIGHT)
-    ],
-    outputfile: OUTPUT_FILE_MIN,
-    watch: false,
-    mode: 'production'
-  }
-  : {
-    plugins: [
       new webpack.BannerPlugin(COPYRIGHT),
       new BugsnagSourceMapUploaderPlugin({
         apiKey: 'd626c9610aa4d6ab8b09d922475c57d1',
@@ -34,6 +26,14 @@ const { plugins, outputfile, mode, watch } = env == 'build'
           "buildReason": "Working on auth and order flow"
         }
       })
+    ],
+    outputfile: OUTPUT_FILE_MIN,
+    watch: false,
+    mode: 'production'
+  }
+  : {
+    plugins: [
+      new webpack.BannerPlugin(COPYRIGHT)
     ],
     outputfile: OUTPUT_FILE,
     watch: true,

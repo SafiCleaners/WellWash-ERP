@@ -81,30 +81,12 @@ const subheader = () => {
                                         ]
                                     )
                                 ),
-                                // m("a", { "class": "nav-item active" },
-                                //     localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
-                                //         [
-
-
-                                //             m("div", { "class": "topbar-item mr-3" },
-                                //                 m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                //                     m("a", { "class": "menu-link", "href": "#!/FAQ" },
-                                //                         [
-                                //                             m("span", { "class": "menu-text font-size-sm" },
-                                //                                 "Welcome " + localStorage.getItem('name')
-                                //                             ),
-                                //                             m("br"),
-                                //                             m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
-                                //                         ]
-                                //                     )
-                                //                 )
-                                //             )
-                                //         ]
-                                //     ) : m("div", { style: { margin: "auto" } }, [
-                                //         // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
-                                //         m(google_login)
-                                //     ])
-                                // )
+                                localStorage.getItem('authToken') ? [] : m("a", { "class": "nav-item active" },
+                                     m("div", { style: { margin: "auto" } }, [
+                                        // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
+                                        m(google_login)
+                                    ])
+                                )
                             ]
                         )
                     ]
