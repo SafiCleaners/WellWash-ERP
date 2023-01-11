@@ -28,10 +28,10 @@ const subheader = () => {
                                     !localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },
                                         [
                                             m("span", { "class": "nav-title text-dark-75 font-weight-bold font-size-h4" },
-                                                "Order Now"
+                                                "Order For Pickup"
                                             ),
                                             m("span", { "class": "nav-desc text-muted" },
-                                                "Order for Laundry Pickup"
+                                                "Your Trusted Laundry Service"
                                             )
                                         ]
                                     ) : m("span", { "class": "nav-label px-10" },
