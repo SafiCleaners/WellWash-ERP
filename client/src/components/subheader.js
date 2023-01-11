@@ -43,7 +43,8 @@ const subheader = () => {
                                                             src: localStorage.getItem('imageUrl'),
                                                             style: {
                                                                 "max-width": "100%",
-                                                                height: "auto"
+                                                                height: "auto",
+                                                                "padding-top": "20"
                                                             }
                                                         })
                                                     // ]),
