@@ -104,7 +104,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        
+
                                         m("li", { "class": "menu-item" + (window.location.hash == "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/FAQ" },
                                                 [
@@ -148,13 +148,13 @@ const header = {
                         localStorage.getItem('authToken') ? [
                             m("div", { "class": "topbar-item mr-3" },
                                 m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                    m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                    m("a", { "class": "menu-link", "href": "#", style: { color: "white" } },
                                         [
                                             m("span", { "class": "menu-text font-size-sm" },
-                                            localStorage.getItem('name')
+                                                localStorage.getItem('name')
                                             ),
                                             m("br"),
-                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email') + `: role:${localStorage.getItem('role')}`)
+                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
                                         ]
                                     )
                                 )
@@ -173,7 +173,7 @@ const header = {
                                     "class": "btn btn-dropdown btn-fixed-height btn-primary font-weight-bolder font-size-sm px-6", onclick() {
                                         localStorage.clear()
 
-                                        if(window.gapi.auth2)
+                                        if (window.gapi.auth2)
                                             Promise.resolve(window.gapi.auth2.getAuthInstance().signOut()).then(function () {
                                                 console.log('User signed out.');
                                                 window.location.reload()

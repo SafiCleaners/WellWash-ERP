@@ -114,33 +114,34 @@ const routes = async (client) => {
 
     app.patch('/jobs/:id', async (req, res) => {
         try {
-          let jobId = req.params.id;
-          // check if id provided is 'null'
-          if(jobId === 'null'){
-            jobId = new ObjectId();
-          }
-          // Find the job by its id, if it exists
-          const job = await db.collection('jobs').findOne({
-            _id: ObjectId(jobId),
-            deleted: false
-          });
-          if(!job){
-            const newJobData = Object.assign(req.body, {_id: jobId, deleted: false});
-            const newJob = await db.collection('jobs').insertOne(newJobData);
-            return res.status(201).send({id: jobId});
-          }
-          // update job
-          const updatedJob = await db.collection('jobs').updateOne(
-            { _id: ObjectId(jobId) },
-            { $set: req.body }
-          );
-          res.status(200).send({id: jobId});
+            let jobId = req.params.id;
+            // check if id provided is 'null'
+            if (jobId === 'null') {
+                jobId = new ObjectId();
+            }
+            // Find the job by its id, if it exists
+            const job = await db.collection('jobs').findOne({
+                _id: ObjectId(jobId),
+                deleted: false
+            });
+            if (!job) {
+                const newJobData = Object.assign(req.body, { _id: ObjectId(jobId), deleted: false });
+                const newJob = await db.collection('jobs').insertOne(newJobData);
+                return res.status(201).send({ id: jobId });
+            }
+            // update job
+            const updatedJob = await db.collection('jobs').update(
+                { _id: ObjectId(jobId) },
+                { $set: req.body },
+                { upsert: true }
+            );
+            res.status(200).send({ id: jobId });
         } catch (err) {
-          console.log(err);
-          res.status(500).send({ message: 'Server error' });
+            console.log(err);
+            res.status(500).send({ message: 'Server error' });
         }
-      });
-    
+    });
+
 
 
     app.delete('/jobs/:id', authMiddleware, (req, res) => {

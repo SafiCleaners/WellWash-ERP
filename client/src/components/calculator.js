@@ -51,7 +51,7 @@ const datepicker = {
 
 var calculator = () => {
     return {
-        oninitX: function (vnode) {
+        oninit: function (vnode) {
             var cost = 0
             var price = 0
             vnode.state = Object.assign(vnode.state, {
@@ -59,7 +59,7 @@ var calculator = () => {
                 pickupDay: moment(new Date()).format('L'),
                 // select tommorow automatically
                 dropOffDay: moment(new Date()).add(1, 'days').format('L'),
-                pickupTime: '7am-8am',
+                pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
                 appartmentName: '',
                 houseNumber: '',
@@ -71,174 +71,11 @@ var calculator = () => {
                 mpesaPhoneNumber: 0,
                 mpesaConfirmationCode: '',
                 calculatePrice() {
-
-
                     return cost
                 },
+                saved: false,
                 uploading: false,
             }, JSON.parse(localStorage.getItem("activeOrder")))
-
-
-
-            // create an order if there was not one already running
-            // cache order in local storage even accross refreshes
-            const activeOrderId = localStorage.getItem("activeOrderId")
-            const activeOrder = JSON.parse(localStorage.getItem("activeOrder"))
-
-            if (activeOrderId) {
-                vnode.state.id = activeOrderId
-            }
-
-
-            const updateOrderOnServerPeriodically = (period) => {
-                setInterval(() => {
-                    console.log("Running updateOrderOnServerPeriodically", vnode.state)
-                    // console.log(vnode.state.activeOrder)
-                    const order = Object.assign({}, vnode.state, {
-                        typesMapping: undefined,
-                        subjectAreaMapping: undefined,
-                        oninit: undefined,
-                        oncreate: undefined,
-                        view: undefined,
-                        activeOrder: undefined
-                    })
-
-                    // check if the order has changed before sending it to the server
-                    const orderString = JSON.stringify(order);
-                    const activeOrderString = localStorage.getItem("activeOrder");
-                    if (orderString === activeOrderString) {
-                        console.log("Order has not changed. Not sending request to server.");
-                        return;
-                    }
-
-                    // console.log(order)
-
-                    const options = {
-                        method: 'PATCH',
-                        url: url + "/jobs/" + activeOrderId,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'authorization': localStorage.getItem('token')
-                        },
-                        data: order
-                    };
-
-                    vnode.state.uploading = true
-                    axios.request(options).then(function (response) {
-                        vnode.state.activeOrder = order
-                        localStorage.setItem("activeOrder", JSON.stringify(order, null, '\t'))
-
-                        vnode.state.uploading = false
-                        vnode.state.saved = false
-                        vnode.state.lastSyncTime = new Date()
-                        // add toastr notification
-                        // m.route.set("/order2", { 
-                        //     order
-                        // })
-                    }).catch(function (error) {
-                        order.id = null
-                        order.retry_innitial_send = true
-                        // vnode.state.activeOrder = order
-                        vnode.state.uploading = false
-                        vnode.state.saved = false
-                        // m.route.set("/order2", {
-                        //     order
-                        // })
-                    });
-
-                }, period);
-            }
-
-            if (!activeOrderId) {
-                const order = {
-                    // select today automatically
-                    pickupDay: moment(new Date()).format('L'),
-                    // select tommorow automatically
-                    dropOffDay: moment(new Date()).add(1, 'days').format('L'),
-                    pickupTime: '7am-8am',
-                    dropOffTime: '10am-11am',
-                    appartmentName: '',
-                    houseNumber: '',
-                    moreDetails: '',
-                    curtains: 0,
-                    blankets: 0,
-                    duvets: 0,
-                    generalKgs: 0,
-                    mpesaPhoneNumber: 0,
-                    mpesaConfirmationCode: '',
-                    partial: true
-                }
-
-                const options = {
-                    method: 'POST',
-                    url: url + "/jobs",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authorization': localStorage.getItem('token')
-                    },
-                    data: order
-                };
-
-                vnode.state.uploading = true
-                axios.request(options).then(function (response) {
-                    order.id = response.data.insertedId
-
-                    vnode.state.activeOrder = order
-                    localStorage.setItem("activeOrderId", order.id)
-                    localStorage.setItem("activeOrder", JSON.stringify(order))
-
-                    vnode.state.uploading = false
-                    vnode.state.saved = false
-                    // add toastr notification
-                    // m.route.set("/order2", {
-                    //     order
-                    // })
-
-                    updateOrderOnServerPeriodically(3000)
-                }).catch(function (error) {
-                    order.id = null
-                    order.retry_innitial_send = true
-                    // vnode.state.activeOrder = order
-                    vnode.state.uploading = false
-                    vnode.state.saved = false
-                    // m.route.set("/order2", {
-                    //     order
-                    // })
-                });
-            } else {
-                vnode.state.activeOrder = activeOrder
-
-                updateOrderOnServerPeriodically(3000)
-            }
-        },
-        oninit: function (vnode) {
-            var cost = 0
-            var price = 0
-            vnode.state = Object.assign(vnode.state, {
-                activeOrder: {
-                    // select today automatically
-                    pickupDay: moment(new Date()).format('L'),
-                    // select tommorow automatically
-                    dropOffDay: moment(new Date()).add(1, 'days').format('L'),
-                    pickupTime: '10am-11am',
-                    dropOffTime: '10am-11am',
-                    appartmentName: '',
-                    houseNumber: '',
-                    moreDetails: '',
-                    curtains: 0,
-                    blankets: 0,
-                    duvets: 0,
-                    generalKgs: 0,
-                    mpesaPhoneNumber: 0,
-                    mpesaConfirmationCode: '',
-                    calculatePrice() {
-                        return cost
-                    },
-                    uploading: false,
-                }
-            }, {
-                activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
-            })
 
             // create an order if there was not one already running
             // cache order in local storage even accross refreshes
@@ -250,13 +87,11 @@ var calculator = () => {
             // }
             vnode.state.id = activeOrderId
 
-            
+
 
             // function to update order on the server
             const updateOrderOnServer = () => {
                 console.log("Running updateOrderOnServer", vnode.state)
-
-                let order = {};
 
                 var {
                     pickupDay,
@@ -272,11 +107,10 @@ var calculator = () => {
                     generalKgs,
                     mpesaPhoneNumber,
                     phone,
-                    mpesaConfirmationCode,
                     name
                 } = vnode.state
 
-                Object.assign(order, vnode.state.activeOrder, {
+                let order = Object.assign({}, {
                     pickupDay,
                     dropOffDay,
                     pickupTime,
@@ -290,9 +124,16 @@ var calculator = () => {
                     generalKgs,
                     mpesaPhoneNumber,
                     phone,
-                    mpesaConfirmationCode,
                     name
-                });
+                }, vnode.state.activeOrder);
+
+                if(phone){
+                    localStorage.setItem("phone", phone)
+                }
+
+                if(!order.name && localStorage.getItem("authToken")){
+                    order.name = localStorage.getItem("name")
+                }
 
                 // check if the order has changed before sending it to the server
                 // const orderString = JSON.stringify(order);
