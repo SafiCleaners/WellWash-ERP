@@ -12,7 +12,7 @@ const subheader = () => {
             return m("div", { "class": "subheader bg-white h-100px", "id": "kt_subheader" },
                 m("div", { "class": "container flex-wrap flex-sm-nowrap" },
                     [
-                        m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-250px" },
+                        m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-300px" },
                             m("a", { "href": "index.html" },
                                 m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/exported-wellwash.png" })
                             )
