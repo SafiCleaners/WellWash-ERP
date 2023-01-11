@@ -19,6 +19,7 @@
     "querystring": "^0.2.1"
   },
   "scripts": {
-    "start": "node server"
+    "start": "node server.js",
+    "dev": "npx nodemon server.js"
   }
 }
