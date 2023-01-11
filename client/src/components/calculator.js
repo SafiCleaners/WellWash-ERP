@@ -802,74 +802,74 @@ var calculator = () => {
 
                                     ]),
 
-                                m(map),
+                                // m(map),
 
-                                m("div", { "class": "bs-stepper" },
-                                    [
-                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                            [
-                                                m("div", { "class": "step", "data-target": "#logins-part" },
-                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                        [
-                                                            m("span", { "class": "bs-stepper-circle" },
-                                                                "4.1"
-                                                            ),
-                                                            m("span", { "class": "bs-stepper-label" },
-                                                                "Theoretical Calculator Pricing"
-                                                            )
-                                                        ]
-                                                    )
-                                                )]
-                                        )]
-                                ),
+                                // m("div", { "class": "bs-stepper" },
+                                //     [
+                                //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                //             [
+                                //                 m("div", { "class": "step", "data-target": "#logins-part" },
+                                //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                //                         [
+                                //                             m("span", { "class": "bs-stepper-circle" },
+                                //                                 "4.1"
+                                //                             ),
+                                //                             m("span", { "class": "bs-stepper-label" },
+                                //                                 "Theoretical Calculator Pricing"
+                                //                             )
+                                //                         ]
+                                //                     )
+                                //                 )]
+                                //         )]
+                                // ),
 
 
-                                m("div", { "class": "form-group row" },
-                                    [
-                                        m(input, {
-                                            name: 'Curtains',
-                                            value: 0,
-                                            charge: 200,
-                                            value: curtains,
-                                            onChange(value) {
-                                                vnode.state.curtains = value
-                                            }
-                                        }),
-                                        m(input, {
-                                            name: 'Blankets',
-                                            value: 0,
-                                            charge: 350,
-                                            value: blankets,
-                                            onChange(value) {
-                                                vnode.state.blankets = value
-                                            }
-                                        }),
-                                        m(input, {
-                                            name: 'Duvets',
-                                            value: 0,
-                                            charge: 700,
-                                            value: duvets,
-                                            onChange(value) {
-                                                vnode.state.duvets = value
-                                            }
-                                        }),
-                                        m(input, {
-                                            name: 'General Clothes in Kgs',
-                                            value: 0,
-                                            charge: 150,
-                                            value: generalKgs,
-                                            onChange(value) {
-                                                vnode.state.generalKgs = value
-                                            }
-                                        }),
+                                // m("div", { "class": "form-group row" },
+                                //     [
+                                //         m(input, {
+                                //             name: 'Curtains',
+                                //             value: 0,
+                                //             charge: 200,
+                                //             value: curtains,
+                                //             onChange(value) {
+                                //                 vnode.state.curtains = value
+                                //             }
+                                //         }),
+                                //         m(input, {
+                                //             name: 'Blankets',
+                                //             value: 0,
+                                //             charge: 350,
+                                //             value: blankets,
+                                //             onChange(value) {
+                                //                 vnode.state.blankets = value
+                                //             }
+                                //         }),
+                                //         m(input, {
+                                //             name: 'Duvets',
+                                //             value: 0,
+                                //             charge: 700,
+                                //             value: duvets,
+                                //             onChange(value) {
+                                //                 vnode.state.duvets = value
+                                //             }
+                                //         }),
+                                //         m(input, {
+                                //             name: 'General Clothes in Kgs',
+                                //             value: 0,
+                                //             charge: 150,
+                                //             value: generalKgs,
+                                //             onChange(value) {
+                                //                 vnode.state.generalKgs = value
+                                //             }
+                                //         }),
 
-                                        m("h3", { "class": "display-4" },
-                                            `This would cost around KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
-                                        ),
-                                        m("p", { "class": "font-size-lg" },
-                                            `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`
-                                        )
-                                    ]),
+                                //         m("h3", { "class": "display-4" },
+                                //             `This would cost around KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                //         ),
+                                //         m("p", { "class": "font-size-lg" },
+                                //             `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`
+                                //         )
+                                //     ]),
 
 
 
