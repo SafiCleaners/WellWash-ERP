@@ -8,9 +8,6 @@ import moment from "moment"
 import uploader from "../components/uploader"
 import input from "../components/input";
 
-
-
-
 const order_item = {
 
     oninit(vnode) {
@@ -32,18 +29,10 @@ const order_item = {
 
     },
     oncreate(vnode) {
-        vnode.state.updateOrderOnServerPeriodically = (period) => {
-            setInterval(() => {
-                const {
-                    whites,
-                    whites_wash_units,
-                    blacks,
-                    black_wash_units,
-                    coloured,
-                    coloured_wash_units
-                } = vnode.state
-
-                // console.log(vnode.state.activeOrder)
+        function updateOrderOnServer() {
+            // Check if the current route is not the root route ("/")
+            if (m.route.get() !== "/") {
+                const { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units } = vnode.state;
                 const order = Object.assign({}, vnode.state.job, {
                     whites,
                     whites_wash_units,
@@ -56,16 +45,14 @@ const order_item = {
                     oncreate: undefined,
                     view: undefined,
                     _id: undefined,
-                    jobs: undefined,
-                    job: undefined,
-                    activeOrder: undefined
-                })
-
-                // console.log(order)
+                    // jobs: undefined,
+                    // job: undefined,
+                    // activeOrder: undefined
+                });
 
                 const options = {
                     method: 'PATCH',
-                    url: url + "/jobs/" + vnode.state.job.id,
+                    url: url + "/jobs/" + vnode.state.job._id,
                     headers: {
                         'Content-Type': 'application/json',
                         'authorization': localStorage.getItem('token')
@@ -73,30 +60,21 @@ const order_item = {
                     data: order
                 };
 
-                vnode.state.uploading = true
+                vnode.state.uploading = true;
                 axios.request(options).then(function (response) {
-                    vnode.state.activeOrder = order
-                    // localStorage.setItem("activeOrder", JSON.stringify(order, null, '\t'))
-
-                    vnode.state.uploading = false
-                    vnode.state.saved = false
-                    vnode.state.lastSyncTime = new Date()
-                    // add toastr notification
-                    // m.route.set("/order2", {
-                    //     order
-                    // })
+                    vnode.state.activeOrder = order;
+                    vnode.state.uploading = false;
+                    vnode.state.saved = false;
+                    vnode.state.lastSyncTime = new Date();
+                    setTimeout(updateOrderOnServer, 3000);  // call the function again after 3s
                 }).catch(function (error) {
-                    order.id = null
-                    order.retry_innitial_send = true
-                    // vnode.state.activeOrder = order
-                    vnode.state.uploading = false
-                    vnode.state.saved = false
-                    // m.route.set("/order2", {
-                    //     order
-                    // })
+                    order.id = null;
+                    order.retry_innitial_send = true;
+                    vnode.state.uploading = false;
+                    vnode.state.saved = false;
+                    setTimeout(updateOrderOnServer, 3000); // call the function again after 3s
                 });
-
-            }, period);
+            }
         }
 
         const options = {
@@ -109,40 +87,26 @@ const order_item = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.jobs = [response.data]
+            console.log(response)
+            vnode.state.jobs = [response.data];
 
             vnode.state.jobs.map(job => {
                 Object.assign(job, {
                     timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                     timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
-                })
-            })
+                });
+            });
 
             if (vnode.state.jobs[0]) {
-                vnode.state.job = vnode.state.jobs[0]
+                vnode.state.job = vnode.state.jobs[0];
 
-                const {
-                    whites,
-                    whites_wash_units,
-                    blacks,
-                    black_wash_units,
-                    coloured,
-                    coloured_wash_units
-                } = vnode.state.job
+                const { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units } = vnode.state.job;
 
                 // assign this since thye get written to state but come from jobs first
-                Object.assign(vnode.state, {
-                    whites,
-                    whites_wash_units,
-                    blacks,
-                    black_wash_units,
-                    coloured,
-                    coloured_wash_units
-                })
-                vnode.state.updateOrderOnServerPeriodically(3000)
+                Object.assign(vnode.state, { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units });
+                updateOrderOnServer(); // call the function to begin the loop
             }
-
-            m.redraw()
+            m.redraw();
         }).catch(function (error) {
             console.error(error);
         });
@@ -180,19 +144,19 @@ const order_item = {
             timeDroppedOffFromNow,
             timePickedUpFromNow,
 
-            duvet_size_1=0,
-            duvet_size_2=0,
-            coat_hoodie=0,
-            blankets=0,
-            furry_blankets=0,
-            bed_sheets=0,
-            curtains=0,
-            towels=0,
-            suits_type1=0,
-            suits_type2=0,
-            ironing=0,
-            ironing_trousers=0,
-            generalKgs=0,
+            duvet_size_1 = 0,
+            duvet_size_2 = 0,
+            coat_hoodie = 0,
+            blankets = 0,
+            furry_blankets = 0,
+            bed_sheets = 0,
+            curtains = 0,
+            towels = 0,
+            suits_type1 = 0,
+            suits_type2 = 0,
+            ironing = 0,
+            ironing_trousers = 0,
+            generalKgs = 0,
         } = job
 
 
@@ -213,10 +177,8 @@ const order_item = {
                 (ironing_trousers * 70) +
                 (generalKgs * 91)
         }
-        
+
         return [
-
-
             m("div", { "class": "card-body pt-0 pb-4" },
                 // content id
                 m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
@@ -768,6 +730,72 @@ const order_item = {
             //     ]
             // ),
 
+            m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
+                [
+                    m("label",
+                        "What Status Would You Like To Change This Job To? "
+                    ),
+                    m("br"),
+
+                    m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
+                        [
+                            [{
+                                status: "LEAD"
+                            }, {
+                                status: "PICKED_UP"
+                            }, {
+                                status: "WASHED"
+                            }, {
+                                status: "FOLDED"
+                            }, {
+                                status: "DELIVERED"
+                            }, {
+                                status: "CONFIRMED_PAYMENT"
+                            }, {
+                                status: "BLOCKED",
+                            }]
+                                .map((statusInfo) => {
+                                    const { status } = statusInfo
+
+                                    var currentStatus = !vnode.state.job.statusInfo ? null : vnode.state.job.statusInfo[0].status
+                                    console.log(currentStatus, status)
+                                    return m("label", { "class": `btn btn-info ${currentStatus == status ? "active" : ""}` },
+                                        [
+                                            m("input", {
+                                                "type": "radio",
+                                                "name": "pickupDay",
+                                                "id": pickupDay,
+                                                // disabled: date.day() === 0,
+                                                // "checked": pickupDay === date.format('L') ? true : false,
+                                                onchange: () => {
+                                                    console.log(vnode.state.job)
+                                                    // preserve the previous status and keep the time of the change
+                                                    vnode.state.job = Object.assign(vnode.state.job, {
+                                                        statusInfo: !vnode.state.job.statusInfo ? [{
+                                                            status,
+                                                            createdAt: new Date()
+                                                        }] : [{
+                                                            status,
+                                                            createdAt: new Date()
+                                                        }, ...vnode.state.job.statusInfo]
+                                                    }, {
+                                                        oninit: undefined,
+                                                        oncreate: undefined,
+                                                        view: undefined,
+                                                    });
+                                                }
+                                            }),
+                                            status
+                                        ]
+                                    )
+                                }),
+                        ]
+                    )
+                ]
+            ),
+
+            vnode.state.job.statusInfo ? m("rel", "Current Status: " + vnode.state.job.statusInfo[0].status) : [],
+
             m(".row", [
                 m("div", { "class": "card card-custom gutter-b" },
                     [
@@ -868,65 +896,65 @@ const order_item = {
                         ]
                     )
                 ]),
-                vnode.state.jobs[0] && vnode.state.jobs[0].assigned_to && [vnode.state.jobs[0].assigned_to.id !== localStorage.getItem("authToken") ? [] : m(".col-lg-9", [
-                    m("div", { "class": "card card-custom gutter-b" },
-                        [
-                            m("div", { "class": "card-header border-0 pt-7" },
-                                [
-                                    m("h3", { "class": "card-title align-items-start flex-column" },
-                                        [
-                                            m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                                "Upload Compleated Work"
-                                            ),
-                                            // m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
-                                            //     "More than 400+ new members"
-                                            // )
-                                        ]
-                                    )
-                                ]
-                            ),
-                            m("div", { "class": "card-body pt-0 pb-4" },
-                                // content id
-                                m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
-                                    [
+                // vnode.state.jobs[0] && vnode.state.jobs[0].assigned_to && [vnode.state.jobs[0].assigned_to.id !== localStorage.getItem("authToken") ? [] : m(".col-lg-9", [
+                //     m("div", { "class": "card card-custom gutter-b" },
+                //         [
+                //             m("div", { "class": "card-header border-0 pt-7" },
+                //                 [
+                //                     m("h3", { "class": "card-title align-items-start flex-column" },
+                //                         [
+                //                             m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+                //                                 "Upload Compleated Work"
+                //                             ),
+                //                             // m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
+                //                             //     "More than 400+ new members"
+                //                             // )
+                //                         ]
+                //                     )
+                //                 ]
+                //             ),
+                //             m("div", { "class": "card-body pt-0 pb-4" },
+                //                 // content id
+                //                 m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
+                //                     [
 
-                                        m("div", { "class": "m-0 text-dark-50 font-weight-bold font-size-lg" },
-                                            [
-                                                m("div", { "class": "form-group" },
-                                                    [
-                                                        m("label",
-                                                            "Compleated Work"
-                                                        ),
-                                                        m("div"),
-                                                        m(uploader, {
-                                                            jobID: vnode.attrs.job,
-                                                            job: vnode.state.jobs[0],
-                                                            field: "completed_upload"
-                                                        })
-                                                    ]
-                                                ),
-                                                m("div", { "class": "form-group" },
-                                                    [
-                                                        m("label",
-                                                            "Plaegerism Report"
-                                                        ),
-                                                        m("div"),
-                                                        m(uploader, {
-                                                            jobID: vnode.attrs.job,
-                                                            job: vnode.state.jobs[0],
-                                                            field: "plaegerism_upload"
-                                                        })
-                                                    ]
-                                                )
-                                            ]
-                                        ),
-                                    ]
-                                )
-                            ),
+                //                         m("div", { "class": "m-0 text-dark-50 font-weight-bold font-size-lg" },
+                //                             [
+                //                                 m("div", { "class": "form-group" },
+                //                                     [
+                //                                         m("label",
+                //                                             "Compleated Work"
+                //                                         ),
+                //                                         m("div"),
+                //                                         m(uploader, {
+                //                                             jobID: vnode.attrs.job,
+                //                                             job: vnode.state.jobs[0],
+                //                                             field: "completed_upload"
+                //                                         })
+                //                                     ]
+                //                                 ),
+                //                                 m("div", { "class": "form-group" },
+                //                                     [
+                //                                         m("label",
+                //                                             "Plaegerism Report"
+                //                                         ),
+                //                                         m("div"),
+                //                                         m(uploader, {
+                //                                             jobID: vnode.attrs.job,
+                //                                             job: vnode.state.jobs[0],
+                //                                             field: "plaegerism_upload"
+                //                                         })
+                //                                     ]
+                //                                 )
+                //                             ]
+                //                         ),
+                //                     ]
+                //                 )
+                //             ),
 
-                        ]
-                    )
-                ])]
+                //         ]
+                //     )
+                // ])]
             ]),
         ]
     }

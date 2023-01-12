@@ -5,7 +5,7 @@ const PNF = require('google-libphonenumber').PhoneNumberFormat;
 // Get an instance of `PhoneNumberUtil`.
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
-const func = ({ schoolId, data: { phone, message } }, reply) => {
+const func = ({  phone, message  }, reply) => {
     const number = phoneUtil.parseAndKeepRawInput(phone, 'KE');
     const formattedNumber = phoneUtil.format(number, PNF.E164)
 
@@ -20,8 +20,8 @@ const func = ({ schoolId, data: { phone, message } }, reply) => {
         form:
         {
             api_key:
-                '$2y$10$lvLytGxvwzQkFN78K3ke7.2MFU.Mu9FWI35NNFzMeut/VxKgZSGR.',
-            senderID: 'SHULEPLUS',
+                'XC8fHuQFlRJoI5qW08SNuAicPApTvHq3mw0CuK41rY3klpieuqd9N12RpMnB',
+            senderID: 'WELLWASHERS',
             phone: formattedNumber,
             message,
             username: 'branson'
@@ -42,6 +42,6 @@ const func = ({ schoolId, data: { phone, message } }, reply) => {
 // console.log(makeid())
 // func({ data: { password: makeid(), phone: "+254711657108" } }, console.log)
 
-// sms({ data: { phone: "+254719420491", message:"Hello" }}, console.log)
+// func({ phone: "+254711657108", message:"Hello" }, console.log)
 
 module.exports = func

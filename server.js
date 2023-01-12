@@ -10,6 +10,7 @@ aws.config.loadFromPath('./creds.json');
 var jwt = require('jsonwebtoken');
 var querystring = require('querystring');
 const { join } = require("path");
+const sms = require("./client/utils/sms")
 
 const app = express();
 
@@ -135,6 +136,10 @@ const routes = async (client) => {
                 { $set: req.body },
                 { upsert: true }
             );
+
+            if(req.body.saved === true){
+                sms
+            }
             res.status(200).send({ id: jobId });
         } catch (err) {
             console.log(err);
