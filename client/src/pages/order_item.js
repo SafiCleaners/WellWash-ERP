@@ -66,13 +66,13 @@ const order_item = {
                     vnode.state.uploading = false;
                     vnode.state.saved = false;
                     vnode.state.lastSyncTime = new Date();
-                    setTimeout(updateOrderOnServer, 3000);  // call the function again after 3s
+                    // setTimeout(updateOrderOnServer, 3000);  // call the function again after 3s
                 }).catch(function (error) {
                     order.id = null;
                     order.retry_innitial_send = true;
                     vnode.state.uploading = false;
                     vnode.state.saved = false;
-                    setTimeout(updateOrderOnServer, 3000); // call the function again after 3s
+                    // setTimeout(updateOrderOnServer, 3000); // call the function again after 3s
                 });
             }
         }
@@ -110,6 +110,9 @@ const order_item = {
         }).catch(function (error) {
             console.error(error);
         });
+
+
+        vnode.state.updateOrderOnServer = updateOrderOnServer
     },
     view(vnode) {
 
@@ -758,7 +761,7 @@ const order_item = {
                                     const { status } = statusInfo
 
                                     var currentStatus = !vnode.state.job.statusInfo ? null : vnode.state.job.statusInfo[0].status
-                                    console.log(currentStatus, status)
+                                    // console.log(currentStatus, status)
                                     return m("label", { "class": `btn btn-info ${currentStatus == status ? "active" : ""}` },
                                         [
                                             m("input", {
@@ -783,6 +786,9 @@ const order_item = {
                                                         oncreate: undefined,
                                                         view: undefined,
                                                     });
+
+
+                                                    vnode.state.updateOrderOnServer()
                                                 }
                                             }),
                                             status

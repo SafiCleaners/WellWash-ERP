@@ -9,6 +9,7 @@ import map from "./map";
 import input from "./input";
 import dayRangeCalculator from "../dateCalculator";
 import moment from "moment"
+const { uuid } = require('uuidv4');
 
 
 const operationTimes = [
@@ -54,6 +55,18 @@ var calculator = () => {
         oninit: function (vnode) {
             var cost = 0
             var price = 0
+
+            let clientID
+
+            // if (localStorage.getItem("clientID")) {
+            //     clientID = localStorage.getItem("clientID")
+            // } else {
+            //     clientID = uuid();
+            //     localStorage.setItem("clientID", clientID)
+            // }
+            // = localStorage.getItem("clientID") ? uuid() : localStorage.getItem("clientID")
+            // localStorage.setItem("clientID", clientID)
+
             vnode.state = Object.assign(vnode.state, {
                 // select today automatically
                 pickupDay: moment(new Date()).format('L'),
@@ -70,9 +83,14 @@ var calculator = () => {
                 generalKgs: 0,
                 mpesaPhoneNumber: 0,
                 mpesaConfirmationCode: '',
+                clientID,
                 calculatePrice() {
                     return cost
                 },
+                statusInfo: vnode.state.statusInfo ? vnode.state.statusInfo : [{
+                    status: "LEAD",
+                    createdAt: new Date()
+                }],
                 saved: false,
                 uploading: false,
             }, JSON.parse(localStorage.getItem("activeOrder")))
@@ -92,6 +110,9 @@ var calculator = () => {
             // function to update order on the server
             const updateOrderOnServer = () => {
                 console.log("Running updateOrderOnServer", vnode.state)
+                if (m.route.get() !== '/') {
+                    return;
+                }
 
                 var {
                     pickupDay,
@@ -107,7 +128,9 @@ var calculator = () => {
                     generalKgs,
                     mpesaPhoneNumber,
                     phone,
-                    name
+                    name,
+                    statusInfo,
+                    saved
                 } = vnode.state
 
                 let order = Object.assign({}, {
@@ -124,14 +147,16 @@ var calculator = () => {
                     generalKgs,
                     mpesaPhoneNumber,
                     phone,
-                    name
+                    name,
+                    statusInfo,
+                    saved
                 }, vnode.state.activeOrder);
 
-                if(phone){
+                if (phone) {
                     localStorage.setItem("phone", phone)
                 }
 
-                if(!order.name && localStorage.getItem("authToken")){
+                if (!order.name && localStorage.getItem("authToken")) {
                     order.name = localStorage.getItem("name")
                 }
 
@@ -181,6 +206,8 @@ var calculator = () => {
                     // })
                 });
             }
+
+            vnode.state.updateOrderOnServer = updateOrderOnServer
 
             // call updateOrderOnServer function once 
             updateOrderOnServer();
@@ -627,11 +654,19 @@ var calculator = () => {
                                                     // alert("saving order")
 
                                                     vnode.state.saved = true
+                                                    vnode.state.updateOrderOnServer()
+                                                    vnode.state.activeOrderId = null
+                                                    localStorage.removeItem("activeOrderId")
+                                                    m.route.set('/thankyou')
                                                     setTimeout(() => {
                                                         // localStorage.removeItem("activeOrderId")
                                                         // localStorage.removeItem("activeOrder")
+
+
+                                                        // cleare the order id 
+
                                                         location.reload()
-                                                    }, 6000)
+                                                    }, 3000)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),

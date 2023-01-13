@@ -1,6 +1,11 @@
 import m from "mithril"
 export default () => {
     return {
+        oncreate(){
+            setTimeout(()=>{
+                m.route.set("/")
+            }, 3000)
+        },
         view() {
             return m("div", { "class": "p-5 text-center bg-image rounded-3", "style": { "    background-image": "url('https", "height": "400px" } },
                 m("div",
@@ -17,10 +22,10 @@ export default () => {
                                     "Your Order was recieved successfully"
                                 ),
                                 m("h4", { "class": "mb-3" },
-                                    "A writer is working on it"
+                                    "Our Team is working on it"
                                 ),
                                 m("h4", { "class": "mb-3" },
-                                    "For further communication please write is a message on the buble below"
+                                    "For further tracking please check the details on the table on the first page. make sure to sign in and talk to us on whatsapp if you have any doubts"
                                 )
                             ]
                         )
