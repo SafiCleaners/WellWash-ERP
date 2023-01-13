@@ -14,7 +14,8 @@ const sms = require("./client/utils/sms")
 
 const app = express();
 
-var { MongoClient, ObjectId } = require('mongodb')
+var { MongoClient, ObjectId } = require('mongodb');
+const { error } = require('console');
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
@@ -325,8 +326,12 @@ const routes = async (client) => {
 const PORT = process.env.PORT || 8002;
 
 async function main() {
-    const { DB_URL } = process.env
+    const { DB_URL='' } = process.env
     const uri = DB_URL;
+
+    if (DB_URL === ''){
+        throw 'Mongo url missing'
+    }
 
     const client = new MongoClient(uri);
 
