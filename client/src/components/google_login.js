@@ -57,6 +57,7 @@ const google_login = {
         };
         const res = await axios.request(options);
         localStorage.setItem('token', res.data.token);
+        localStorage.setItem('userId', res.data.user.id);
         localStorage.setItem('role', res.data.user.role);
         window.location.reload();
       } else {

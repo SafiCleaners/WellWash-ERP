@@ -26,17 +26,17 @@ const step = (vnode) => {
                     'authorization': localStorage.getItem('token')
                 },
             };
-    
+
             axios.request(options).then(function (response) {
                 vnode.state.jobs = response.data
-    
+
                 vnode.state.jobs.map(job => {
                     Object.assign(job, {
                         timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                         timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                     })
                 })
-    
+
                 vnode.state.loading = false
                 m.redraw()
             }).catch(function (error) {
@@ -45,14 +45,11 @@ const step = (vnode) => {
             });
         },
         view(vnode) {
-            if(vnode.state.jobs.length === 0 && vnode.state.loading === false){
-                return []
-            }
             return m("div", { "class": "row d-flex h-100" },
                 [
                     m(steps),
 
-                    [
+                    vnode.state.jobs.length === 0 && vnode.state.loading === false ? null : [
                         m("div", { "class": "card-header border-0 pt-7" },
                             [
                                 m("h3", { "class": "card-title align-items-start flex-column" },
@@ -86,12 +83,12 @@ const step = (vnode) => {
                                                             ]
                                                         )
                                                     ),
-    
+
                                                 ]
                                             )
                                         )
                                     ),
-    
+
                                     m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                         m("div", { "class": "table-responsive" },
                                             !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -167,7 +164,7 @@ const step = (vnode) => {
                                                                                     )
                                                                                 ]
                                                                             ),
-    
+
                                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -178,11 +175,11 @@ const step = (vnode) => {
                                                                                     )
                                                                                 ]
                                                                             ),
-    
+
                                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
-    
+
                                                                                         "Was Picked ", timePickedUpFromNow + " ago"
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
@@ -207,7 +204,7 @@ const step = (vnode) => {
                                                                             //         academicLevel
                                                                             //     )
                                                                             // ),
-    
+
                                                                             m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                                 [
                                                                                     // m("a", { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
@@ -233,7 +230,7 @@ const step = (vnode) => {
                                                                                                     'authorization': localStorage.getItem('token')
                                                                                                 },
                                                                                             };
-    
+
                                                                                             axios.request(options).then(function (response) {
                                                                                                 console.log(response.data);
                                                                                                 location.reload()
@@ -310,12 +307,12 @@ const step = (vnode) => {
                                                             ]
                                                         )
                                                     ),
-    
+
                                                 ]
                                             )
                                         )
                                     ),
-    
+
                                     m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                         m("div", { "class": "table-responsive" },
                                             !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -391,7 +388,7 @@ const step = (vnode) => {
                                                                                     )
                                                                                 ]
                                                                             ),
-    
+
                                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -402,11 +399,11 @@ const step = (vnode) => {
                                                                                     )
                                                                                 ]
                                                                             ),
-    
+
                                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
-    
+
                                                                                         "Was Picked ", timePickedUpFromNow + " ago"
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
@@ -431,7 +428,7 @@ const step = (vnode) => {
                                                                             //         academicLevel
                                                                             //     )
                                                                             // ),
-    
+
                                                                             m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                                 [
                                                                                     // m("a", { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
@@ -457,7 +454,7 @@ const step = (vnode) => {
                                                                                                     'authorization': localStorage.getItem('token')
                                                                                                 },
                                                                                             };
-    
+
                                                                                             axios.request(options).then(function (response) {
                                                                                                 console.log(response.data);
                                                                                                 location.reload()
