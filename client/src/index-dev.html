@@ -14,6 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <!--begin::Fonts-->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+  <link rel="manifest" href="/manifest.json">
   <!--end::Fonts-->
   <!--begin::Page Vendors Styles(used by this page)-->
   <!-- <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" /> -->
@@ -1132,6 +1133,11 @@
     </div>
     <!--end::Content-->
   </div>
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    }
+    </script>
   <!--end::Quick Panel-->
   <!--begin::Chat Panel-->
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.19/auth0-spa-js.production.js"></script>
