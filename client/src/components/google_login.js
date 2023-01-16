@@ -22,7 +22,7 @@ const google_login = {
     //   return;
     // }
     try {
-      console.log(client_id)
+      console.log(client_id,url)
       gClient = await window.google.accounts.id.initialize({
         client_id: client_id,
         callback: (response) => {
@@ -71,7 +71,7 @@ const google_login = {
       'button',
       {
         type: 'button',
-        class: 'btn btn-danger btn-lg',
+        class: 'btn btn-primary btn-lg',
         onclick() {
           window.google.accounts.id.prompt();
         },
