@@ -9,6 +9,8 @@
     "csv": "^6.2.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-mongodb-session": "^3.2.1",
+    "express-session": "^1.17.3",
     "google-libphonenumber": "^3.2.31",
     "html-minifier": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
@@ -18,7 +20,8 @@
     "multer-s3": "^2.9.0",
     "node-csv": "^0.1.2",
     "querystring": "^0.2.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "uuidv4": "^6.2.13"
   },
   "scripts": {
     "start": "node --harmony server.js",

@@ -16,15 +16,48 @@ const app = express();
 
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
+const { uuid } = require("uuidv4")
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+const session = require('express-session');
+const MongoDBStore = require('express-mongodb-session')(session);
+
 const {
-    JWT_TOKEN = 'shhhhh'
+    JWT_TOKEN = 'shhhhh',
+    DB_URL
 } = process.env
+
+
+const store = new MongoDBStore({
+    uri: `${DB_URL}/sessions`,
+    collection: 'connect_mongodb_session_test'
+});
+
+app.use(require('express-session')({
+    secret: 'This is a secret',
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+    },
+    genid: function (req) {
+        return uuid() // use UUIDs for session IDs
+    },
+    store: store,
+    // Boilerplate options, see:
+    // * https://www.npmjs.com/package/express-session#resave
+    // * https://www.npmjs.com/package/express-session#saveuninitialized
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Catch errors
+store.on('error', function (error) {
+    console.log(error);
+});
+
 
 const authMiddleware = (req, res, next) => {
     // let token = req.header('authorization');
@@ -64,9 +97,26 @@ const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => 
 const routes = async (client) => {
     const db = await client.db("WellAutoWashers")
 
+    if (app.get('env') === 'production') {
+        app.set('trust proxy', 1) // trust first proxy
+        sess.cookie.secure = true // serve secure cookies
+    }
+
     // Routes
     app.use('/health', (req, res) => {
         res.send({ status: "ok" })
+    });
+
+    app.get('/activeOrder', function (req, res) {
+        res.send(req.session);
+    });
+
+    app.get("/api/session", (req, res) => {
+        res.json({
+            clientID: req.session.clientID,
+            activeOrder: req.session.activeOrder,
+            // any other session data you want to retrieve
+        });
     });
 
     // Endpoint to serve the configuration file
@@ -138,8 +188,10 @@ const routes = async (client) => {
                 { upsert: true }
             );
 
-            if(req.body.saved === true){
+            if (req.body.saved === true) {
                 sms
+            } else {
+                req.session.activeOrder = req.body
             }
             res.status(200).send({ id: jobId });
         } catch (err) {
@@ -326,10 +378,10 @@ const routes = async (client) => {
 const PORT = process.env.PORT || 8002;
 
 async function main() {
-    const { DB_URL='' } = process.env
+    const { DB_URL = '' } = process.env
     const uri = DB_URL;
 
-    if (DB_URL === ''){
+    if (DB_URL === '') {
         throw 'Mongo url missing'
     }
 

@@ -64,7 +64,7 @@ const header = {
                                     ),
 
                                     !localStorage.getItem('authToken') ? [
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/discounts" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -74,7 +74,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/about" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -84,7 +84,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/guarantees" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -94,7 +94,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/services" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -105,7 +105,7 @@ const header = {
                                             )
                                         ),
 
-                                        m("li", { "class": "menu-item" + (window.location.hash == "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "#!/FAQ" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -125,8 +125,7 @@ const header = {
                                             ]
                                         )
                                     ),
-
-                                    localStorage.getItem('role') != "Owner" ? "" : m("li", { "class": "menu-item" + (window.location.hash.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                    m("li", { "class": "menu-item" + (window.location.hash.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         m("a", { "class": "menu-link", "href": "#!/users" },
                                             [
                                                 m("span", { "class": "menu-text" },

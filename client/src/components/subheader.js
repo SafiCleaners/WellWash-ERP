@@ -1,9 +1,4 @@
 import m from "mithril"
-import {
-    url,
-    client_id
-} from "../constants"
-import axios from "axios"
 import google_login from "./google_login"
 
 const subheader = () => {
