@@ -318,7 +318,7 @@ var calculator = () => {
 
 
 
-                                m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
+                                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your Pickup? "
@@ -387,7 +387,7 @@ var calculator = () => {
                                             ]
                                         )
                                     ]),
-                                m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
+                                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your DropOff?"

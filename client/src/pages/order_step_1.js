@@ -49,7 +49,7 @@ const step = (vnode) => {
                 [
                     m(steps),
 
-                    vnode.state.jobs.length === 0 && vnode.state.loading === false ? null : [
+                    vnode.state.jobs.length === 0 ? null : [
                         m("div", { "class": "card-header border-0 pt-7" },
                             [
                                 m("h3", { "class": "card-title align-items-start flex-column" },
