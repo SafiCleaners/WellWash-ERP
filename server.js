@@ -33,7 +33,7 @@ const {
 
 
 const store = new MongoDBStore({
-    uri: `${DB_URL}/sessions`,
+    uri: `${DB_URL}`,
     collection: 'connect_mongodb_session_test'
 });
 
@@ -99,7 +99,7 @@ const routes = async (client) => {
 
     if (app.get('env') === 'production') {
         app.set('trust proxy', 1) // trust first proxy
-        // sess.cookie.secure = true // serve secure cookies
+        sess.cookie.secure = true // serve secure cookies
     }
 
     // Routes
