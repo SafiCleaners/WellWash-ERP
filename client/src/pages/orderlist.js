@@ -104,7 +104,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'LEAD')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -321,7 +321,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'LEAD' && job.saved === true)
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === true)
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -538,7 +538,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'PICKED_UP')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'PICKED_UP')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -755,7 +755,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'WASHED')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'WASHED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -972,7 +972,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'FOLDED')
+                                                            .filter(job => job.statusInfo&& job.statusInfo[0].status === 'FOLDED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1189,7 +1189,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                        .filter(job => job.statusInfo[0].status === 'DELIVERED')
+                                                        .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'DELIVERED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1406,7 +1406,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
+                                                            .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1623,7 +1623,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo[0].status === 'BLOCKED')
+                                                            .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'BLOCKED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
