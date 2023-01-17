@@ -21,6 +21,7 @@ const google_login = {
     //   console.error('window.google Auth client not found!');
     //   return;
     // }
+    
     try {
       console.log(client_id,url)
       gClient = await window.google.accounts.id.initialize({
@@ -78,6 +79,7 @@ const google_login = {
       },
       'Login with Google'
     );
+    
   },
 };
 
