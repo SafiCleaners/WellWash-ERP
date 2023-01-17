@@ -9,6 +9,7 @@ let token, gClient, decodedToken;
 
 const setStorage = ({ decodedToken, token }) => {
   localStorage.setItem('authToken', token);
+  localStorage.setItem('googleId', decodedToken.sub);
   localStorage.setItem('name', decodedToken.name);
   localStorage.setItem('imageUrl', decodedToken.picture);
   localStorage.setItem('email', decodedToken.email);
