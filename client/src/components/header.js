@@ -169,7 +169,7 @@ const header = {
                                 ])
                             ), m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m("a", {
-                                    "class": "btn btn-dropdown btn-fixed-height btn-primary font-weight-bolder font-size-sm px-6", onclick() {
+                                    "class": "btn btn-dropdown btn-fixed-height btn-danger font-weight-bolder font-size-sm px-6", onclick() {
                                         localStorage.clear()
 
                                         if (window.gapi.auth2)
@@ -186,7 +186,7 @@ const header = {
                             )
                         ] : m("div", { style: { margin: "auto" } }, [
                             // m("div", { "id": "g_id_onload", "data-callback": "handleGoogleCredentialResponse" }),
-                            m(google_login)
+                            m(google_login),
                         ])]
                     )
                 ]
