@@ -4,7 +4,7 @@ var client_id =
   let url = "https://wellwash.herokuapp.com";
 
 if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
-  // url = "http://localhost:8002";
+  url = "http://localhost:8002";
 }
 
 export { client_id, url };

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const aws = require('aws-sdk');
+const morgan = require('morgan');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const axios = require('axios')
@@ -16,12 +17,13 @@ const app = express();
 
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
-const { uuid } = require("uuidv4")
+const { v4:uuidv4 } = require("uuid")
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+app.use(morgan('tiny'))
 
 const session = require('express-session');
 const MongoDBStore = require('express-mongodb-session')(session);
@@ -43,7 +45,7 @@ app.use(require('express-session')({
         maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
     },
     genid: function (req) {
-        return uuid() // use UUIDs for session IDs
+        return uuidv4() // use UUIDs for session IDs
     },
     store: store,
     // Boilerplate options, see:
@@ -156,14 +158,13 @@ const routes = async (client) => {
         db.collection('jobs').find({
             googleId: req.params.googleId,
             deleted: false
-        }, function (err, result) {
+        }).toArray(function (err, result) {
             if (err) throw err
-
             res.send(result)
         })
     });
 
-    
+
 
     app.post('/jobs', (req, res) => {
         Object.assign(req.body, {
@@ -191,11 +192,14 @@ const routes = async (client) => {
             });
             if (!job) {
                 const newJobData = Object.assign(req.body, { _id: ObjectId(jobId), deleted: false });
+                console.log({ newJobData })
                 const newJob = await db.collection('jobs').insertOne(newJobData);
                 return res.status(201).send({ id: jobId });
             }
+
             // update job
-            const updatedJob = await db.collection('jobs').update(
+            console.log({ oldJobData:req.body })
+            const updatedJob = await db.collection('jobs').updateOne(
                 { _id: ObjectId(jobId) },
                 { $set: req.body },
                 { upsert: true }

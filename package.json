@@ -16,15 +16,17 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "mongodb": "^4.1.1",
+    "morgan": "^1.10.0",
     "multer": "^1.4.3",
     "multer-s3": "^2.9.0",
     "node-csv": "^0.1.2",
+    "pino-pretty": "^9.1.1",
     "querystring": "^0.2.1",
     "request": "^2.88.2",
     "uuidv4": "^6.2.13"
   },
   "scripts": {
     "start": "node --harmony server.js",
-    "dev": "npx nodemon server.js"
+    "dev": "npx nodemon server.js | pino-pretty"
   }
 }

@@ -9,8 +9,6 @@ import map from "./map";
 import input from "./input";
 import dayRangeCalculator from "../dateCalculator";
 import moment from "moment"
-const { uuid } = require('uuidv4');
-
 
 const operationTimes = [
     "7am - 8am",
@@ -56,17 +54,6 @@ var calculator = () => {
             var cost = 0
             var price = 0
 
-            let clientID
-
-            // if (localStorage.getItem("clientID")) {
-            //     clientID = localStorage.getItem("clientID")
-            // } else {
-            //     clientID = uuid();
-            //     localStorage.setItem("clientID", clientID)
-            // }
-            // = localStorage.getItem("clientID") ? uuid() : localStorage.getItem("clientID")
-            // localStorage.setItem("clientID", clientID)
-
             vnode.state = Object.assign(vnode.state, {
                 // select today automatically
                 pickupDay: moment(new Date()).format('L'),
@@ -75,8 +62,9 @@ var calculator = () => {
                 pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
                 googleId:  localStorage.getItem('googleId'),
-                appartmentName: '',
-                houseNumber: '',
+                phone:  localStorage.getItem('phone'),
+                appartmentName:  localStorage.getItem('appartmentName'),
+                houseNumber: localStorage.getItem('houseNumber'),
                 moreDetails: '',
                 curtains: 0,
                 blankets: 0,
@@ -84,7 +72,6 @@ var calculator = () => {
                 generalKgs: 0,
                 mpesaPhoneNumber: 0,
                 mpesaConfirmationCode: '',
-                clientID,
                 calculatePrice() {
                     return cost
                 },
@@ -94,7 +81,9 @@ var calculator = () => {
                 }],
                 saved: false,
                 uploading: false,
-            }, JSON.parse(localStorage.getItem("activeOrder")))
+            }, {
+                activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
+            })
 
             // create an order if there was not one already running
             // cache order in local storage even accross refreshes
@@ -110,7 +99,7 @@ var calculator = () => {
 
             // function to update order on the server
             const updateOrderOnServer = () => {
-                console.log("Running updateOrderOnServer", vnode.state)
+                
                 if (m.route.get() !== '/') {
                     return;
                 }
@@ -131,30 +120,39 @@ var calculator = () => {
                     phone,
                     name,
                     statusInfo,
-                    saved
+                    saved,
+                    googleId
                 } = vnode.state
 
-                let order = Object.assign({}, {
+                let order = Object.assign({},vnode.state.activeOrder || {}, {
                     pickupDay,
                     dropOffDay,
+                    googleId,
                     pickupTime,
                     dropOffTime,
                     appartmentName,
                     houseNumber,
                     moreDetails,
-                    curtains,
-                    blankets,
-                    duvets,
-                    generalKgs,
-                    mpesaPhoneNumber,
                     phone,
                     name,
                     statusInfo,
                     saved
-                }, vnode.state.activeOrder);
+                });
 
                 if (phone) {
                     localStorage.setItem("phone", phone)
+                }
+
+                if (appartmentName) {
+                    localStorage.setItem("appartmentName", appartmentName)
+                }
+
+                if (houseNumber) {
+                    localStorage.setItem("houseNumber", houseNumber)
+                }
+
+                if (!order.name && localStorage.getItem("authToken")) {
+                    order.name = localStorage.getItem("name")
                 }
 
                 if (!order.name && localStorage.getItem("authToken")) {
@@ -163,10 +161,12 @@ var calculator = () => {
 
                 // check if the order has changed before sending it to the server
                 // const orderString = JSON.stringify(order);
-                const activeOrder = JSON.parse(localStorage.getItem("activeOrder"));
-                const cleanOrder = JSON.parse(JSON.stringify(order))
+                const activeOrder = vnode.state.activeOrder;
+                const cleanOrder = order
+                console.log(cleanOrder, activeOrder, equal(cleanOrder, activeOrder))
                 if (equal(cleanOrder, activeOrder)) {
-                    console.log("Order has not changed. Not sending request to server.");
+                    // console.log("Order has not changed. Not sending request to server.");
+                    // console.log("Running updateOrderOnServer", order)
                     return;
                 } else {
                     console.log("Order has changed, updating the backend", order, activeOrder)
@@ -189,9 +189,10 @@ var calculator = () => {
                     const orderIdFromServer = response.data.id;
                     if (!localStorage.getItem("activeOrderId")) {
                         localStorage.setItem("activeOrderId", orderIdFromServer);
+                        
                     }
                     vnode.state.activeOrder = order
-                    localStorage.setItem("activeOrder", JSON.stringify(order, null, '\t'))
+                    localStorage.setItem("activeOrder", JSON.stringify(vnode.state.activeOrder))
                     vnode.state.uploading = false
                 }).catch(function (error) {
                     console.log(error)
