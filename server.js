@@ -152,6 +152,19 @@ const routes = async (client) => {
         })
     });
 
+    app.get('/jobs/findByGoogleId/:googleId', authMiddleware, (req, res) => {
+        db.collection('jobs').find({
+            googleId: req.params.googleId,
+            deleted: false
+        }, function (err, result) {
+            if (err) throw err
+
+            res.send(result)
+        })
+    });
+
+    
+
     app.post('/jobs', (req, res) => {
         Object.assign(req.body, {
             deleted: false

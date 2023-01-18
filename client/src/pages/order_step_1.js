@@ -20,7 +20,7 @@ const step = (vnode) => {
         oncreate(vnode) {
             const options = {
                 method: 'GET',
-                url: url + "/jobs",
+                url: url + "/jobs/findByGoogleId/" + localStorage.getItem('googleId'),
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': localStorage.getItem('token')
@@ -108,7 +108,7 @@ const step = (vnode) => {
                                                     m("tbody",
                                                         [
                                                             vnode.state.jobs
-                                                                // .filter(job => job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
+                                                                .filter(job => job.statusInfo[0].status !== 'CONFIRMED_PAYMENT')
                                                                 .map(({
                                                                     appartmentName,
                                                                     name,
@@ -332,7 +332,7 @@ const step = (vnode) => {
                                                     m("tbody",
                                                         [
                                                             vnode.state.jobs
-                                                                // .filter(job => job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
+                                                                .filter(job => job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                                 .map(({
                                                                     appartmentName,
                                                                     name,

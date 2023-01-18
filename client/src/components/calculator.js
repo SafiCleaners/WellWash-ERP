@@ -74,6 +74,7 @@ var calculator = () => {
                 dropOffDay: moment(new Date()).add(1, 'days').format('L'),
                 pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
+                googleId:  localStorage.getItem('googleId'),
                 appartmentName: '',
                 houseNumber: '',
                 moreDetails: '',
