@@ -24,6 +24,9 @@ const dayRangeCalculator = (start=new Date()) => {
         var year = new_date.format('YYYY');
         var dayIndex = new_date.day()
 
+        // alert(dayIndex)
+        // alert(dayNames[dayIndex])
+
         const dayNames = [
             "Sunday",
             "Mon",
