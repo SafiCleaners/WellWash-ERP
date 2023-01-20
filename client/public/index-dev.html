@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<!-- above is old platform, unnneccesarry for authentication below is new less code method -->
+<script src="https://accounts.google.com/gsi/client" id="gisLib"
+  data-api-key="345449971495-4lncidafh4k98fqnr16a5bp76nmgveha.apps.googleusercontent.com"></script>
+<html lang="en">
+
+<head>
+  <base href="" />
+  <meta charset="utf-8" />
+  <title>WellWash | Home</title>
+  <meta name="description" content="Your Professional Laundry Partner" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!--begin::Fonts-->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+  <link rel="manifest" href="/manifest.json">
+  <!--end::Fonts-->
+  <!--begin::Page Vendors Styles(used by this page)-->
+  <!-- <link href="assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css" /> -->
+  <!--end::Page Vendors Styles-->
+  <!--begin::Global Theme Styles(used by all pages)-->
+  <!-- <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" /> -->
+  <!-- <link href="assets/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet" type="text/css" /> -->
+  <link href="https://cdn.jsdelivr.net/npm/bs-stepper/dist/css/bs-stepper.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+    integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!--end::Global Theme Styles-->
+  <!--begin::Layout Themes(used by all pages)-->
+  <!--end::Layout Themes-->
+  <link rel="stylesheet" href="styling.css" />
+
+  <link href="https://unpkg.com/placeholder-loading/dist/css/placeholder-loading.min.css" rel="stylesheet" />
+
+  <link rel="shortcut icon" href="client/public/assets/media/washer-logo.png" />
+  <link href="assets/plugins/custom/uppy/uppy.bundle.css" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrCbsRhIWOa5a622sx91FiilQwa-CXFIc"></script>
+
+  <style>
+    .bs-stepper .step-trigger {
+      align-items: flex-start;
+    }
+
+    .float {
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      bottom: 40px;
+      right: 40px;
+      background-color: #25d366;
+      color: #FFF;
+      border-radius: 50px;
+      text-align: center;
+      font-size: 30px;
+      box-shadow: 2px 2px 3px #999;
+      z-index: 100;
+    }
+
+    .my-float {
+      margin-top: 13px;
+    }
+
+    .icon-xl {
+      font-size: 2.75rem !important;
+    }
+
+    .loader {
+      position: relative;
+      margin: auto;
+      box-sizing: border-box;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      transform-origin: 50% 50%;
+      transform: perspective(200px) rotateX(66deg);
+      animation: spinner-wiggle 1.2s infinite;
+    }
+
+    .loader:before,
+    .loader:after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      box-sizing: border-box;
+      border: 4px solid #0000;
+      animation: spinner-spin 1.2s cubic-bezier(0.6, 0.2, 0, 0.8) infinite,
+        spinner-fade 1.2s linear infinite;
+    }
+
+    .loader:before {
+      border-top-color: #fff;
+    }
+
+    .loader:after {
+      border-top-color: #ff3d00;
+      animation-delay: 0.4s;
+    }
+
+    @keyframes spinner-spin {
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+
+    @keyframes spinner-fade {
+
+      25%,
+      75% {
+        opacity: 0.1
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+  </style>
+
+  <script src="//d2wy8f7a9ursnm.cloudfront.net/v7/bugsnag.min.js"></script>
+  <script>Bugsnag.start({ apiKey: 'd626c9610aa4d6ab8b09d922475c57d1' })</script>
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled page-loading">
+  <a href="https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
+    class="float" target="_blank">
+    <i class="icon-xl fa-2 fab fa-whatsapp my-float" style="color: white"></i>
+  </a>
+  <!-- <a 
+    href="https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
+    class="float" target="_blank">
+      <i 
+        style="font-family: null"
+       class="fa fa-whatsapp my-float" style="color: white"></i>
+      </a> -->
+
+
+
+  <!--begin::Main-->
+  <!--begin::Header Mobile-->
+  <div id="kt_header_mobile" class="header-mobile header-mobile-fixed">
+    <!--begin::Logo-->
+    <a href="index.html">
+      <img alt="Logo" src="assets/media/exported-wellwash.png" class="max-h-30px" />
+    </a>
+    <!--end::Logo-->
+    <!--begin::Toolbar-->
+    <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center">
+        <button class="btn p-0 rounded-0 ml-4" id="kt_header_mobile_toggle">
+          <span class="svg-icon svg-icon-xxl">
+            <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+              height="24px" viewBox="0 0 24 24" version="1.1">
+              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect x="0" y="0" width="24" height="24"></rect>
+                <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5"></rect>
+                <path
+                  d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
+                  fill="#000000" opacity="0.3"></path>
+              </g>
+            </svg>
+            <!--end::Svg Icon-->
+          </span>
+        </button>
+        <!-- <button
+            class="btn rounded-0 p-0 ml-2"
+            id="kt_header_mobile_topbar_toggle"
+          >
+            <span class="svg-icon svg-icon-xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="24px"
+                height="24px"
+                viewBox="0 0 24 24"
+                version="1.1"
+              >
+                <g
+                  stroke="none"
+                  stroke-width="1"
+                  fill="none"
+                  fill-rule="evenodd"
+                >
+                  <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                  <path
+                    d="M12,11 C9.790861,11 8,9.209139 8,7 C8,4.790861 9.790861,3 12,3 C14.209139,3 16,4.790861 16,7 C16,9.209139 14.209139,11 12,11 Z"
+                    fill="#000000"
+                    fill-rule="nonzero"
+                    opacity="0.3"
+                  ></path>
+                  <path
+                    d="M3.00065168,20.1992055 C3.38825852,15.4265159 7.26191235,13 11.9833413,13 C16.7712164,13 20.7048837,15.2931929 20.9979143,20.2 C21.0095879,20.3954741 20.9979143,21 20.2466999,21 C16.541124,21 11.0347247,21 3.72750223,21 C3.47671215,21 2.97953825,20.45918 3.00065168,20.1992055 Z"
+                    fill="#000000"
+                    fill-rule="nonzero"
+                  ></path>
+                </g>
+              </svg>
+            </span>
+          </button> -->
+      </div>
+    </div>
+    <!--end::Header Mobile-->
+  </div>
+  <div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+      <!--begin::Wrapper-->
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        <!--begin::Header-->
+        <div id="kt_header" class="header header-fixed">
+          <!--begin::Container-->
+          <div id="kt_header_in"></div>
+          <!--end::Container-->
+        </div>
+        <!--end::Header-->
+
+        <!-- TODO, replace with component that shows logged in user, or login with google thingie thats on the top bar -->
+        <!--begin::Subheader-->
+        <div id="subheader"></div>
+        <!--end::Subheader-->
+        <!--begin::Content-->
+        <!-- CONTENT, removed for brevity -->
+        <!-- jumbotron header -->
+        <!-- id="jumbotron" class="jumbotron jumbotron-fluid" -->
+        <div>
+          <div class="container">
+            <div id="order_reciever" style="margin-top: 20px">
+
+              <!-- loader here -->
+              <span class="loader"></span>
+              <!-- loader ends here -->
+
+            </div>
+
+            <!-- import it here so it starts loading as soon as the element is available -->
+            <!-- <script src="dist/main.min.js"></script> -->
+            <script src="/dist/main.min.js"></script>
+          </div>
+        </div>
+
+        <!-- SECTION 1 -->
+
+
+        <!-- PROCESSS INFO SECTION hidden on mobile-->
+        <section class="bg-light py-5 border-bottom d-none d-sm-block">
+          <div class="container px-5 my-5">
+            <div class="row gx-5 justify-content-center">
+              <!-- Pricing card free-->
+              <div class="col-lg-12 col-xl-12">
+                <div class="card mb-5 mb-xl-0">
+                  <div class="card-body p-5">
+                    <div class="small text-uppercase fw-bold text-muted">
+                      Our Order Process
+                    </div>
+                    <div class="mb-3">
+                      <span class="text-muted">We have a simple order process that takes less than 2
+                        minutes to complete. Simply fill in your load details
+                        details. We ensure that the order is assigned to a
+                        rider who will come at the selected time. we will then
+                        have the load delivered to you on time after the
+                        automated laundry cleaning and folding.</span>
+                    </div>
+                    <ul class="list-unstyled mb-4">
+                      <li class="mb-2">
+                        <div class="bs-stepper">
+                          <div class="bs-stepper-header" role="tablist">
+                            <!-- your steps here -->
+                            <div class="step" data-target="#logins-part">
+                              <button type="button" class="step-trigger" role="tab" aria-controls="logins-part"
+                                id="logins-part-trigger">
+                                <span class="bs-stepper-circle">1</span>
+                                <span class="bs-stepper-label">Fill Out Order Form</span>
+                              </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#information-part">
+                              <button type="button" class="step-trigger" role="tab" aria-controls="information-part"
+                                id="information-part-trigger">
+                                <span class="bs-stepper-circle">2</span>
+                                <span class="bs-stepper-label">Submit Payment</span>
+                              </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#information-part">
+                              <button type="button" class="step-trigger" role="tab" aria-controls="information-part"
+                                id="information-part-trigger">
+                                <span class="bs-stepper-circle">3</span>
+                                <span class="bs-stepper-label">A worker works on your Laundry load</span>
+                              </button>
+                            </div>
+                            <div class="line"></div>
+                            <div class="step" data-target="#information-part">
+                              <button type="button" class="step-trigger" role="tab" aria-controls="information-part"
+                                id="information-part-trigger">
+                                <span class="bs-stepper-circle">4</span>
+                                <span class="bs-stepper-label">Deliver Your Packaged laundry</span>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="bs-stepper-content">
+                            <!-- your steps content here -->
+                            <div id="logins-part" class="content" role="tabpanel" aria-labelledby="logins-part-trigger">
+                            </div>
+                            <div id="information-part" class="content" role="tabpanel"
+                              aria-labelledby="information-part-trigger"></div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!--end::Content-->
+        <!--begin::Footer-->
+        <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
+          <!--begin::Container-->
+          <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <!--begin::Copyright-->
+            <div class="text-dark order-2 order-md-1">
+              <span class="text-muted font-weight-bold mr-2">2021©</span>
+              <a href="#" target="_blank" class="text-dark-75 text-hover-primary">WellWash</a>
+            </div>
+            <!--end::Copyright-->
+            <!--begin::Nav-->
+            <div class="nav nav-dark order-1 order-md-2">
+              <a href="#" target="_blank" class="nav-link pr-3 pl-0">About</a>
+              <a href="#" target="_blank" class="nav-link px-3">Team</a>
+              <a href="#" target="_blank" class="nav-link pl-3 pr-0">Contact</a>
+            </div>
+            <!--end::Nav-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::Footer-->
+      </div>
+      <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+  </div>
+  <!--end::Main-->
+  <!-- begin::User Panel-->
+  <div id="kt_quick_user" class="offcanvas offcanvas-right p-10">
+    <!--begin::Header-->
+    <div class="offcanvas-header d-flex align-items-center justify-content-between pb-5">
+      <h3 class="font-weight-bold m-0">
+        User Profile
+        <small class="text-muted font-size-sm ml-2">15 messages</small>
+      </h3>
+      <a href="#" class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_user_close">
+        <i class="ki ki-close icon-xs text-muted"></i>
+      </a>
+    </div>
+    <!--end::Header-->
+    <!--begin::Content-->
+
+    <!--end::Content-->
+  </div>
+  <!-- end::User Panel-->
+  <!--begin::Quick Panel-->
+  <div id="kt_quick_panel" class="offcanvas offcanvas-right pt-5 pb-10">
+    <!--begin::Header-->
+    <div class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between mb-5">
+      <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10"
+        role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#kt_quick_panel_logs">Logs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#kt_quick_panel_notifications">Notifications</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#kt_quick_panel_settings">Settings</a>
+        </li>
+      </ul>
+      <div class="offcanvas-close mt-n1 pr-5">
+        <a href="#" class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_panel_close">
+          <i class="ki ki-close icon-xs text-muted"></i>
+        </a>
+      </div>
+    </div>
+    <!--end::Header-->
+    <!--begin::Content-->
+    <div class="offcanvas-content px-10">
+      <div class="tab-content">
+        <!--begin::Tabpane-->
+        <div class="tab-pane fade show pt-3 pr-5 mr-n5 active" id="kt_quick_panel_logs" role="tabpanel">
+          <!--begin::Section-->
+          <div class="mb-15">
+            <h5 class="font-weight-bold mb-5">System Messages</h5>
+            <!--begin::Timeline-->
+            <div class="timeline timeline-5">
+              <div class="timeline-items">
+                <!--begin::Item-->
+                <div class="timeline-item">
+                  <!--begin::Icon-->
+                  <div class="timeline-media bg-light-primary">
+                    <span class="svg-icon svg-icon-primary svg-icon-md">
+                      <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group-chat.svg-->
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                        height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <rect x="0" y="0" width="24" height="24" />
+                          <path
+                            d="M16,15.6315789 L16,12 C16,10.3431458 14.6568542,9 13,9 L6.16183229,9 L6.16183229,5.52631579 C6.16183229,4.13107011 7.29290239,3 8.68814808,3 L20.4776218,3 C21.8728674,3 23.0039375,4.13107011 23.0039375,5.52631579 L23.0039375,13.1052632 L23.0206157,17.786793 C23.0215995,18.0629336 22.7985408,18.2875874 22.5224001,18.2885711 C22.3891754,18.2890457 22.2612702,18.2363324 22.1670655,18.1421277 L19.6565168,15.6315789 L16,15.6315789 Z"
+                            fill="#000000" />
+                          <path
+                            d="M1.98505595,18 L1.98505595,13 C1.98505595,11.8954305 2.88048645,11 3.98505595,11 L11.9850559,11 C13.0896254,11 13.9850559,11.8954305 13.9850559,13 L13.9850559,18 C13.9850559,19.1045695 13.0896254,20 11.9850559,20 L4.10078614,20 L2.85693427,21.1905292 C2.65744295,21.3814685 2.34093638,21.3745358 2.14999706,21.1750444 C2.06092565,21.0819836 2.01120804,20.958136 2.01120804,20.8293182 L2.01120804,18.32426 C1.99400175,18.2187196 1.98505595,18.1104045 1.98505595,18 Z M6.5,14 C6.22385763,14 6,14.2238576 6,14.5 C6,14.7761424 6.22385763,15 6.5,15 L11.5,15 C11.7761424,15 12,14.7761424 12,14.5 C12,14.2238576 11.7761424,14 11.5,14 L6.5,14 Z M9.5,16 C9.22385763,16 9,16.2238576 9,16.5 C9,16.7761424 9.22385763,17 9.5,17 L11.5,17 C11.7761424,17 12,16.7761424 12,16.5 C12,16.2238576 11.7761424,16 11.5,16 L9.5,16 Z"
+                            fill="#000000" opacity="0.3" />
+                        </g>
+                      </svg>
+                      <!--end::Svg Icon-->
+                    </span>
+                  </div>
+                  <!--end::Icon-->
+                  <!--begin::Info-->
+                  <div class="timeline-desc timeline-desc-light-primary">
+                    <span class="font-weight-bolder text-primary">09:30 AM</span>
+                    <p class="font-weight-normal text-dark-50 pb-2">
+                      To start a blog, think of a topic about and first
+                      brainstorm ways to write details
+                    </p>
+                  </div>
+                  <!--end::Info-->
+                </div>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <div class="timeline-item">
+                  <!--begin::Icon-->
+                  <div class="timeline-media bg-light-warning">
+                    <span class="svg-icon svg-icon-warning svg-icon-md">
+                      <!--begin::Svg Icon | path:assets/media/svg/icons/General/Attachment2.svg-->
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                        height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <rect x="0" y="0" width="24" height="24" />
+                          <path
+                            d="M11.7573593,15.2426407 L8.75735931,15.2426407 C8.20507456,15.2426407 7.75735931,15.6903559 7.75735931,16.2426407 C7.75735931,16.7949254 8.20507456,17.2426407 8.75735931,17.2426407 L11.7573593,17.2426407 L11.7573593,18.2426407 C11.7573593,19.3472102 10.8619288,20.2426407 9.75735931,20.2426407 L5.75735931,20.2426407 C4.65278981,20.2426407 3.75735931,19.3472102 3.75735931,18.2426407 L3.75735931,14.2426407 C3.75735931,13.1380712 4.65278981,12.2426407 5.75735931,12.2426407 L9.75735931,12.2426407 C10.8619288,12.2426407 11.7573593,13.1380712 11.7573593,14.2426407 L11.7573593,15.2426407 Z"
+                            fill="#000000" opacity="0.3"
+                            transform="translate(7.757359, 16.242641) rotate(-45.000000) translate(-7.757359, -16.242641)" />
+                          <path
+                            d="M12.2426407,8.75735931 L15.2426407,8.75735931 C15.7949254,8.75735931 16.2426407,8.30964406 16.2426407,7.75735931 C16.2426407,7.20507456 15.7949254,6.75735931 15.2426407,6.75735931 L12.2426407,6.75735931 L12.2426407,5.75735931 C12.2426407,4.65278981 13.1380712,3.75735931 14.2426407,3.75735931 L18.2426407,3.75735931 C19.3472102,3.75735931 20.2426407,4.65278981 20.2426407,5.75735931 L20.2426407,9.75735931 C20.2426407,10.8619288 19.3472102,11.7573593 18.2426407,11.7573593 L14.2426407,11.7573593 C13.1380712,11.7573593 12.2426407,10.8619288 12.2426407,9.75735931 L12.2426407,8.75735931 Z"
+                            fill="#000000"
+                            transform="translate(16.242641, 7.757359) rotate(-45.000000) translate(-16.242641, -7.757359)" />
+                          <path
+                            d="M5.89339828,3.42893219 C6.44568303,3.42893219 6.89339828,3.87664744 6.89339828,4.42893219 L6.89339828,6.42893219 C6.89339828,6.98121694 6.44568303,7.42893219 5.89339828,7.42893219 C5.34111353,7.42893219 4.89339828,6.98121694 4.89339828,6.42893219 L4.89339828,4.42893219 C4.89339828,3.87664744 5.34111353,3.42893219 5.89339828,3.42893219 Z M11.4289322,5.13603897 C11.8194565,5.52656326 11.8194565,6.15972824 11.4289322,6.55025253 L10.0147186,7.96446609 C9.62419433,8.35499039 8.99102936,8.35499039 8.60050506,7.96446609 C8.20998077,7.5739418 8.20998077,6.94077682 8.60050506,6.55025253 L10.0147186,5.13603897 C10.4052429,4.74551468 11.0384079,4.74551468 11.4289322,5.13603897 Z M0.600505063,5.13603897 C0.991029355,4.74551468 1.62419433,4.74551468 2.01471863,5.13603897 L3.42893219,6.55025253 C3.81945648,6.94077682 3.81945648,7.5739418 3.42893219,7.96446609 C3.0384079,8.35499039 2.40524292,8.35499039 2.01471863,7.96446609 L0.600505063,6.55025253 C0.209980772,6.15972824 0.209980772,5.52656326 0.600505063,5.13603897 Z"
+                            fill="#000000" opacity="0.3"
+                            transform="translate(6.014719, 5.843146) rotate(-45.000000) translate(-6.014719, -5.843146)" />
+                          <path
+                            d="M17.9142136,15.4497475 C18.4664983,15.4497475 18.9142136,15.8974627 18.9142136,16.4497475 L18.9142136,18.4497475 C18.9142136,19.0020322 18.4664983,19.4497475 17.9142136,19.4497475 C17.3619288,19.4497475 16.9142136,19.0020322 16.9142136,18.4497475 L16.9142136,16.4497475 C16.9142136,15.8974627 17.3619288,15.4497475 17.9142136,15.4497475 Z M23.4497475,17.1568542 C23.8402718,17.5473785 23.8402718,18.1805435 23.4497475,18.5710678 L22.0355339,19.9852814 C21.6450096,20.3758057 21.0118446,20.3758057 20.6213203,19.9852814 C20.2307961,19.5947571 20.2307961,18.9615921 20.6213203,18.5710678 L22.0355339,17.1568542 C22.4260582,16.76633 23.0592232,16.76633 23.4497475,17.1568542 Z M12.6213203,17.1568542 C13.0118446,16.76633 13.6450096,16.76633 14.0355339,17.1568542 L15.4497475,18.5710678 C15.8402718,18.9615921 15.8402718,19.5947571 15.4497475,19.9852814 C15.0592232,20.3758057 14.4260582,20.3758057 14.0355339,19.9852814 L12.6213203,18.5710678 C12.2307961,18.1805435 12.2307961,17.5473785 12.6213203,17.1568542 Z"
+                            fill="#000000" opacity="0.3"
+                            transform="translate(18.035534, 17.863961) scale(1, -1) rotate(45.000000) translate(-18.035534, -17.863961)" />
+                        </g>
+                      </svg>
+                      <!--end::Svg Icon-->
+                    </span>
+                  </div>
+                  <!--end::Icon-->
+                  <!--begin::Info-->
+                  <div class="timeline-desc timeline-desc-light-warning">
+                    <span class="font-weight-bolder text-warning">2:45 PM</span>
+                    <p class="font-weight-normal text-dark-50 pt-1 pb-2">
+                      To start a blog, think of a topic about and first
+                      brainstorm ways to write details
+                    </p>
+                  </div>
+                  <!--end::Info-->
+                </div>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <div class="timeline-item">
+                  <!--begin::Icon-->
+                  <div class="timeline-media bg-light-success">
+                    <span class="svg-icon svg-icon-success svg-icon-md">
+                      <!--begin::Svg Icon | path:assets/media/svg/icons/Home/Library.svg-->
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                        height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <rect x="0" y="0" width="24" height="24" />
+                          <path
+                            d="M5,3 L6,3 C6.55228475,3 7,3.44771525 7,4 L7,20 C7,20.5522847 6.55228475,21 6,21 L5,21 C4.44771525,21 4,20.5522847 4,20 L4,4 C4,3.44771525 4.44771525,3 5,3 Z M10,3 L11,3 C11.5522847,3 12,3.44771525 12,4 L12,20 C12,20.5522847 11.5522847,21 11,21 L10,21 C9.44771525,21 9,20.5522847 9,20 L9,4 C9,3.44771525 9.44771525,3 10,3 Z"
+                            fill="#000000" />
+                          <rect fill="#000000" opacity="0.3"
+                            transform="translate(17.825568, 11.945519) rotate(-19.000000) translate(-17.825568, -11.945519)"
+                            x="16.3255682" y="2.94551858" width="3" height="18" rx="1" />
+                        </g>
+                      </svg>
+                      <!--end::Svg Icon-->
+                    </span>
+                  </div>
+                  <!--end::Icon-->
+                  <!--begin::Info-->
+                  <div class="timeline-desc timeline-desc-light-success">
+                    <span class="font-weight-bolder text-success">3:12 PM</span>
+                    <p class="font-weight-normal text-dark-50 pt-1 pb-2">
+                      To start a blog, think of a topic about and first
+                      brainstorm ways to write details
+                    </p>
+                  </div>
+                  <!--end::Info-->
+                </div>
+                <!--end::Item-->
+                <!--begin::Item-->
+                <div class="timeline-item">
+                  <!--begin::Icon-->
+                  <div class="timeline-media bg-light-danger">
+                    <span class="svg-icon svg-icon-danger svg-icon-md">
+                      <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Add-user.svg-->
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                        height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <polygon points="0 0 24 0 24 24 0 24" />
+                          <path
+                            d="M18,8 L16,8 C15.4477153,8 15,7.55228475 15,7 C15,6.44771525 15.4477153,6 16,6 L18,6 L18,4 C18,3.44771525 18.4477153,3 19,3 C19.5522847,3 20,3.44771525 20,4 L20,6 L22,6 C22.5522847,6 23,6.44771525 23,7 C23,7.55228475 22.5522847,8 22,8 L20,8 L20,10 C20,10.5522847 19.5522847,11 19,11 C18.4477153,11 18,10.5522847 18,10 L18,8 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z"
+                            fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                          <path
+                            d="M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z"
+                            fill="#000000" fill-rule="nonzero" />
+                        </g>
+                      </svg>
+                      <!--end::Svg Icon-->
+                    </span>
+                  </div>
+                  <!--end::Icon-->
+                  <!--begin::Info-->
+                  <div class="timeline-desc timeline-desc-light-danger">
+                    <span class="font-weight-bolder text-danger">7:05 PM</span>
+                    <p class="font-weight-normal text-dark-50 pt-1">
+                      To start a blog, think of a topic about and first
+                      brainstorm ways to write details
+                    </p>
+                  </div>
+                  <!--end::Info-->
+                </div>
+                <!--end::Item-->
+              </div>
+            </div>
+            <!--end::Timeline-->
+          </div>
+          <!--end::Section-->
+          <!--begin::Section-->
+          <div class="mb-5">
+            <h5 class="font-weight-bold mb-5">Notifications</h5>
+            <!--begin::Item-->
+            <div class="d-flex align-items-center mb-6">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 flex-shrink-0 mr-3">
+                <!-- <img alt="Pic" src="assets/media/users/150-5.jpg" /> -->
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Marcus Smart</a>
+                  <span class="text-muted font-weight-bold">UI/UX, Art Director</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-success font-weight-bolder font-size-sm pr-6">+65%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <div class="d-flex align-items-center mb-6">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 symbol-light-info flex-shrink-0 mr-3">
+                <span class="symbol-label font-weight-bolder font-size-lg">AH</span>
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Andreas Hawks</a>
+                  <span class="text-muted font-weight-bold">Python Developer</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-success font-weight-bolder font-size-sm pr-6">+23%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <div class="d-flex align-items-center mb-6">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 symbol-light-success flex-shrink-0 mr-3">
+                <span class="symbol-label font-weight-bolder font-size-lg">SC</span>
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Sarah Connor</a>
+                  <span class="text-muted font-weight-bold">HTML, CSS. jQuery</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-danger font-weight-bolder font-size-sm pr-6">-34%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <div class="d-flex align-items-center mb-6">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 flex-shrink-0 mr-3">
+                <!-- <img alt="Pic" src="assets/media/users/150-7.jpg" /> -->
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Amanda Harden</a>
+                  <span class="text-muted font-weight-bold">UI/UX, Art Director</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-success font-weight-bolder font-size-sm pr-6">+72%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <div class="d-flex align-items-center mb-6">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 symbol-light-danger flex-shrink-0 mr-3">
+                <span class="symbol-label font-weight-bolder font-size-lg">SR</span>
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Sean Robbins</a>
+                  <span class="text-muted font-weight-bold">UI/UX, Art Director</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-success font-weight-bolder font-size-sm pr-6">+65%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <div class="d-flex align-items-center">
+              <!--begin::Symbol-->
+              <div class="symbol symbol-35 symbol-light-primary flex-shrink-0 mr-3">
+                <span class="symbol-label font-weight-bolder font-size-lg">JT</span>
+              </div>
+              <!--end::Symbol-->
+              <!--begin::Content-->
+              <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1">
+                  <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bold font-size-lg">Jason Tatum</a>
+                  <span class="text-muted font-weight-bold">ASP.NET Developer</span>
+                </div>
+                <!--end::Text-->
+                <!--begin::Section-->
+                <div class="d-flex align-items-center py-2">
+                  <!--begin::Label-->
+                  <span class="text-success font-weight-bolder font-size-sm pr-6">+139%</span>
+                  <!--end::Label-->
+                  <!--begin::Btn-->
+                  <a href="#" class="btn btn-icon btn-light btn-sm">
+                    <span class="svg-icon svg-icon-success">
+                      <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Navigation/Angle-right.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
+                          height="24px" viewBox="0 0 24 24" version="1.1">
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <polygon points="0 0 24 0 24 24 0 24" />
+                            <path
+                              d="M6.70710678,15.7071068 C6.31658249,16.0976311 5.68341751,16.0976311 5.29289322,15.7071068 C4.90236893,15.3165825 4.90236893,14.6834175 5.29289322,14.2928932 L11.2928932,8.29289322 C11.6714722,7.91431428 12.2810586,7.90106866 12.6757246,8.26284586 L18.6757246,13.7628459 C19.0828436,14.1360383 19.1103465,14.7686056 18.7371541,15.1757246 C18.3639617,15.5828436 17.7313944,15.6103465 17.3242754,15.2371541 L12.0300757,10.3841378 L6.70710678,15.7071068 Z"
+                              fill="#000000" fill-rule="nonzero"
+                              transform="translate(12.000003, 11.999999) rotate(-270.000000) translate(-12.000003, -11.999999)" />
+                          </g>
+                        </svg>
+                        <!--end::Svg Icon-->
+                      </span>
+                    </span>
+                  </a>
+                  <!--end::Btn-->
+                </div>
+                <!--end::Section-->
+              </div>
+              <!--end::Content-->
+            </div>
+            <!--end::Item-->
+          </div>
+          <!--end::Section-->
+        </div>
+        <!--end::Tabpane-->
+        <!--begin::Tabpane-->
+        <div class="tab-pane fade pt-2 pr-5 mr-n5" id="kt_quick_panel_notifications" role="tabpanel">
+          <!--begin::Nav-->
+          <div class="navi navi-icon-circle navi-spacer-x-0">
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-bell text-success icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    5 new user generated report
+                  </div>
+                  <div class="text-muted">Reports based on sales</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon2-box text-danger icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    2 new items submited
+                  </div>
+                  <div class="text-muted">by Grog John</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-psd text-primary icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    79 PSD files generated
+                  </div>
+                  <div class="text-muted">Reports based on sales</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon2-supermarket text-warning icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    $2900 worth producucts sold
+                  </div>
+                  <div class="text-muted">Total 234 items</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-paper-plane-1 text-success icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    4.5h-avarage response time
+                  </div>
+                  <div class="text-muted">Fostest is Barry</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-safe-shield-protection text-danger icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    3 Defence alerts
+                  </div>
+                  <div class="text-muted">40% less alerts thar last week</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-notepad text-primary icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    Avarage 4 blog posts per author
+                  </div>
+                  <div class="text-muted">Most posted 12 time</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-users-1 text-warning icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    16 authors joined last week
+                  </div>
+                  <div class="text-muted">9 photodrapehrs, 7 designer</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon2-box text-info icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    2 new items have been submited
+                  </div>
+                  <div class="text-muted">by Grog John</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon2-download text-success icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    2.8 GB-total downloads size
+                  </div>
+                  <div class="text-muted">Mostly PSD end AL concepts</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon2-supermarket text-danger icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    $2900 worth producucts sold
+                  </div>
+                  <div class="text-muted">Total 234 items</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-bell text-primary icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    7 new user generated report
+                  </div>
+                  <div class="text-muted">Reports based on sales</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+            <!--begin::Item-->
+            <a href="#" class="navi-item">
+              <div class="navi-link rounded">
+                <div class="symbol symbol-50 mr-3">
+                  <div class="symbol-label">
+                    <i class="flaticon-paper-plane-1 text-success icon-lg"></i>
+                  </div>
+                </div>
+                <div class="navi-text">
+                  <div class="font-weight-bold font-size-lg">
+                    4.5h-avarage response time
+                  </div>
+                  <div class="text-muted">Fostest is Barry</div>
+                </div>
+              </div>
+            </a>
+            <!--end::Item-->
+          </div>
+          <!--end::Nav-->
+        </div>
+        <!--end::Tabpane-->
+        <!--begin::Tabpane-->
+        <div class="tab-pane fade pt-3 pr-5 mr-n5" id="kt_quick_panel_settings" role="tabpanel">
+          <form class="form">
+            <!--begin::Section-->
+            <div class="pt-1">
+              <h4 class="mb-7">Privacy Settings:</h4>
+              <div class="pb-5">
+                <div class="checkbox-inline mb-2">
+                  <label class="checkbox">
+                    <input type="checkbox" />
+                    <span></span>You have new notifications.</label>
+                </div>
+                <div class="checkbox-inline mb-2">
+                  <label class="checkbox">
+                    <input type="checkbox" />
+                    <span></span>You're sent a direct message</label>
+                </div>
+                <div class="checkbox-inline mb-2">
+                  <label class="checkbox">
+                    <input type="checkbox" checked="checked" />
+                    <span></span>Someone adds you as a connection</label>
+                </div>
+                <div class="checkbox-inline mb-2">
+                  <label class="checkbox checkbox-success">
+                    <input type="checkbox" />
+                    <span></span>Upon new order</label>
+                </div>
+                <div class="checkbox-inline mb-2">
+                  <label class="checkbox checkbox-success">
+                    <input type="checkbox" />
+                    <span></span>New membership approval</label>
+                </div>
+              </div>
+              <!--begin::Group-->
+              <div class="text-muted">
+                After you log in, you will be asked for additional information
+                to confirm your identity.
+              </div>
+              <!--end::Group-->
+            </div>
+            <!--end::Section-->
+            <div class="separator separator-dashed my-8"></div>
+            <!--begin::Section-->
+            <div class="pt-1">
+              <h4 class="mb-7">Security Settings:</h4>
+              <div class="pb-5">
+                <div class="checkbox-inline">
+                  <label class="checkbox mb-2">
+                    <input type="checkbox" />
+                    <span></span>Personal information safety</label>
+                </div>
+                <p class="form-text text-muted pb-5 mb-0">
+                  After you log in, you will be asked for additional
+                  information to confirm your identity. For extra security,
+                  this requires you to confirm your email.
+                  <a href="#" class="font-weight-bold">Learn more</a>.
+                </p>
+                <button type="button" class="btn btn-light-danger font-weight-bolder btn-sm">
+                  Setup login verification
+                </button>
+              </div>
+            </div>
+            <!--end::Section-->
+          </form>
+        </div>
+        <!--end::Tabpane-->
+      </div>
+    </div>
+    <!--end::Content-->
+  </div>
+  <script>
+    // if('serviceWorker' in navigator) {
+    //   navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    // }
+    </script>
+  <!--end::Quick Panel-->
+  <!--begin::Chat Panel-->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.19/auth0-spa-js.production.js"></script>
+
+  <!--end::Demo Panel-->
+  <script>
+    var HOST_URL = "https://preview.keenthemes.com/keen/theme/tools/preview";
+  </script>
+  <!--begin::Global Config(global config for global JS scripts)-->
+  <script>
+    var KTAppSettings = {
+      breakpoints: { sm: 576, md: 768, lg: 992, xl: 1200, xxl: 1200 },
+      colors: {
+        theme: {
+          base: {
+            white: "#ffffff",
+            primary: "#0BB783",
+            secondary: "#E5EAEE",
+            success: "#1BC5BD",
+            info: "#8950FC",
+            warning: "#FFA800",
+            danger: "#F64E60",
+            light: "#F3F6F9",
+            dark: "#212121",
+          },
+          light: {
+            white: "#ffffff",
+            primary: "#D7F9EF",
+            secondary: "#ECF0F3",
+            success: "#C9F7F5",
+            info: "#EEE5FF",
+            warning: "#FFF4DE",
+            danger: "#FFE2E5",
+            light: "#F3F6F9",
+            dark: "#D6D6E0",
+          },
+          inverse: {
+            white: "#ffffff",
+            primary: "#ffffff",
+            secondary: "#212121",
+            success: "#ffffff",
+            info: "#ffffff",
+            warning: "#ffffff",
+            danger: "#ffffff",
+            light: "#464E5F",
+            dark: "#ffffff",
+          },
+        },
+        gray: {
+          "gray-100": "#F3F6F9",
+          "gray-200": "#ECF0F3",
+          "gray-300": "#E5EAEE",
+          "gray-400": "#D6D6E0",
+          "gray-500": "#B5B5C3",
+          "gray-600": "#80808F",
+          "gray-700": "#464E5F",
+          "gray-800": "#1B283F",
+          "gray-900": "#212121",
+        },
+      },
+      "font-family": "Poppins",
+    };
+  </script>
+  <!--end::Global Config-->
+  <!--begin::Global Theme Bundle(used by all pages)-->
+
+
+
+  <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+
+  <!--end::Global Theme Bundle-->
+  <!--begin::Page Vendors(used by this page)-->
+  <!-- <script src="assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script> -->
+  <!--end::Page Vendors-->
+  <!--begin::Page Scripts(used by this page)-->
+  <!-- <script src="assets/js/pages/widgets.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script> -->
+  <!--end::Page Scripts-->
+
+
+</body>
+<!--end::Body-->
+<script src="assets/plugins/global/plugins.bundle.js"></script>
+<!-- <script src="assets/plugins/custom/prismjs/prismjs.bundle.js"></script> -->
+<script src="assets/js/scripts.bundle.js"></script>
+
+<script src="assets/js/pages/features/forms/widgets/bootstrap-datetimepicker.js"></script>
+
+</html>

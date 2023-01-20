@@ -1,4 +1,4 @@
-const CACHE_NAME = `my-sample-app-cache-v1`;
+const CACHE_NAME = `wellwash.online.cache`;
 
 // Use the install event to pre-cache all initial resources.
 self.addEventListener('install', event => {
@@ -16,8 +16,10 @@ self.addEventListener('fetch', event => {
       // Try to fetch the resource from the network.
       const fetchResponse = await fetch(event.request);
 
-      // Save the resource in the cache.
-      cache.put(event.request, fetchResponse.clone());
+      
+
+      // Save the resource in the cache if its not made by a chrome ext.
+      if (!(event.request.url.indexOf('chr') === 0)) cache.put(event.request, fetchResponse.clone());
 
       // And return it.
       return fetchResponse;
