@@ -61,9 +61,10 @@ var calculator = () => {
                 dropOffDay: moment(new Date()).add(1, 'days').format('L'),
                 pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
-                googleId:  localStorage.getItem('googleId'),
-                phone:  localStorage.getItem('phone'),
-                appartmentName:  localStorage.getItem('appartmentName'),
+                googleId: localStorage.getItem('googleId'),
+                name: localStorage.getItem('name'),
+                phone: localStorage.getItem('phone'),
+                appartmentName: localStorage.getItem('appartmentName'),
                 houseNumber: localStorage.getItem('houseNumber'),
                 moreDetails: '',
                 curtains: 0,
@@ -83,7 +84,9 @@ var calculator = () => {
                 uploading: false,
             }, {
                 activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
-            })
+            }, JSON.parse(localStorage.getItem("activeOrder")))
+
+            console.log({ state: vnode.state })
 
             // create an order if there was not one already running
             // cache order in local storage even accross refreshes
@@ -99,7 +102,7 @@ var calculator = () => {
 
             // function to update order on the server
             const updateOrderOnServer = () => {
-                
+
                 if (m.route.get() !== '/') {
                     return;
                 }
@@ -121,13 +124,13 @@ var calculator = () => {
                     name,
                     statusInfo,
                     saved,
-                    googleId
+                    // googleId
                 } = vnode.state
 
-                let order = Object.assign({},vnode.state.activeOrder || {}, {
+                let order = Object.assign({}, vnode.state.activeOrder || {}, {
                     pickupDay,
                     dropOffDay,
-                    googleId,
+                    googleId: localStorage.getItem('googleId'),
                     pickupTime,
                     dropOffTime,
                     appartmentName,
@@ -138,6 +141,12 @@ var calculator = () => {
                     statusInfo,
                     saved
                 });
+
+                console.log({ order })
+
+                if (name) {
+                    localStorage.setItem("name", name)
+                }
 
                 if (phone) {
                     localStorage.setItem("phone", phone)
@@ -155,24 +164,19 @@ var calculator = () => {
                     order.name = localStorage.getItem("name")
                 }
 
-                if (!order.name && localStorage.getItem("authToken")) {
-                    order.name = localStorage.getItem("name")
-                }
-
+                let activeOrderId = localStorage.getItem("activeOrderId")
                 // check if the order has changed before sending it to the server
                 // const orderString = JSON.stringify(order);
-                const activeOrder = vnode.state.activeOrder;
-                const cleanOrder = order
-                console.log(cleanOrder, activeOrder, equal(cleanOrder, activeOrder))
-                if (equal(cleanOrder, activeOrder)) {
+                // console.log(order, vnode.state.activeOrder, equal(order, vnode.state.activeOrder))
+                if (equal(order, vnode.state.activeOrder) && activeOrderId) {
                     // console.log("Order has not changed. Not sending request to server.");
                     // console.log("Running updateOrderOnServer", order)
                     return;
                 } else {
-                    console.log("Order has changed, updating the backend", order, activeOrder)
+                    console.log("Order has changed, updating the backend", order, vnode.state.activeOrder)
                 }
 
-                let activeOrderId = localStorage.getItem("activeOrderId")
+                
                 // send request to server
                 const options = {
                     method: 'PATCH',
@@ -183,19 +187,15 @@ var calculator = () => {
                     },
                     data: order
                 };
+
+                console.log(options)
                 vnode.state.uploading = true
                 axios.request(options).then(function (response) {
                     //save orderId from server response to local storage
                     const orderIdFromServer = response.data.id;
-                    if (!localStorage.getItem("activeOrderId")) {
-                        localStorage.setItem("activeOrderId", orderIdFromServer);
-                        
-                    }
+                    localStorage.setItem("activeOrderId", orderIdFromServer);
                     vnode.state.activeOrder = order
                     localStorage.setItem("activeOrder", JSON.stringify(vnode.state.activeOrder))
-                    vnode.state.uploading = false
-                }).catch(function (error) {
-                    console.log(error)
                     vnode.state.uploading = false
                 }).catch(function (error) {
                     order.id = null
