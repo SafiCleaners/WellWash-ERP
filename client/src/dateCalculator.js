@@ -16,7 +16,7 @@ const dayRangeCalculator = (start=new Date()) => {
     const daysForward = 6
     const days = []
 
-    for (let index = 0; index < daysForward; index++) {
+    for (let index = 0; index <= daysForward; index++) {
         var new_date = moment(new Date(start), "DD-MM-YYYY").add(index, 'days');
 
         var day = new_date.format('DD');
@@ -25,16 +25,16 @@ const dayRangeCalculator = (start=new Date()) => {
         var dayIndex = new_date.day()
 
         const dayNames = [
+            "Sunday",
             "Mon",
             "Tue",
             "Wed",
             "Thur",
             "Friday",
             "Saturday",
-            "Sunday",
         ]
 
-        if(dayNames[dayIndex] === 'Sunday'){
+        if(dayNames[dayIndex] === 0){
             // do nothing
         } else {
             days.push({
