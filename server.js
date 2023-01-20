@@ -17,7 +17,7 @@ const app = express();
 
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
-const { v4:uuidv4 } = require("uuid")
+const { v4: uuidv4 } = require("uuid")
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
@@ -198,7 +198,7 @@ const routes = async (client) => {
             }
 
             // update job
-            console.log({ oldJobData:req.body })
+            // console.log({ oldJobData: req.body })
             const updatedJob = await db.collection('jobs').updateOne(
                 { _id: ObjectId(jobId) },
                 { $set: req.body },
@@ -230,19 +230,34 @@ const routes = async (client) => {
     // user mannagement
     app.post('/users', (req, res) => {
 
-        db.collection('users').findOne({ id: req.body.id }, function (err, result) {
+        const { googleId } = req.body
+
+        db.collection('users').findOne({ googleId }, function (err, result) {
             console.log(result)
 
             if (!result) {
                 // check if error is a "not found error"
-                db.collection('users').updateOne({ id: req.body.id }, { $set: req.body, }, { upsert: true }, function (err, result) {
+                db.collection('users').updateOne({ googleId }, { $set: req.body, }, { upsert: true }, function (err, result) {
                     if (err) throw err
 
-                    res.send(result)
+                    const { upsertedId: id } = result
+
+                    var token = jwt.sign(result, JWT_TOKEN);
+
+                    res.send({
+                        user: Object.assign({}, req.body, { id }),
+                        token
+                    })
+
+                    db.collection('roles').updateOne({ _id: ObjectId(id) }, { $set: { role: 'CLIENT' }, }, { upsert: true }, function (err, result) {
+                        if (err) throw err
+                    })
                 })
+
+
             } else if (result) {
 
-                db.collection('users').updateOne({ id: req.body.id }, { $set: req.body, }, { upsert: true }, function (err, _) {
+                db.collection('users').updateOne({ googleId }, { $set: req.body, }, { upsert: true }, function (err, _) {
                     if (err) throw err
 
                     var token = jwt.sign(result, JWT_TOKEN);
@@ -261,23 +276,41 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/users', authMiddleware, (req, res) => {
-        // if (req.auth.role != "Owner")
-        //     res.status(401).send([])
-
-        db.collection('users').find({
-            // deleted: false
-        }).toArray(function (err, result) {
+    app.patch('/users/roles/:id', authMiddleware, (req, res) => {
+        db.collection('roles').updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body }, function (err, result) {
             if (err) throw err
 
             res.send(result)
         })
     });
 
-    app.get('/users/:email', authMiddleware, (req, res) => {
-        db.collection('users').findOne({ email: req.params.email, deleted: false }, function (err, result) {
+    app.get('/users', authMiddleware, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('users').find({
+            // deleted: false
+        }).toArray(async function  (err, result) {
             if (err) throw err
-            res.send(result)
+
+            const result2 = await Promise.all(result.map(user => new Promise((resolve, reject) => {
+                db.collection('roles').findOne({ _id: new ObjectId(user._id) }, function (err, result) {
+                    if (err) throw err
+                    // res.status(result ? 200 : 404).send(result)
+                    user.role = result
+                    resolve(user)
+                })
+            })))
+
+            console.log(result2)
+            res.send(result2)
+        })
+    });
+
+    app.get('/users/:googleId', authMiddleware, (req, res) => {
+        db.collection('users').findOne({ googleId: req.params.googleId, deleted: false }, function (err, result) {
+            if (err) throw err
+            res.status(result ? 200 : 404).send(result)
         })
     });
 

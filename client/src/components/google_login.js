@@ -7,24 +7,56 @@ import { url, client_id } from '../constants';
 
 let token, gClient, decodedToken;
 
-const setStorage = ({ decodedToken, token }) => {
-  localStorage.setItem('authToken', token);
-  localStorage.setItem('googleId', decodedToken.sub);
-  localStorage.setItem('name', decodedToken.name);
-  localStorage.setItem('imageUrl', decodedToken.picture);
-  localStorage.setItem('email', decodedToken.email);
-};
+
 
 const google_login = {
   async oncreate() {
-    // window.google.addEventListener("load", async () => {
-    // if (!window.google || !window.google.accounts || !window.google.accounts.id) {
-    //   console.error('window.google Auth client not found!');
-    //   return;
-    // }
-    
+    const setStorage = async ({ decodedToken, token }) => {
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('googleId', decodedToken.sub);
+      localStorage.setItem('name', decodedToken.name);
+      localStorage.setItem('imageUrl', decodedToken.picture);
+      localStorage.setItem('email', decodedToken.email);
+
+      try {
+        console.log(client_id, url)
+        const options = {
+          method: 'GET',
+          url: `${url}/users/${decodedToken.sub}`,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+        const user = await axios.request(options);
+        localStorage.setItem('role', user.data.role);
+        window.location.reload();
+      } catch (err) {
+
+        if (err.response && err.response.status === 404) {
+          const {
+            email, picture, sub, name
+          } = decodedToken
+          const userData = { email, picture, googleId: sub, name };
+          const options = {
+            method: 'POST',
+            url: `${url}/users`,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            data: userData,
+          };
+          const res = await axios.request(options);
+          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('userId', res.data.user.id);
+          localStorage.setItem('role', res.data.user.role);
+          window.location.reload();
+        } else {
+          console.error(err);
+        }
+      }
+    };
+
     try {
-      console.log(client_id,url)
       gClient = await window.google.accounts.id.initialize({
         client_id: client_id,
         callback: (response) => {
@@ -34,39 +66,11 @@ const google_login = {
           window.location.reload()
         },
       });
-      console.log({ gClient })
+
       await window.google.accounts.id.prompt();
-      const options = {
-        method: 'GET',
-        url: `${url}/users/${decodedToken.email}`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-      const user = await axios.request(options);
-      localStorage.setItem('role', user.data.role);
-      window.location.reload();
     } catch (err) {
-      if (err.response && err.response.status === 404) {
-        const userData = { email: decodedToken.email };
-        const options = {
-          method: 'POST',
-          url: `${url}/users`,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          data: userData,
-        };
-        const res = await axios.request(options);
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('userId', res.data.user.id);
-        localStorage.setItem('role', res.data.user.role);
-        window.location.reload();
-      } else {
-        console.error(err);
-      }
+      console.log(err)
     }
-    // })
   },
   view() {
     return m(
@@ -80,7 +84,7 @@ const google_login = {
       },
       'Login with Google'
     );
-    
+
   },
 };
 

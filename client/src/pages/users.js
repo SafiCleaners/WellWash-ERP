@@ -13,9 +13,9 @@ const users = {
         vnode.state.loading = true
     },
     oncreate(vnode) {
-        const options = { 
+        const options = {
             method: 'GET', url: url + "/users",
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
@@ -93,9 +93,9 @@ const users = {
                                                 [
                                                     vnode.state.users.map(({
                                                         email,
-                                                        id,
+                                                        googleId,
                                                         _id,
-                                                        imageUrl,
+                                                        picture,
                                                         name,
                                                         role,
                                                         deleted
@@ -107,7 +107,7 @@ const users = {
                                                                 m("td",
                                                                     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
                                                                         m("span", { "class": "symbol-label" },
-                                                                            m("img", { "class": "h-50 align-self-center", "src": imageUrl, "alt": "" })
+                                                                            m("img", { "class": "h-50 align-self-center", "src": picture, "alt": "" })
                                                                         )
                                                                     )
                                                                 ),
@@ -122,7 +122,7 @@ const users = {
                                                                             [
                                                                                 m("span", { "class": "font-weight-bolder text-dark-75" },
                                                                                     "Google ID:", [m("span", { "class": "text-muted font-weight-bold text-hover-primary", style: "white-space: nowrap;", },
-                                                                                        id
+                                                                                        googleId
                                                                                     )]
                                                                                 )
                                                                             ]
@@ -144,11 +144,11 @@ const users = {
                                                                         m("div", { "class": "dropdown" },
                                                                             [
                                                                                 m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                                                    role ? role : "Select a role:"
+                                                                                    role ? role.role : "Select a role:"
                                                                                 ),
                                                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                                                     [
-                                                                                        ["Editor", "Writer", "Owner"].map(e => {
+                                                                                        ["CLIENT","RIDER", "INTERNAL", "OWNER"].map(e => {
                                                                                             return m("a", {
                                                                                                 style: { "z-index": 10000 },
                                                                                                 onclick() {
@@ -156,8 +156,8 @@ const users = {
                                                                                                     // vnode.state.user = e
                                                                                                     const options = {
                                                                                                         method: 'PATCH',
-                                                                                                        url: url + `/users/${email}`,
-                                                                                                        headers: { 
+                                                                                                        url: url + `/users/roles/${_id}`,
+                                                                                                        headers: {
                                                                                                             'Content-Type': 'application/json',
                                                                                                             'authorization': localStorage.getItem('token')
                                                                                                         },
@@ -186,10 +186,10 @@ const users = {
                                                                     [
                                                                         m("a", {
                                                                             "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                const options = { 
-                                                                                    method: 'DELETE', 
+                                                                                const options = {
+                                                                                    method: 'DELETE',
                                                                                     url: `${url}/users/${email}`,
-                                                                                    headers: { 
+                                                                                    headers: {
                                                                                         'Content-Type': 'application/json',
                                                                                         'authorization': localStorage.getItem('token')
                                                                                     },
