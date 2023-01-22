@@ -74,15 +74,15 @@ const google_login = {
   },
   view() {
     return m(
-      'button',
+      "button",
       {
-        type: 'button',
-        class: 'btn btn-primary btn-lg',
+        type: "button",
+        class: "btn btn-danger btn-lg ",
         onclick() {
           window.google.accounts.id.prompt();
         },
       },
-      'Login with Google'
+      [m("i", { class: "bi bi-google align-text-bottom" }), "Login with Google"]
     );
 
   },
