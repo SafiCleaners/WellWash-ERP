@@ -961,7 +961,7 @@ const order_item = {
                 ]
             ),
 
-            vnode.state.job.statusInfo ? m("rel", "Current Status: " + vnode.state.job.statusInfo[0].status) : [],
+            vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
 
             m(".row", [
                 m("div", { "class": "card card-custom gutter-b" },
@@ -995,14 +995,14 @@ const order_item = {
 
                             m("div", { "class": "card-body pt-0 pb-4" },
                                 // content id
-                                !vnode.state.jobs[0] ? null : [
+                                vnode.state?.jobs && !vnode.state?.jobs[0] ? null : [
                                     m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
                                         [
                                             m("div", [
                                                 m("button", {
                                                     "class": "btn btn-primary btn-lg btn-block",
                                                     "type": "button",
-                                                    disabled: vnode.state.jobs[0].assigned_to,
+                                                    disabled: vnode.state.jobs && vnode.state.jobs[0].assigned_to,
                                                     onclick() {
                                                         const options = {
                                                             method: 'PATCH',
@@ -1029,12 +1029,12 @@ const order_item = {
                                             ])
                                         ]
                                     ),
-                                    !vnode.state.jobs[0].completed_upload ? null : m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
+                                    vnode.state.jobs && !vnode.state.jobs[0].completed_upload ? null : m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
                                         [
                                             m("div", [
                                                 m("button", {
                                                     "class": "btn btn-primary btn-lg btn-block", "type": "button",
-                                                    disabled: vnode.state.jobs[0].ready_for_review,
+                                                    disabled: vnode.state.jobs && vnode.state.jobs[0].ready_for_review,
                                                     onclick() {
                                                         const options = {
                                                             method: 'PATCH',
@@ -1053,7 +1053,7 @@ const order_item = {
                                                         });
                                                     }
                                                 },
-                                                    vnode.state.jobs[0].ready_for_review ? "Job is Submited for review" : "Job is Ready for Review"
+                                                vnode.state.jobs && vnode.state.jobs[0].ready_for_review ? "Job is Submited for review" : "Job is Ready for Review"
                                                 )
                                             ])
                                         ]
