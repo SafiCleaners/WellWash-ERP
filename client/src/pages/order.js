@@ -161,7 +161,7 @@ const order = {
                                                                     vnode.state.serviceType
                                                                 ),
                                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                                                    serviceTypes.map(type => m("a", {
+                                                                    serviceTypes.map(type => m(m.route.Link, {
                                                                         "class": "dropdown-item", onclick() {
                                                                             vnode.state.serviceType = type
                                                                         }
@@ -187,7 +187,7 @@ const order = {
                                                                     [
                                                                         Object.keys(vnode.state.typesMapping).map(point => {
                                                                             return vnode.state.typesMapping[point].map(type => {
-                                                                                return m("a", {
+                                                                                return m(m.route.Link, {
                                                                                     style: { "z-index": 10000 },
                                                                                     onclick() {
                                                                                         vnode.state.articleType = {
@@ -221,7 +221,7 @@ const order = {
                                                                     [
                                                                         Object.keys(vnode.state.subjectAreaMapping).map(point => {
                                                                             return vnode.state.subjectAreaMapping[point].map(type => {
-                                                                                return m("a", {
+                                                                                return m(m.route.Link, {
                                                                                     style: { "z-index": 10000 },
                                                                                     onclick() {
                                                                                         vnode.state.subjectArea = {

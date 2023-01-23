@@ -8,14 +8,14 @@ const subheader = () => {
                 m("div", { "class": "container flex-wrap flex-sm-nowrap" },
                     [
                         m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-300px" },
-                            m("a", { "href": "index.html" },
+                            m(m.route.Link, { "href": "index.html" },
                                 m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/exported-wellwash.png" })
                             )
                         ),
                         m("div", { "class": "subheader-nav nav flex-grow-1" },
                             [
-                                m("a", {
-                                    "class": "nav-item", href: "#!/order1",
+                                m(m.route.Link, {
+                                    "class": "nav-item", href: "/order1",
                                     onclick() {
                                         m.route.set("/order1")
                                     }
@@ -77,7 +77,7 @@ const subheader = () => {
                                         ]
                                     )
                                 ),
-                                localStorage.getItem('authToken') ? [] : m("a", { "class": "nav-item active d-md-none" },
+                                localStorage.getItem('authToken') ? [] : m(m.route.Link, { "class": "nav-item active d-md-none" },
                                      m("div", { style: { margin: "auto" } }, [
                                         // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
                                         m(google_login)

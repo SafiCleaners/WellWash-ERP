@@ -18,6 +18,9 @@ var root = document.getElementById("order_reciever")
 
 m.mount(document.getElementById("kt_header_in"), header)
 m.mount(document.getElementById("subheader"), subheader)
+
+m.route.mode = "pathname"
+
 m.route(root, "/order1", {
     "/": order_1,
     "/order1": order_1,

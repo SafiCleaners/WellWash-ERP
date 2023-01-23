@@ -9,6 +9,7 @@ import map from "./map";
 import input from "./input";
 import dayRangeCalculator from "../dateCalculator";
 import moment from "moment"
+import _ from "underscore"
 
 const operationTimes = [
     "7am - 8am",
@@ -83,8 +84,6 @@ var calculator = () => {
                 startedAt: new Date(),
                 saved: false,
                 uploading: false,
-            }, {
-                activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
             }, JSON.parse(localStorage.getItem("activeOrder")))
 
 
@@ -104,7 +103,8 @@ var calculator = () => {
             // function to update order on the server
             const updateOrderOnServer = () => {
 
-                if (m.route.get() !== '/') {
+                console.log(m.route.get())
+                if (!['/', ''].includes(m.route.get())) {
                     return;
                 }
 
@@ -170,6 +170,9 @@ var calculator = () => {
                 } else {
                     console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
                 }
+
+                const orderDetailsDiff = _.omit(order, function (v, k) { return orderString[k] === v; })
+                console.log({ orderDetailsDiff })
 
                 order.lastSubmittedAt = new Date()
                 // send request to server
@@ -387,7 +390,7 @@ var calculator = () => {
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                     [
                                                         operationTimes.map(time => {
-                                                            return m("a", {
+                                                            return m(m.route.Link, {
                                                                 style: { "z-index": 10000 },
                                                                 onclick() {
                                                                     vnode.state.pickupTime = time
@@ -450,7 +453,7 @@ var calculator = () => {
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                     [
                                                         operationTimes.map(time => {
-                                                            return m("a", {
+                                                            return m(m.route.Link, {
                                                                 style: { "z-index": 10000 },
                                                                 onclick() {
                                                                     vnode.state.dropOffTime = time
@@ -673,15 +676,6 @@ var calculator = () => {
                                                     vnode.state.activeOrderId = null
                                                     localStorage.removeItem("activeOrderId")
                                                     m.route.set('/thankyou')
-                                                    setTimeout(() => {
-                                                        // localStorage.removeItem("activeOrderId")
-                                                        // localStorage.removeItem("activeOrder")
-
-
-                                                        // cleare the order id 
-
-                                                        location.reload()
-                                                    }, 3000)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),

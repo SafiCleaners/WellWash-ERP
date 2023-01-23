@@ -57,9 +57,9 @@ export default {
                     "Choose file"
                 ),
 
-                file && m("a", { href: `https://temp-uploads-storage.fra1.digitaloceanspaces.com/${file.name}` }, `Download ${file.name}`),
-                uploadedFile && m("a", { href: uploadedFile }, `Download ${uploadedFile.split("/").pop()}`),
-                // job && job[field] && m("a", { href: job[field] }, `Download last Uploaded file`),
+                file && m(m.route.Link, { href: `https://temp-uploads-storage.fra1.digitaloceanspaces.com/${file.name}` }, `Download ${file.name}`),
+                uploadedFile && m(m.route.Link, { href: uploadedFile }, `Download ${uploadedFile.split("/").pop()}`),
+                // job && job[field] && m(m.route.Link, { href: job[field] }, `Download last Uploaded file`),
                 m("i",!uploadedFile ? vnode.state.state : ""),
             ]
         )

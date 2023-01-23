@@ -53,10 +53,10 @@ const header = {
                                 [
                                     m("li", {
                                         "class": "menu-item" + (
-                                            ["#!/", "/", "", "/order1"].includes(window.location.hash) || window.location.hash.includes("/order2") || window.location.hash.includes("/order1")
+                                            ["/", "/", "", "/order1"].includes(window.location.hash) || window.location.hash.includes("/order2") || window.location.hash.includes("/order1")
                                                 ? " menu-item-active" : ""), "aria-haspopup": "true"
                                     },
-                                        m("a", { "class": "menu-link", "href": "#!/" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/" },
                                             m("span", { "class": "menu-text" },
                                                 "Create Order"
                                             )
@@ -64,8 +64,8 @@ const header = {
                                     ),
 
                                     !localStorage.getItem('authToken') ? [
-                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/discounts" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m(m.route.Link, { "class": "menu-link", "href": "/discounts" },
                                                 [
                                                     m("span", { "class": "menu-text" },
                                                         "Get Discounts"
@@ -74,8 +74,8 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/about" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m(m.route.Link, { "class": "menu-link", "href": "/about" },
                                                 [
                                                     m("span", { "class": "menu-text" },
                                                         "About Us"
@@ -84,8 +84,8 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/guarantees" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m(m.route.Link, { "class": "menu-link", "href": "/guarantees" },
                                                 [
                                                     m("span", { "class": "menu-text" },
                                                         "Guarantees"
@@ -94,8 +94,8 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/services" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m(m.route.Link, { "class": "menu-link", "href": "/services" },
                                                 [
                                                     m("span", { "class": "menu-text" },
                                                         "Services"
@@ -105,8 +105,8 @@ const header = {
                                             )
                                         ),
 
-                                        m("li", { "class": "menu-item" + (window.location.hash === "#!/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                            m("a", { "class": "menu-link", "href": "#!/FAQ" },
+                                        m("li", { "class": "menu-item" + (window.location.hash === "/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m(m.route.Link, { "class": "menu-link", "href": "/FAQ" },
                                                 [
                                                     m("span", { "class": "menu-text" },
                                                         "FAQ"
@@ -116,7 +116,7 @@ const header = {
                                             )
                                         )
                                     ] : [m("li", { "class": "menu-item" + (window.location.hash.includes("joblist") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                        m("a", { "class": "menu-link", "href": "#!/joblist" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/joblist" },
                                             [
                                                 m("span", { "class": "menu-text" },
                                                     "Job Queue"
@@ -126,7 +126,7 @@ const header = {
                                         )
                                     ),
                                     m("li", { "class": "menu-item" + (window.location.hash.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                        m("a", { "class": "menu-link", "href": "#!/users" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                             [
                                                 m("span", { "class": "menu-text" },
                                                     "User Management"
@@ -147,7 +147,7 @@ const header = {
                         localStorage.getItem('authToken') ? [
                             m("div", { "class": "topbar-item mr-3" },
                                 m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                    m("a", { "class": "menu-link", "href": "#", style: { color: "white" } },
+                                    m(m.route.Link, { "class": "menu-link", "href": "#", style: { color: "white" } },
                                         [
                                             m("span", { "class": "menu-text font-size-sm" },
                                                 localStorage.getItem('name')
@@ -168,7 +168,7 @@ const header = {
                                     })
                                 ])
                             ), m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
-                                m("a", {
+                                m(m.route.Link, {
                                     "class": "btn btn-dropdown btn-fixed-height btn-danger font-weight-bolder font-size-sm px-6", onclick() {
                                         localStorage.clear()
 

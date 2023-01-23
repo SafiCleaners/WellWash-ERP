@@ -207,7 +207,7 @@ const step = (vnode) => {
 
                                                                             m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                                 [
-                                                                                    // m("a", { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                                    // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
                                                                                     //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
                                                                                     //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
                                                                                     //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
@@ -220,7 +220,7 @@ const step = (vnode) => {
                                                                                     //         )
                                                                                     //     )
                                                                                     // ),
-                                                                                    m("a", {
+                                                                                    m(m.route.Link, {
                                                                                         "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                             const options = {
                                                                                                 method: 'DELETE',
@@ -431,7 +431,7 @@ const step = (vnode) => {
 
                                                                             m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                                 [
-                                                                                    // m("a", { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                                    // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
                                                                                     //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
                                                                                     //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
                                                                                     //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
@@ -444,7 +444,7 @@ const step = (vnode) => {
                                                                                     //         )
                                                                                     //     )
                                                                                     // ),
-                                                                                    m("a", {
+                                                                                    m(m.route.Link, {
                                                                                         "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                             const options = {
                                                                                                 method: 'DELETE',

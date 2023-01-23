@@ -149,7 +149,7 @@ const users = {
                                                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                                                     [
                                                                                         ["CLIENT","RIDER", "INTERNAL", "OWNER"].map(e => {
-                                                                                            return m("a", {
+                                                                                            return m(m.route.Link, {
                                                                                                 style: { "z-index": 10000 },
                                                                                                 onclick() {
                                                                                                     // update db on role change
@@ -184,7 +184,7 @@ const users = {
                                                                 ),
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     [
-                                                                        m("a", {
+                                                                        m(m.route.Link, {
                                                                             "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                 const options = {
                                                                                     method: 'DELETE',
