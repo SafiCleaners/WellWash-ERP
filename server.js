@@ -13,6 +13,8 @@ var querystring = require('querystring');
 const { join } = require("path");
 const sms = require("./client/utils/sms")
 
+const DeviceDetector = require("device-detector-js");
+
 const app = express();
 
 var { MongoClient, ObjectId } = require('mongodb');
@@ -179,6 +181,10 @@ const routes = async (client) => {
     });
 
     app.patch('/jobs/:id', async (req, res) => {
+        const deviceDetector = new DeviceDetector();
+        const device = deviceDetector.parse(req.headers['user-agent']);
+
+        console.log(device)
         try {
             let jobId = req.params.id;
             // check if id provided is 'null'
@@ -191,7 +197,11 @@ const routes = async (client) => {
                 deleted: false
             });
             if (!job) {
-                const newJobData = Object.assign(req.body, { _id: ObjectId(jobId), deleted: false });
+                const newJobData = Object.assign(req.body, {
+                    _id: ObjectId(jobId),
+                    deleted: false,
+                    device
+                });
                 console.log({ newJobData })
                 const newJob = await db.collection('jobs').insertOne(newJobData);
                 return res.status(201).send({ id: jobId });
@@ -199,9 +209,10 @@ const routes = async (client) => {
 
             // update job
             // console.log({ oldJobData: req.body })
+            const jobBody = req.body
             const updatedJob = await db.collection('jobs').updateOne(
                 { _id: ObjectId(jobId) },
-                { $set: req.body },
+                { $set: Object.assign(jobBody, { device }) },
                 { upsert: true }
             );
 
@@ -229,6 +240,8 @@ const routes = async (client) => {
 
     // user mannagement
     app.post('/users', (req, res) => {
+
+
 
         const { googleId } = req.body
 
@@ -290,7 +303,7 @@ const routes = async (client) => {
 
         db.collection('users').find({
             // deleted: false
-        }).toArray(async function  (err, result) {
+        }).toArray(async function (err, result) {
             if (err) throw err
 
             const result2 = await Promise.all(result.map(user => new Promise((resolve, reject) => {
