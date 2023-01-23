@@ -62,10 +62,10 @@ var calculator = () => {
                 pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
                 googleId: localStorage.getItem('googleId'),
-                name: localStorage.getItem('name'),
-                phone: localStorage.getItem('phone'),
-                appartmentName: localStorage.getItem('appartmentName'),
-                houseNumber: localStorage.getItem('houseNumber'),
+                name: '',
+                phone: '',
+                appartmentName: '',
+                houseNumber: '',
                 moreDetails: '',
                 curtains: 0,
                 blankets: 0,
@@ -80,13 +80,14 @@ var calculator = () => {
                     status: "LEAD",
                     createdAt: new Date()
                 }],
+                startedAt: new Date(),
                 saved: false,
                 uploading: false,
             }, {
                 activeOrder: JSON.parse(localStorage.getItem("activeOrder"))
             }, JSON.parse(localStorage.getItem("activeOrder")))
 
-            console.log({ state: vnode.state })
+
 
             // create an order if there was not one already running
             // cache order in local storage even accross refreshes
@@ -121,44 +122,35 @@ var calculator = () => {
                     generalKgs,
                     mpesaPhoneNumber,
                     phone,
+                    mpesaConfirmationCode,
                     name,
                     statusInfo,
-                    saved,
-                    // googleId
+                    saved
                 } = vnode.state
 
-                let order = Object.assign({}, vnode.state.activeOrder || {}, {
+                let order = Object.assign({
                     pickupDay,
                     dropOffDay,
-                    googleId: localStorage.getItem('googleId'),
                     pickupTime,
                     dropOffTime,
                     appartmentName,
                     houseNumber,
                     moreDetails,
+                    curtains,
+                    blankets,
+                    duvets,
+                    generalKgs,
+                    mpesaPhoneNumber,
                     phone,
+                    mpesaConfirmationCode,
                     name,
                     statusInfo,
                     saved
+                }, {
+                    googleId: localStorage.getItem('googleId'),
                 });
 
-                console.log({ order })
-
-                if (name) {
-                    localStorage.setItem("name", name)
-                }
-
-                if (phone) {
-                    localStorage.setItem("phone", phone)
-                }
-
-                if (appartmentName) {
-                    localStorage.setItem("appartmentName", appartmentName)
-                }
-
-                if (houseNumber) {
-                    localStorage.setItem("houseNumber", houseNumber)
-                }
+                console.log(order)
 
                 if (!order.name && localStorage.getItem("authToken")) {
                     order.name = localStorage.getItem("name")
@@ -166,17 +158,20 @@ var calculator = () => {
 
                 let activeOrderId = localStorage.getItem("activeOrderId")
                 // check if the order has changed before sending it to the server
-                // const orderString = JSON.stringify(order);
-                // console.log(order, vnode.state.activeOrder, equal(order, vnode.state.activeOrder))
-                if (equal(order, vnode.state.activeOrder) && activeOrderId) {
+                const orderString = JSON.parse(localStorage.getItem("activeOrder"));
+                // lets update localstorage here
+                localStorage.setItem("activeOrder", JSON.stringify(order))
+
+                // 
+                if (equal(order, orderString) && activeOrderId) {
                     // console.log("Order has not changed. Not sending request to server.");
                     // console.log("Running updateOrderOnServer", order)
                     return;
                 } else {
-                    console.log("Order has changed, updating the backend", order, vnode.state.activeOrder)
+                    console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
                 }
 
-                
+                order.lastSubmittedAt = new Date()
                 // send request to server
                 const options = {
                     method: 'PATCH',
@@ -194,8 +189,10 @@ var calculator = () => {
                     //save orderId from server response to local storage
                     const orderIdFromServer = response.data.id;
                     localStorage.setItem("activeOrderId", orderIdFromServer);
-                    vnode.state.activeOrder = order
-                    localStorage.setItem("activeOrder", JSON.stringify(vnode.state.activeOrder))
+
+                    // to ensure order stays the same but we know when it was last submitted
+                    order.lastSubmittedAt = undefined;
+                    localStorage.setItem("activeOrder", JSON.stringify(order))
                     vnode.state.uploading = false
                 }).catch(function (error) {
                     order.id = null
@@ -237,7 +234,23 @@ var calculator = () => {
                 name
             } = vnode.state
 
-            // console.log(vnode.state)
+            // console.table({
+            //     pickupDay,
+            //     dropOffDay,
+            //     pickupTime,
+            //     dropOffTime,
+            //     appartmentName,
+            //     houseNumber,
+            //     moreDetails,
+            //     curtains,
+            //     blankets,
+            //     duvets,
+            //     generalKgs,
+            //     mpesaPhoneNumber,
+            //     phone,
+            //     mpesaConfirmationCode,
+            //     name
+            // })
 
             return m("div", { "class": "card-body" },
 
