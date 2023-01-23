@@ -148,9 +148,10 @@ const users = {
                                                                                 ),
                                                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                                                     [
-                                                                                        ["CLIENT","RIDER", "INTERNAL", "OWNER"].map(e => {
-                                                                                            return m(m.route.Link, {
+                                                                                        ["CLIENT", "RIDER", "INTERNAL", "OWNER"].map(e => {
+                                                                                            return m("a", {
                                                                                                 style: { "z-index": 10000 },
+                                                                                                href: "javascript:void(0);",
                                                                                                 onclick() {
                                                                                                     // update db on role change
                                                                                                     // vnode.state.user = e

@@ -155,22 +155,24 @@ var calculator = () => {
                 }
 
                 let activeOrderId = localStorage.getItem("activeOrderId")
+
                 // check if the order has changed before sending it to the server
                 const orderString = JSON.parse(localStorage.getItem("activeOrder"));
+
                 // lets update localstorage here
-                localStorage.setItem("activeOrder", JSON.stringify(order))
+                
 
                 // 
                 if (equal(order, orderString) && activeOrderId) {
-                    // console.log("Order has not changed. Not sending request to server.");
-                    // console.log("Running updateOrderOnServer", order)
+                    // console.log("Order has not changed. Not sending request to server.");  
                     return;
                 } else {
+                    localStorage.setItem("activeOrder", JSON.stringify(order))
                     console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
                 }
 
                 const orderDetailsDiff = _.omit(order, function (v, k) { return orderString[k] === v; })
-                console.log({ orderDetailsDiff })
+                // console.log({ orderDetailsDiff })
 
                 order.lastSubmittedAt = new Date()
                 // send request to server
@@ -181,7 +183,7 @@ var calculator = () => {
                         'Content-Type': 'application/json',
                         'authorization': localStorage.getItem('token')
                     },
-                    data: order
+                    data: orderDetailsDiff
                 };
 
                 console.log(options)

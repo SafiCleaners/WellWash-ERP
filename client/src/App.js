@@ -7,7 +7,7 @@ import subheader from "./components/subheader"
 import landing from "./components/landing"
 
 
-import order_1 from "./pages/order_step_1";
+import order_step_1 from "./pages/order_step_1";
 import OrderList from "./pages/orderlist";
 import OrderItem from "./pages/order_item";
 import thankyou from "./components/thankyou";
@@ -21,10 +21,8 @@ m.mount(document.getElementById("subheader"), subheader)
 
 m.route.mode = "pathname"
 
-m.route(root, "/order1", {
-    "/": order_1,
-    "/order1": order_1,
-    // "/order2": Order,
+m.route(root, "/", {
+    "/": order_step_1,
     "/joblist": OrderList,
     "/joblist/:job": OrderItem,
     "/thankyou": thankyou,

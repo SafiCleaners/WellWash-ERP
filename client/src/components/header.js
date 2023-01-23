@@ -53,8 +53,7 @@ const header = {
                                 [
                                     m("li", {
                                         "class": "menu-item" + (
-                                            ["/", "/", "", "/order1"].includes(window.location.hash) || window.location.hash.includes("/order2") || window.location.hash.includes("/order1")
-                                                ? " menu-item-active" : ""), "aria-haspopup": "true"
+                                            ["/", ""].includes(window.location.hash) ? " menu-item-active" : ""), "aria-haspopup": "true"
                                     },
                                         m(m.route.Link, { "class": "menu-link", "href": "/" },
                                             m("span", { "class": "menu-text" },

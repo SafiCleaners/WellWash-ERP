@@ -8,16 +8,16 @@ const subheader = () => {
                 m("div", { "class": "container flex-wrap flex-sm-nowrap" },
                     [
                         m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-300px" },
-                            m(m.route.Link, { "href": "index.html" },
+                            m(m.route.Link, { "href": "/" },
                                 m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/exported-wellwash.png" })
                             )
                         ),
                         m("div", { "class": "subheader-nav nav flex-grow-1" },
                             [
                                 m(m.route.Link, {
-                                    "class": "nav-item", href: "/order1",
+                                    "class": "nav-item", href: "/",
                                     onclick() {
-                                        m.route.set("/order1")
+                                        m.route.set("/")
                                     }
                                 },
                                     !localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },

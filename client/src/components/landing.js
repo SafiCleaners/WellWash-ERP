@@ -28,7 +28,7 @@ const landing = () => {
                                     type:"button",
                                     "class": "btn btn-info btn-lg", "role": "button",
                                     onclick() {
-                                        m.route.set("/order1")
+                                        m.route.set("/")
                                     }
                                 },
                                     "Pick up my Laundry!"

@@ -216,8 +216,10 @@ const orders = {
                                                                                 //         )
                                                                                 //     )
                                                                                 // ),
-                                                                                m(m.route.Link, {
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                                m("a", {
+                                                                                    href: "javascript:void(0);",
+                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm",
+                                                                                    onclick() {
                                                                                         const options = {
                                                                                             method: 'DELETE',
                                                                                             url: `${url}/jobs/${_id}`,
@@ -972,7 +974,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo&& job.statusInfo[0].status === 'FOLDED')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'FOLDED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1189,7 +1191,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                        .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'DELIVERED')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'DELIVERED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1406,7 +1408,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
@@ -1623,7 +1625,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job =>  job.statusInfo&&job.statusInfo[0].status === 'BLOCKED')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'BLOCKED')
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
