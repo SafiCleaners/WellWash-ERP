@@ -9,7 +9,7 @@ import dayRangeCalculator from "../dateCalculator";
 var equal = require('deep-equal');
 
 import uploader from "../components/uploader"
-// import input from "../components/input";
+import incrementableInput from "../components/input";
 import {
     oninit,
     oncreate
@@ -17,22 +17,26 @@ import {
 
 
 const input = {
-    view({ attrs, state }) {
+    oninit(vnode) {
+        const { value, onChange } = vnode.attrs
+        vnode.state.value = value
+    },
+    view(vnode) {
         return m("div", { "class": "col-lg-6" },
             [
                 m("label",
-                    attrs.name
+                    vnode.attrs.name
                 ),
                 m("div", { "class": "input-group" },
                     [
                         m("input", {
                             oninput: (e) => {
-                                attrs.onChange(e.target.value)
+                                vnode.state.value = Number(vnode.state.value) - 1
+
+                                vnode.attrs.onChange(vnode.state.value)
                             },
-                            value: attrs.value,
-                            "class": "form-control",
-                            // "type": "text",
-                            // "placeholder": "ie 07...."
+                            value: vnode.attrs.value,
+                            "class": "form-control"
                         }),
                         m("div", { "class": "input-group-append" },
                             m("span", { "class": "input-group-text" },
@@ -40,10 +44,7 @@ const input = {
                             )
                         )
                     ]
-                ),
-                // m("span", { "class": "form-text text-muted" },
-                //     "The phone number that will be used for messaging"
-                // )
+                )
             ]
         )
     }
@@ -71,125 +72,126 @@ const order_item = {
             console.error(error);
         });
     },
-    // oninit: function (vnode) {
-    //     var cost = 0
-    //     var price = 0
+    oninit: function (vnode) {
+        var cost = 0
+        var price = 0
 
-    //     // create an order if there was not one already running
-    //     // cache order in local storage even accross refreshes
-    //     let activeOrderId = localStorage.getItem("activeOrderId")
+        // create an order if there was not one already running
+        // cache order in local storage even accross refreshes
+        let activeOrderId = localStorage.getItem("activeOrderId")
 
-    //     // if (!activeOrderId) {
-    //     //     activeOrderId = new ObjectId()
-    //     //     localStorage.setItem("activeOrderId", activeOrderId)
-    //     // }
-    //     vnode.state.id = activeOrderId
+        // if (!activeOrderId) {
+        //     activeOrderId = new ObjectId()
+        //     localStorage.setItem("activeOrderId", activeOrderId)
+        // }
+        vnode.state.id = activeOrderId
 
-    //     // function to update order on the server
-    //     const updateOrderOnServer = () => {
-    //         if (!['/', ''].includes(m.route.get())) {
-    //             return;
-    //         }
+        // function to update order on the server
+        const updateOrderOnServer = () => {
+            if (!['/', ''].includes(m.route.get())) {
+                return;
+            }
 
-    //         var {
-    //             pickupDay,
-    //             dropOffDay,
-    //             pickupTime,
-    //             dropOffTime,
-    //             appartmentName,
-    //             houseNumber,
-    //             moreDetails,
-    //             curtains,
-    //             blankets,
-    //             duvets,
-    //             generalKgs,
-    //             mpesaPhoneNumber,
-    //             phone,
-    //             mpesaConfirmationCode,
-    //             name,
-    //             statusInfo,
-    //             saved
-    //         } = vnode.state.job
+            var {
+                pickupDay,
+                dropOffDay,
+                pickupTime,
+                dropOffTime,
+                appartmentName,
+                houseNumber,
+                moreDetails,
+                curtains,
+                blankets,
+                duvets,
+                generalKgs,
+                mpesaPhoneNumber,
+                phone,
+                mpesaConfirmationCode,
+                name,
+                statusInfo,
+                saved
+            } = vnode.state
 
-    //         let order = Object.assign({
-    //             pickupDay,
-    //             dropOffDay,
-    //             pickupTime,
-    //             dropOffTime,
-    //             appartmentName,
-    //             houseNumber,
-    //             moreDetails,
-    //             curtains,
-    //             blankets,
-    //             duvets,
-    //             generalKgs,
-    //             mpesaPhoneNumber,
-    //             phone,
-    //             mpesaConfirmationCode,
-    //             name,
-    //             statusInfo,
-    //             saved
-    //         }, {
-    //             googleId: localStorage.getItem('googleId'),
-    //         });
+            let order = Object.assign({
+                pickupDay,
+                dropOffDay,
+                pickupTime,
+                dropOffTime,
+                appartmentName,
+                houseNumber,
+                moreDetails,
+                curtains,
+                blankets,
+                duvets,
+                generalKgs,
+                mpesaPhoneNumber,
+                phone,
+                mpesaConfirmationCode,
+                name,
+                statusInfo,
+                saved
+            }, {
+                googleId: localStorage.getItem('googleId'),
+            });
 
-    //         console.log(order)
+            console.log(order)
 
-    //         if (equal(order, vnode.state.originalJob) && activeOrderId) {
-    //             // console.log("Order has not changed. Not sending request to server.");  
-    //             return;
-    //         } else {
-    //             localStorage.setItem("activeOrder", JSON.stringify(order))
-    //             console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
-    //         }
+            // compare order in state and order in original job
+            if (equal(order, vnode.state.originalJob) && activeOrderId) {
+                // console.log("Order has not changed. Not sending request to server.");  
+                return;
+            } else {
+                // localStorage.setItem("activeOrder", JSON.stringify(order))
+                console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromOriginalJob: vnode.state.originalJob })
+            }
 
-    //         const orderDetailsDiff = _.omit(order, function (v, k) { return orderString[k] === v; })
-    //         // console.log({ orderDetailsDiff })
+            const orderDetailsDiff = _.omit(order, function (v, k) { return vnode.state.originalJob[k] === v; })
+            // console.log({ orderDetailsDiff })
 
-    //         order.lastSubmittedAt = new Date()
-    //         // send request to server
-    //         const options = {
-    //             method: 'PATCH',
-    //             url: url + "/jobs/" + activeOrderId,
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'authorization': localStorage.getItem('token')
-    //             },
-    //             data: orderDetailsDiff
-    //         };
+            order.lastSubmittedAt = new Date()
+            // send request to server
+            const options = {
+                method: 'PATCH',
+                url: url + "/jobs/" + activeOrderId,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
+                data: orderDetailsDiff
+            };
 
-    //         console.log(options)
-    //         vnode.state.uploading = true
-    //         axios.request(options).then(function (response) {
-    //             //save orderId from server response to local storage
-    //             const orderIdFromServer = response.data.id;
-    //             localStorage.setItem("activeOrderId", orderIdFromServer);
+            console.log(options)
+            vnode.state.uploading = true
+            axios.request(options).then(function (response) {
+                //save orderId from server response to local storage
+                const orderIdFromServer = response.data.id;
+                localStorage.setItem("activeOrderId", orderIdFromServer);
 
-    //             // to ensure order stays the same but we know when it was last submitted
-    //             order.lastSubmittedAt = undefined;
-    //             localStorage.setItem("activeOrder", JSON.stringify(order))
-    //             vnode.state.uploading = false
-    //         }).catch(function (error) {
-    //             order.id = null
-    //             order.retry_innitial_send = true
-    //             // vnode.state.activeOrder = order
-    //             vnode.state.uploading = false
-    //             vnode.state.saved = false
-    //             // m.route.set("/order2", {
-    //             //     order
-    //             // })
-    //         });
-    //     }
+                // to ensure order stays the same but we know when it was last submitted
+                order.lastSubmittedAt = undefined;
+                localStorage.setItem("activeOrder", JSON.stringify(order))
+                vnode.state.uploading = false
+            }).catch(function (error) {
+                order.id = null
+                order.retry_innitial_send = true
+                // vnode.state.activeOrder = order
+                vnode.state.uploading = false
+                vnode.state.saved = false
+                // m.route.set("/order2", {
+                //     order
+                // })
+            });
+        }
 
-    //     vnode.state.updateOrderOnServer = updateOrderOnServer
+        vnode.state.updateOrderOnServer = updateOrderOnServer
 
-    //     // call updateOrderOnServer function once 
-    //     updateOrderOnServer();
-    //     // call updateOrderOnServerPeriodically function with a suitable time period 
-    //     setInterval(updateOrderOnServer, 2000);
-    //     // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
+        // call updateOrderOnServer function once 
+        updateOrderOnServer();
+        // call updateOrderOnServerPeriodically function with a suitable time period 
+        setInterval(updateOrderOnServer, 2000);
+        // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
 
-    // },
+    },
     view(vnode) {
 
         console.log({ state: vnode.state })
@@ -641,36 +643,32 @@ const order_item = {
 
             m("div", { "class": "form-group row" },
                 [
-                    m(input, {
+                    m(incrementableInput, {
                         name: 'Curtains',
-                        value: 0,
                         charge: 200,
                         value: curtains,
                         onChange(value) {
                             vnode.state.curtains = value
                         }
                     }),
-                    m(input, {
+                    m(incrementableInput, {
                         name: 'Blankets',
-                        value: 0,
                         charge: 350,
                         value: blankets,
                         onChange(value) {
                             vnode.state.blankets = value
                         }
                     }),
-                    m(input, {
+                    m(incrementableInput, {
                         name: 'Duvets',
-                        value: 0,
                         charge: 700,
                         value: duvets,
                         onChange(value) {
                             vnode.state.duvets = value
                         }
                     }),
-                    m(input, {
+                    m(incrementableInput, {
                         name: 'General Clothes in Kgs',
-                        value: 0,
                         charge: 150,
                         value: generalKgs,
                         onChange(value) {
@@ -1127,108 +1125,105 @@ const order_item = {
                 ]
             ),
 
-            vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
+            // vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
 
             m(".row", [
-                m("div", { "class": "card card-custom gutter-b" },
-                    [
-                        m("div", { "class": "card-body" }, [
-                            m("div", { "class": "form-group mb-1" },
-                                [
-                                    m("label", { "for": "exampleTextarea" },
-                                        "Mpesa Confirmation message"
-                                    ),
-                                    m("textarea", {
-                                        oninput: (e) => {
-                                            vnode.state.mpesaConfirmationCode = e.target.value
-                                        },
-                                        value: mpesaConfirmationCode,
-                                        "class": "form-control",
-                                        "id": "exampleTextarea",
-                                        "rows": "12",
-                                        "spellcheck": "true"
-                                    })
-                                ]
-                            )
-                        ])
-                    ])
+                m("div", { "class": "card-body" }, [
+                    m("div", { "class": "form-group mb-1" },
+                        [
+                            m("label", { "for": "exampleTextarea" },
+                                "Mpesa Confirmation message"
+                            ),
+                            m("textarea", {
+                                oninput: (e) => {
+                                    vnode.state.mpesaConfirmationCode = e.target.value
+                                },
+                                value: mpesaConfirmationCode,
+                                "class": "form-control",
+                                "id": "exampleTextarea",
+                                "rows": "12",
+                                "spellcheck": "true"
+                            })
+                        ]
+                    )
+                ])
             ]),
 
             m(".row", [
-                m(".col-lg-3", [
-                    m("div", { "class": "card card-custom gutter-b" },
-                        [
+                // m(".col-lg-3", [
+                //     m("div", { "class": "card card-custom gutter-b" },
+                //         [
 
-                            m("div", { "class": "card-body pt-0 pb-4" },
-                                // content id
-                                vnode.state?.jobs && !vnode.state?.jobs[0] ? null : [
-                                    m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
-                                        [
-                                            m("div", [
-                                                m("button", {
-                                                    "class": "btn btn-primary btn-lg btn-block",
-                                                    "type": "button",
-                                                    disabled: vnode.state.jobs && vnode.state.jobs[0].assigned_to,
-                                                    onclick() {
-                                                        const options = {
-                                                            method: 'PATCH',
-                                                            url: url + `/jobs/${vnode.state.jobs[0]._id}`,
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            data: {
-                                                                assigned_to: {
-                                                                    id: localStorage.getItem("authToken"),
-                                                                    name: localStorage.getItem("name")
-                                                                }
-                                                            }
-                                                        };
+                //             m("div", { "class": "card-body pt-0 pb-4" },
+                //                 // content id
+                //                 vnode.state?.jobs && !vnode.state?.jobs[0] ? null : [
+                //                     m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
+                //                         [
+                //                             m("div", [
+                //                                 m("button", {
+                //                                     "class": "btn btn-primary btn-lg btn-block",
+                //                                     "type": "button",
+                //                                     disabled: vnode.state.jobs && vnode.state.jobs[0].assigned_to,
+                //                                     onclick() {
+                //                                         const options = {
+                //                                             method: 'PATCH',
+                //                                             url: url + `/jobs/${vnode.state.jobs[0]._id}`,
+                //                                             headers: { 'Content-Type': 'application/json' },
+                //                                             data: {
+                //                                                 assigned_to: {
+                //                                                     id: localStorage.getItem("authToken"),
+                //                                                     name: localStorage.getItem("name")
+                //                                                 }
+                //                                             }
+                //                                         };
 
-                                                        axios.request(options).then(function (response) {
-                                                            console.log(response.data);
-                                                            location.reload()
-                                                        }).catch(function (error) {
-                                                            console.error(error);
-                                                        });
-                                                    }
-                                                },
-                                                    "Confirm Job as Closed"
-                                                )
-                                            ])
-                                        ]
-                                    ),
-                                    vnode.state.jobs && !vnode.state.jobs[0].completed_upload ? null : m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
-                                        [
-                                            m("div", [
-                                                m("button", {
-                                                    "class": "btn btn-primary btn-lg btn-block", "type": "button",
-                                                    disabled: vnode.state.jobs && vnode.state.jobs[0].ready_for_review,
-                                                    onclick() {
-                                                        const options = {
-                                                            method: 'PATCH',
-                                                            url: url + `/jobs/${vnode.state.jobs[0]._id}`,
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            data: {
-                                                                ready_for_review: true
-                                                            }
-                                                        };
+                //                                         axios.request(options).then(function (response) {
+                //                                             console.log(response.data);
+                //                                             location.reload()
+                //                                         }).catch(function (error) {
+                //                                             console.error(error);
+                //                                         });
+                //                                     }
+                //                                 },
+                //                                     "Confirm Job as Closed"
+                //                                 )
+                //                             ])
+                //                         ]
+                //                     ),
+                //                     vnode.state.jobs && !vnode.state.jobs[0].completed_upload ? null : m("div", { "class": "card-body d-flex align-items-center py-5 py-lg-13" },
+                //                         [
+                //                             m("div", [
+                //                                 m("button", {
+                //                                     "class": "btn btn-primary btn-lg btn-block", "type": "button",
+                //                                     disabled: vnode.state.jobs && vnode.state.jobs[0].ready_for_review,
+                //                                     onclick() {
+                //                                         const options = {
+                //                                             method: 'PATCH',
+                //                                             url: url + `/jobs/${vnode.state.jobs[0]._id}`,
+                //                                             headers: { 'Content-Type': 'application/json' },
+                //                                             data: {
+                //                                                 ready_for_review: true
+                //                                             }
+                //                                         };
 
-                                                        axios.request(options).then(function (response) {
-                                                            console.log(response.data);
-                                                            location.reload()
-                                                        }).catch(function (error) {
-                                                            console.error(error);
-                                                        });
-                                                    }
-                                                },
-                                                    vnode.state.jobs && vnode.state.jobs[0].ready_for_review ? "Job is Submited for review" : "Job is Ready for Review"
-                                                )
-                                            ])
-                                        ]
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                ]),
+                //                                         axios.request(options).then(function (response) {
+                //                                             console.log(response.data);
+                //                                             location.reload()
+                //                                         }).catch(function (error) {
+                //                                             console.error(error);
+                //                                         });
+                //                                     }
+                //                                 },
+                //                                     vnode.state.jobs && vnode.state.jobs[0].ready_for_review ? "Job is Submited for review" : "Job is Ready for Review"
+                //                                 )
+                //                             ])
+                //                         ]
+                //                     )
+                //                 ]
+                //             )
+                //         ]
+                //     )
+                // ]),
                 // vnode.state.jobs[0] && vnode.state.jobs[0].assigned_to && [vnode.state.jobs[0].assigned_to.id !== localStorage.getItem("authToken") ? [] : m(".col-lg-9", [
                 //     m("div", { "class": "card card-custom gutter-b" },
                 //         [
