@@ -184,7 +184,8 @@ const routes = async (client) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
 
-        console.log(device)
+        // console.log(device)
+        
         try {
             let jobId = req.params.id;
             // check if id provided is 'null'
@@ -202,7 +203,7 @@ const routes = async (client) => {
                     deleted: false,
                     device
                 });
-                console.log({ newJobData })
+                // console.log({ newJobData })
                 const newJob = await db.collection('jobs').insertOne(newJobData);
                 return res.status(201).send({ id: jobId });
             }
