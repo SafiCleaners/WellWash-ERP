@@ -77,7 +77,7 @@ const subheader = () => {
                                         ]
                                     )
                                 ),
-                                localStorage.getItem('authToken') ? [] : m("a", { "class": "nav-item active d-block d-md-none" },
+                                localStorage.getItem('authToken') ? [] : m("a", { "class": "nav-item active d-md-none" },
                                      m("div", { style: { margin: "auto" } }, [
                                         // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
                                         m(google_login)
