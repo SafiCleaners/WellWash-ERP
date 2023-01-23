@@ -2,6 +2,7 @@ import axios from "axios";
 var equal = require('deep-equal');
 import {
     url,
+    operationTimes
 } from "../constants"
 import m from "mithril"
 import uploader from "../components/uploader"
@@ -11,16 +12,7 @@ import dayRangeCalculator from "../dateCalculator";
 import moment from "moment"
 import _ from "underscore"
 
-const operationTimes = [
-    "7am - 8am",
-    "8am - 9am",
-    "10am - 11am",
-    "12am - 1pm",
-    "1pm - 2pm",
-    "3pm - 4pm",
-    "5pm - 6pm",
-    "7pm - 8pm"
-]
+
 
 const datepicker = {
     oncreate(vnode) {

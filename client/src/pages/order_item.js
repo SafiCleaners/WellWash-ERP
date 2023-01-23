@@ -1,119 +1,21 @@
 import {
-    url
+    url,
+    operationTimes
 } from "../constants"
 import axios from "axios";
 import m from "mithril"
 import moment from "moment"
+import dayRangeCalculator from "../dateCalculator";
 
 import uploader from "../components/uploader"
 import input from "../components/input";
+import {
+    oninit,
+    oncreate
+} from "../pages/order_step_1"
 
 const order_item = {
-
-    oninit(vnode) {
-        vnode.state.jobs = []
-        vnode.state.job = {}
-        Object.assign(vnode.state, {
-            whites: 0,
-            whites_wash_units: 0,
-            blacks: 0,
-            black_wash_units: 0,
-            coloured: 0,
-            coloured_wash_units: 0,
-
-        })
-
-        console.log(vnode.state.jobs)
-        if (vnode.state.jobs[0])
-            vnode.state.updateOrderOnServerPeriodically(3000)
-
-    },
-    oncreate(vnode) {
-        function updateOrderOnServer() {
-            // Check if the current route is not the root route ("/")
-            if (m.route.get() !== "/") {
-                const { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units } = vnode.state;
-                const order = Object.assign({}, vnode.state.job, {
-                    whites,
-                    whites_wash_units,
-                    blacks,
-                    black_wash_units,
-                    coloured,
-                    coloured_wash_units
-                }, {
-                    oninit: undefined,
-                    oncreate: undefined,
-                    view: undefined,
-                    _id: undefined,
-                    // jobs: undefined,
-                    // job: undefined,
-                    // activeOrder: undefined
-                });
-
-                const options = {
-                    method: 'PATCH',
-                    url: url + "/jobs/" + vnode.state.job._id,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authorization': localStorage.getItem('token')
-                    },
-                    data: order
-                };
-
-                vnode.state.uploading = true;
-                axios.request(options).then(function (response) {
-                    vnode.state.activeOrder = order;
-                    vnode.state.uploading = false;
-                    vnode.state.saved = false;
-                    vnode.state.lastSyncTime = new Date();
-                    // setTimeout(updateOrderOnServer, 3000);  // call the function again after 3s
-                }).catch(function (error) {
-                    order.id = null;
-                    order.retry_innitial_send = true;
-                    vnode.state.uploading = false;
-                    vnode.state.saved = false;
-                    // setTimeout(updateOrderOnServer, 3000); // call the function again after 3s
-                });
-            }
-        }
-
-        const options = {
-            method: 'GET',
-            url: url + "/jobs/" + vnode.attrs.job,
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(options).then(function (response) {
-            console.log(response)
-            vnode.state.jobs = [response.data];
-
-            vnode.state.jobs.map(job => {
-                Object.assign(job, {
-                    timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
-                    timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
-                });
-            });
-
-            if (vnode.state.jobs[0]) {
-                vnode.state.job = vnode.state.jobs[0];
-
-                const { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units } = vnode.state.job;
-
-                // assign this since thye get written to state but come from jobs first
-                Object.assign(vnode.state, { whites, whites_wash_units, blacks, black_wash_units, coloured, coloured_wash_units });
-                updateOrderOnServer(); // call the function to begin the loop
-            }
-            m.redraw();
-        }).catch(function (error) {
-            console.error(error);
-        });
-
-
-        vnode.state.updateOrderOnServer = updateOrderOnServer
-    },
+   
     view(vnode) {
 
         console.log(vnode.state.job)
@@ -125,11 +27,12 @@ const order_item = {
             black_wash_units,
             coloured,
             coloured_wash_units,
-            job
+            job = {}
         } = vnode.state
 
         const {
             _id,
+            name,
             paid,
             status,
             pickupDay,
@@ -147,8 +50,7 @@ const order_item = {
             timeDroppedOffFromNow,
             timePickedUpFromNow,
 
-            duvet_size_1 = 0,
-            duvet_size_2 = 0,
+            duvets = 0,
             coat_hoodie = 0,
             blankets = 0,
             furry_blankets = 0,
@@ -162,12 +64,8 @@ const order_item = {
             generalKgs = 0,
         } = job
 
-
-        const { name } = vnode.state.job
-
         const calculatePrice = () => {
-            return (duvet_size_1 * 600) +
-                (duvet_size_2 * 600) +
+            return (duvets * 600) +
                 (coat_hoodie * 50) +
                 (blankets * 500) +
                 (furry_blankets * 600) +
@@ -359,6 +257,269 @@ const order_item = {
                     ]
                 )
             ),
+
+            m("div", { "class": "bs-stepper" },
+                [
+                    m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                        [
+                            m("div", { "class": "step", "data-target": "#logins-part" },
+                                m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                    [
+                                        m("span", { "class": "bs-stepper-circle" },
+                                            "0.1"
+                                        ),
+                                        m("span", { "class": "bs-stepper-label" },
+                                            "Order Details"
+                                        )
+                                    ]
+                                )
+                            )]
+                    )]
+            ),
+
+
+            m("div", { "class": "form-group row" },
+                [
+                    m(input, {
+                        name: 'Customer Name',
+                        value: '',
+                        charge: 200,
+                        value: curtains,
+                        onChange(value) {
+                            vnode.state.curtains = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'Customer Phone Number',
+                        value: '',
+                        charge: 350,
+                        value: blankets,
+                        onChange(value) {
+                            vnode.state.blankets = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'Customer Appartment Name',
+                        value: '',
+                        charge: 700,
+                        value: duvets,
+                        onChange(value) {
+                            vnode.state.duvets = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'Customer House Number',
+                        value: '',
+                        charge: 150,
+                        value: generalKgs,
+                        onChange(value) {
+                            vnode.state.generalKgs = value
+                        }
+                    }),
+                ]),
+
+            m(".form-group.row", [
+                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                    [
+                        m("label",
+                            "When would you like your Pickup? "
+                        ),
+                        m("br"),
+
+                        m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
+                            [
+                                dayRangeCalculator()
+                                    .map((time) => {
+                                        const { dayName, day, nth, date } = time
+
+                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "active" : ""}` },
+                                            [
+                                                m("input", {
+                                                    "type": "radio",
+                                                    "name": "pickupDay",
+                                                    "id": pickupDay,
+                                                    disabled: date.day() === 0,
+                                                    "checked": pickupDay === date.format('L') ? true : false,
+                                                    onchange: () => {
+                                                        vnode.state.pickupDay = date.format('L')
+
+                                                        let daysToAdd = 1
+                                                        // increment time here to set drop off
+                                                        if (moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0) {
+                                                            daysToAdd = 2
+                                                        }
+
+                                                        vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
+                                                    }
+                                                }),
+                                                dayName + " " + day + nth
+                                            ]
+                                        )
+                                    }),
+                            ]
+                        )
+                    ]
+                ),
+                m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
+                    [
+                        m("label",
+                            "Time of pickup:"
+                        ),
+                        m("div", { "class": "dropdown" },
+                            [
+                                m("button", { "class": "btn btn-secondary dropdown-toggle btn-lg", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                    pickupTime
+                                ),
+                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                                    [
+                                        operationTimes.map(time => {
+                                            return m(m.route.Link, {
+                                                style: { "z-index": 10000 },
+                                                onclick() {
+                                                    vnode.state.pickupTime = time
+                                                },
+                                                "class": "dropdown-item",
+                                            },
+                                                time
+                                            )
+                                        })
+                                    ]
+                                )
+                            ]
+                        )
+                    ]),
+                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                    [
+                        m("label",
+                            "When would you like your DropOff?"
+                        ),
+                        m("br"),
+
+                        m("div", {
+                            "class": "btn-group btn-group-toggle",
+                            "data-toggle": "buttons"
+                        },
+                            [
+                                dayRangeCalculator(vnode.state.pickupDay)
+                                    .map((time) => {
+                                        const { dayName, day, nth, date } = time
+                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "active" : ""}` },
+                                            [
+                                                m("input", {
+                                                    "type": "radio",
+                                                    "name": "dropOffDay",
+                                                    "id": dropOffDay,
+                                                    "checked": dropOffDay === date.format('L') ? true : false,
+                                                    disabled: moment(vnode.state.pickupDay).day() == 0,
+                                                    onchange: () => {
+                                                        vnode.state.dropOffDay = date.format('L')
+                                                    }
+                                                }),
+                                                dayName + " " + day + nth
+                                            ]
+                                        )
+                                    }),
+                            ]
+                        )
+                    ]
+                ),
+                m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
+                [
+                    m("label",
+                        "Time of DropOff:"
+                    ),
+                    m("div", { "class": "dropdown" },
+                        [
+                            m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                dropOffTime
+                            ),
+                            m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                                [
+                                    operationTimes.map(time => {
+                                        return m(m.route.Link, {
+                                            style: { "z-index": 10000 },
+                                            onclick() {
+                                                vnode.state.dropOffTime = time
+                                            },
+                                            "class": "dropdown-item",
+                                        },
+                                            time
+                                        )
+                                    })
+                                ]
+                            )
+                        ]
+                    )
+                ]),
+            ]),
+
+            m("div", { "class": "bs-stepper" },
+                [
+                    m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                        [
+                            m("div", { "class": "step", "data-target": "#logins-part" },
+                                m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                    [
+                                        m("span", { "class": "bs-stepper-circle" },
+                                            "0.2"
+                                        ),
+                                        m("span", { "class": "bs-stepper-label" },
+                                            "Pricing Calculator"
+                                        )
+                                    ]
+                                )
+                            )]
+                    )]
+            ),
+
+
+            m("div", { "class": "form-group row" },
+                [
+                    m(input, {
+                        name: 'Curtains',
+                        value: 0,
+                        charge: 200,
+                        value: curtains,
+                        onChange(value) {
+                            vnode.state.curtains = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'Blankets',
+                        value: 0,
+                        charge: 350,
+                        value: blankets,
+                        onChange(value) {
+                            vnode.state.blankets = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'Duvets',
+                        value: 0,
+                        charge: 700,
+                        value: duvets,
+                        onChange(value) {
+                            vnode.state.duvets = value
+                        }
+                    }),
+                    m(input, {
+                        name: 'General Clothes in Kgs',
+                        value: 0,
+                        charge: 150,
+                        value: generalKgs,
+                        onChange(value) {
+                            vnode.state.generalKgs = value
+                        }
+                    }),
+
+                    m("h3", { "class": "display-4" },
+                        `This would cost around KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                    ),
+                    m("p", { "class": "font-size-lg" },
+                        `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`
+                    )
+                ]),
+
 
 
 
@@ -760,7 +921,7 @@ const order_item = {
                                 .map((statusInfo) => {
                                     const { status } = statusInfo
 
-                                    var currentStatus = !vnode.state.job.statusInfo ? null : vnode.state.job.statusInfo[0].status
+                                    var currentStatus = !vnode.state?.job?.statusInfo ? null : vnode.state?.job?.statusInfo[0].status
                                     // console.log(currentStatus, status)
                                     return m("label", { "class": `btn btn-info ${currentStatus == status ? "active" : ""}` },
                                         [
