@@ -102,8 +102,6 @@ var calculator = () => {
 
             // function to update order on the server
             const updateOrderOnServer = () => {
-
-                console.log(m.route.get())
                 if (!['/', ''].includes(m.route.get())) {
                     return;
                 }
