@@ -25,7 +25,7 @@ const up = async () => {
     console.log('Running migration...');
 
     // delete all jobs without googleId, clientId or phone
-    const deletedJobs = await db.collection('jobs').deleteMany({ $or: [ { googleId: { $exists: false } }, { clientId: { $exists: false } }, { phone: { $exists: false } } ] });
+    const deletedJobs = await db.collection('jobs').deleteMany({ $or: [ { googleId: { $exists: false } }, { userId: { $exists: false } }, { phone: { $exists: false } } ] });
     console.log(`Deleted ${deletedJobs.deletedCount} jobs`);
 
     // insert a record in the migrations collection

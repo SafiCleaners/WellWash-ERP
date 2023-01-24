@@ -90,6 +90,8 @@ var calculator = () => {
             // }
             vnode.state.id = activeOrderId
 
+            vnode.state.clearInternalActiveOrderId = () => { activeOrderId = null }
+
 
 
             // function to update order on the server
@@ -138,6 +140,7 @@ var calculator = () => {
                     saved
                 }, {
                     googleId: localStorage.getItem('googleId'),
+                    userId: localStorage.getItem('googleId'),
                 });
 
                 console.log(order)
@@ -152,7 +155,7 @@ var calculator = () => {
                 const orderString = JSON.parse(localStorage.getItem("activeOrder"));
 
                 // lets update localstorage here
-                
+
 
                 // 
                 if (equal(order, orderString) && activeOrderId) {
@@ -204,13 +207,14 @@ var calculator = () => {
             vnode.state.updateOrderOnServer = updateOrderOnServer
 
             // call updateOrderOnServer function once 
-            updateOrderOnServer();
+            // updateOrderOnServer();
             // call updateOrderOnServerPeriodically function with a suitable time period 
-            setInterval(updateOrderOnServer, 2000);
+            // setInterval(updateOrderOnServer, 2000);
             // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
 
         },
         view(vnode) {
+            console.log({ vnode })
             var {
                 pickupDay,
                 dropOffDay,
@@ -228,24 +232,6 @@ var calculator = () => {
                 mpesaConfirmationCode,
                 name
             } = vnode.state
-
-            // console.table({
-            //     pickupDay,
-            //     dropOffDay,
-            //     pickupTime,
-            //     dropOffTime,
-            //     appartmentName,
-            //     houseNumber,
-            //     moreDetails,
-            //     curtains,
-            //     blankets,
-            //     duvets,
-            //     generalKgs,
-            //     mpesaPhoneNumber,
-            //     phone,
-            //     mpesaConfirmationCode,
-            //     name
-            // })
 
             return m("div", { "class": "card-body" },
 
@@ -666,8 +652,32 @@ var calculator = () => {
                                                     vnode.state.saved = true
                                                     vnode.state.updateOrderOnServer()
                                                     vnode.state.activeOrderId = null
+
+
+                                                    var {
+                                                        appartmentName,
+                                                        houseNumber,
+                                                        moreDetails,
+                                                        phone,
+                                                        name,
+                                                    } = vnode.state
+
+                                                    let order = Object.assign({
+                                                        appartmentName,
+                                                        houseNumber,
+                                                        moreDetails,
+                                                        phone,
+                                                        name,
+                                                    }, {
+                                                        googleId: localStorage.getItem('googleId'),
+                                                        userId: localStorage.getItem('googleId'),
+                                                    });
+
                                                     localStorage.removeItem("activeOrderId")
-                                                    m.route.set('/thankyou')
+                                                    localStorage.setItem("activeOrder", JSON.stringify(order))
+                                                    vnode.state.clearInternalActiveOrderId()
+
+                                                    setTimeout(() => location.reload(), 1000)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),

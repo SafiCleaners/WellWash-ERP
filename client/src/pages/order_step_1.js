@@ -134,7 +134,8 @@ const step = (vnode) => {
                                                                     timeDroppedOffFromNow,
                                                                     timePickedUpFromNow,
                                                                     _id,
-                                                                    createdAtAgo
+                                                                    createdAtAgo,
+                                                                    shortId
                                                                 }) => {
                                                                     return m("tr", {
                                                                         // key: id,
@@ -156,27 +157,31 @@ const step = (vnode) => {
                                                                                     //         )
                                                                                     //     )
                                                                                     // ),
-                                                                                    m(m.route.Link, {
-                                                                                        "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                            const options = {
-                                                                                                method: 'DELETE',
-                                                                                                url: `${url}/jobs/${_id}`,
-                                                                                                headers: {
-                                                                                                    'Content-Type': 'application/json',
-                                                                                                    'authorization': localStorage.getItem('token')
-                                                                                                },
-                                                                                            };
+                                                                                    // m(m.route.Link, {
+                                                                                    //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                                    //         const options = {
+                                                                                    //             method: 'DELETE',
+                                                                                    //             url: `${url}/jobs/${_id}`,
+                                                                                    //             headers: {
+                                                                                    //                 'Content-Type': 'application/json',
+                                                                                    //                 'authorization': localStorage.getItem('token')
+                                                                                    //             },
+                                                                                    //         };
 
-                                                                                            axios.request(options).then(function (response) {
-                                                                                                console.log(response.data);
-                                                                                                location.reload()
-                                                                                            }).catch(function (error) {
-                                                                                                console.error(error);
-                                                                                            });
-                                                                                        }
-                                                                                    },
-                                                                                        [m("i.las la-truck", [])]
-                                                                                    )
+                                                                                    //         axios.request(options).then(function (response) {
+                                                                                    //             console.log(response.data);
+                                                                                    //             location.reload()
+                                                                                    //         }).catch(function (error) {
+                                                                                    //             console.error(error);
+                                                                                    //         });
+                                                                                    //     }
+                                                                                    // },
+                                                                                    //     []
+                                                                                    // )
+                                                                                    // Math.random() < 0.8
+                                                                                    //     ? m("i.las la-hiking", { style: { 'font-size': '48px' } }, [])
+                                                                                    //     : 
+                                                                                        m("i.las la-truck", { style: { 'font-size': '32px' } }, [])
                                                                                 ]
                                                                             ),
                                                                             // m("td", { "class": "pl-0 py-5" },
@@ -190,7 +195,7 @@ const step = (vnode) => {
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                        "Requested ", createdAtAgo + " ago"
+                                                                                        `#${shortId} `, 1 + " duvet " + "mild perfume"
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                         "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -202,7 +207,7 @@ const step = (vnode) => {
                                                                             },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                        name + " (" + phone + ")"
+                                                                                        "Requested ", createdAtAgo + " ago"
                                                                                     ),
                                                                                     m("div",
                                                                                         [
@@ -223,7 +228,7 @@ const step = (vnode) => {
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold" },
                                                                                         [
-                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," + 
+                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," +
                                                                                             `${paid ? "Paid " : " Not Paid"}`]
                                                                                     ),
                                                                                 ]
