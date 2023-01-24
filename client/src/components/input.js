@@ -1,11 +1,12 @@
 import m from "mithril"
 const input = {
-    oninit(vnode) {
-        const { value, onChange } = vnode.attrs
-        vnode.state.value = value
-    },
+    // oninit(vnode) {
+    //     const { innitialValue, onChange } = vnode.attrs
+    //     vnode.attrs.value = innitialValue
+    // },
     view(vnode) {
-        const { value, onChange, name, label, size="6" } = vnode.attrs
+        const { innitialValue, onChange, name, label, size="6" } = vnode.attrs
+        // console.log(vnode.attrs)
         return m("div", { "class": `col-lg-${size} col-md-${size} col-sm-${size * 2}` },
             [
                 // powerpoint slides
@@ -21,10 +22,10 @@ const input = {
                                 m("button", {
                                     "class": "btn btn-outline-secondary", "type": "button", "id": "button-addon1",
                                     onclick() {
-                                        if (Number(vnode.state.value) - 1 >= 0) {
-                                            vnode.state.value = Number(vnode.state.value) - 1
+                                        if (Number(vnode.attrs.value) - 1 >= 0) {
+                                            vnode.attrs.value = Number(vnode.attrs.value) - 1
 
-                                            onChange(vnode.state.value)
+                                            onChange(vnode.attrs.value)
                                         }
                                     }
                                 },
@@ -33,12 +34,12 @@ const input = {
                             ),
                             m("input", {
                                 "class": "form-control", "type": "number", "aria-describedby": "button-addon1",
-                                value: vnode.state.value,
+                                value: vnode.attrs.value,
                                 oninput(e) {
 
-                                    if (Math.sign(Number(e.target.value)) === 1) {
-                                        vnode.state.value = Number(e.target.value)
-                                        onChange(vnode.state.value)
+                                    if (Math.sign(Number(e.target.innitialValue)) === 1) {
+                                        vnode.attrs.value = Number(e.target.value)
+                                        onChange(vnode.attrs.value)
                                     }
                                 }
                             }),
@@ -46,8 +47,8 @@ const input = {
                                 m("button", {
                                     "class": "btn btn-outline-secondary", "type": "button", "id": "button-addon1",
                                     onclick() {
-                                        vnode.state.value = Number(vnode.state.value) + 1
-                                        onChange(vnode.state.value)
+                                        vnode.attrs.value = Number(vnode.attrs.value) + 1
+                                        onChange(vnode.attrs.value)
                                     }
                                 },
                                     "+"
@@ -59,7 +60,7 @@ const input = {
                         `We Charge:`,
                         m("b", ` KSH :${Number(vnode.attrs.charge)}`),
                         ` Each, and thus will total to `,
-                        m('b', ` KSH :${Number(vnode.attrs.charge) * Number(vnode.state.value)}`)
+                        m('b', ` KSH :${Number(vnode.attrs.charge) * Number(vnode.attrs.value)}`)
                     ]),
                 ]
                 ),

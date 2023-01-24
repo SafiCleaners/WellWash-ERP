@@ -676,8 +676,9 @@ var calculator = () => {
                                                     localStorage.removeItem("activeOrderId")
                                                     localStorage.setItem("activeOrder", JSON.stringify(order))
                                                     vnode.state.clearInternalActiveOrderId()
+                                                    vnode.state.updateOrderOnServer()
 
-                                                    setTimeout(() => location.reload(), 1000)
+                                                    // setTimeout(() => location.reload(), 1000)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),

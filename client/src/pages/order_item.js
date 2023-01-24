@@ -18,11 +18,11 @@ import {
 
 const input = {
     oninit(vnode) {
-        console.log(vnode.attrs)
+        // console.log(vnode.attrs)
         vnode.state.innitialValue = vnode.attrs.innitialValue
     },
     view(vnode) {
-        console.log(vnode.attrs)
+        // console.log(vnode.attrs)
         return m("div", { "class": "col-lg-6" },
             [
                 m("label",
@@ -61,6 +61,9 @@ const order_item = {
         };
 
         axios.request(options).then(function (response) {
+            vnode.state.originalJob = Object.assign({}, response.data)
+            localStorage.setItem("activeOrderId", vnode.state.originalJob._id)
+            localStorage.setItem("activeOrder", JSON.stringify(vnode.state.originalJob))
             vnode.state = Object.assign(vnode.state, response.data)
             vnode.state.loading = false
             m.redraw()
@@ -86,7 +89,7 @@ const order_item = {
 
         // function to update order on the server
         const updateOrderOnServer = () => {
-            if (!['/', ''].includes(m.route.get())) {
+            if (!vnode.state.originalJob) {
                 return;
             }
 
@@ -110,7 +113,7 @@ const order_item = {
                 saved
             } = vnode.state
 
-            let order = Object.assign({
+            let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
                 dropOffDay,
                 pickupTime,
@@ -130,12 +133,17 @@ const order_item = {
                 saved
             }, {
                 googleId: localStorage.getItem('googleId'),
+                _id: undefined,
             });
 
-            console.log(order)
+            console.log({
+                currentOrder: order,
+                originalJob: vnode.state.originalJob
+            })
 
+            const orderString = JSON.parse(localStorage.getItem("activeOrder"))
             // compare order in state and order in original job
-            if (equal(order, vnode.state.originalJob) && activeOrderId) {
+            if (equal(order, orderString)) {
                 // console.log("Order has not changed. Not sending request to server.");  
                 return;
             } else {
@@ -143,10 +151,13 @@ const order_item = {
                 console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromOriginalJob: vnode.state.originalJob })
             }
 
-            const orderDetailsDiff = _.omit(order, function (v, k) { return vnode.state.originalJob[k] === v; })
-            // console.log({ orderDetailsDiff })
+            const orderDetailsDiff = _.omit(order, function (v, k) {
+                console.log("=======>", vnode.state.originalJob[k], v)
+                return vnode.state.originalJob[k] === v;
+            })
+            console.log({ order, orderString, orderDetailsDiff })
 
-            order.lastSubmittedAt = new Date()
+            // order.lastSubmittedAt = new Date()
             // send request to server
             const options = {
                 method: 'PATCH',
@@ -163,7 +174,7 @@ const order_item = {
             axios.request(options).then(function (response) {
                 //save orderId from server response to local storage
                 const orderIdFromServer = response.data.id;
-                localStorage.setItem("activeOrderId", orderIdFromServer);
+                // localStorage.setItem("activeOrderId", orderIdFromServer);
 
                 // to ensure order stays the same but we know when it was last submitted
                 order.lastSubmittedAt = undefined;
@@ -184,9 +195,9 @@ const order_item = {
         vnode.state.updateOrderOnServer = updateOrderOnServer
 
         // call updateOrderOnServer function once 
-        updateOrderOnServer();
+        // updateOrderOnServer();
         // call updateOrderOnServerPeriodically function with a suitable time period 
-        setInterval(updateOrderOnServer, 2000);
+        // setInterval(updateOrderOnServer, 2000);
         // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
 
     },
@@ -1056,32 +1067,39 @@ const order_item = {
             //     ]
             // ),
 
-            m("div", { "class": "col-lg-4 col-md-4 col-sm-12" },
+            m("div", { "class": "col-lg-12 col-md-12 col-sm-12" },
                 [
                     m("label",
-                        "What Status Would You Like To Change This Job To? "
+                        `Currently ${!vnode.state?.statusInfo ? '' : vnode.state?.statusInfo[0].status} What Status Would You Like To Change This Job To? `
                     ),
                     m("br"),
 
                     m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                         [
                             [{
-                                status: "LEAD"
+                                status: "LEAD",
+                                label: 'lead'
                             }, {
-                                status: "PICKED_UP"
+                                status: "PICKED_UP",
+                                label: 'Picked'
                             }, {
-                                status: "WASHED"
+                                status: "WASHED",
+                                label: 'Washed'
                             }, {
-                                status: "FOLDED"
+                                status: "FOLDED",
+                                label: 'Folded'
                             }, {
-                                status: "DELIVERED"
+                                status: "DELIVERED",
+                                label: 'Delivered'
                             }, {
-                                status: "CONFIRMED_PAYMENT"
+                                status: "CONFIRMED_PAYMENT",
+                                label: 'Paid'
                             }, {
                                 status: "BLOCKED",
+                                label: 'Blocked'
                             }]
                                 .map((statusInfo) => {
-                                    const { status } = statusInfo
+                                    const { status, label } = statusInfo
 
                                     var currentStatus = !vnode.state?.statusInfo ? null : vnode.state?.statusInfo[0].status
                                     // console.log(currentStatus, status)
@@ -1096,25 +1114,18 @@ const order_item = {
                                                 onchange: () => {
                                                     console.log(vnode.state)
                                                     // preserve the previous status and keep the time of the change
-                                                    vnode.state = Object.assign(vnode.state, {
-                                                        statusInfo: !vnode.state.statusInfo ? [{
-                                                            status,
-                                                            createdAt: new Date()
-                                                        }] : [{
-                                                            status,
-                                                            createdAt: new Date()
-                                                        }, ...vnode.state.statusInfo]
-                                                    }, {
-                                                        oninit: undefined,
-                                                        oncreate: undefined,
-                                                        view: undefined,
-                                                    });
-
-
+                                                    vnode.state.statusInfo = !vnode.state.statusInfo ? [{
+                                                        status,
+                                                        createdAt: new Date()
+                                                    }] : [{
+                                                        status,
+                                                        createdAt: new Date()
+                                                    }, ...vnode.state.statusInfo]
+                                                   
                                                     vnode.state.updateOrderOnServer()
                                                 }
                                             }),
-                                            status
+                                            label
                                         ]
                                     )
                                 }),
@@ -1124,6 +1135,27 @@ const order_item = {
             ),
 
             // vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
+            m(".row", [
+                m("div", { "class": "card-body" }, [
+                    m("div", { "class": "form-group mb-1" },
+                        [
+                            m("label", { "for": "exampleTextarea" },
+                                "More Details"
+                            ),
+                            m("textarea", {
+                                oninput: (e) => {
+                                    vnode.state.moreDetails = e.target.value
+                                },
+                                value: moreDetails,
+                                "class": "form-control",
+                                "id": "exampleTextarea",
+                                "rows": "4",
+                                "spellcheck": "true"
+                            })
+                        ]
+                    )
+                ])
+            ]),
 
             m(".row", [
                 m("div", { "class": "card-body" }, [
@@ -1282,6 +1314,39 @@ const order_item = {
                 //     )
                 // ])]
             ]),
+
+            m("div", { "class": "form-group row", style: { "padding": "10px" } },
+                [
+
+                    // m("div", { "class": "col-lg-12" },
+                    //     [
+
+                    m("div", {
+                        class: "float-right",
+                        // style: {
+                        //     "padding": "30px"
+                        // }
+                    }, [
+                        m("button", {
+                            type: "button",
+                            "class": "btn btn-lg btn-info",
+                            onclick() {
+                                // alert("saving order")
+
+
+                                vnode.state.updateOrderOnServer()
+
+                                setTimeout(() => location.reload(), 1000)
+                            }
+                        }, [
+                            m("i", { "class": "flaticon2-mail-1" }),
+                            " Save My order"
+                        ]),
+                    ]),
+                    // ])
+
+
+                ])
         ]
     }
     // view(){
