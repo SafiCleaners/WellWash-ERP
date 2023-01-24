@@ -566,7 +566,8 @@ const orders = {
                                                                 uploading,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+                                                                _id,
+                                                                createdAtAgo
                                                             }) => {
                                                                 return m("tr", {
                                                                     // key: id,
