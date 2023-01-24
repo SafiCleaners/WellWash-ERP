@@ -28,13 +28,13 @@ const dayRangeCalculator = (start=new Date()) => {
         // alert(dayNames[dayIndex])
 
         const dayNames = [
-            "Sunday",
+            "Sun",
             "Mon",
             "Tue",
             "Wed",
             "Thur",
-            "Friday",
-            "Saturday",
+            "Fri",
+            "Sat",
         ]
 
         if(dayNames[dayIndex] === 0){

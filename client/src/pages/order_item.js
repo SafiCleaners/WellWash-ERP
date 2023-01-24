@@ -17,13 +17,12 @@ import {
 
 
 const input = {
-    oncreate(vnode) {
+    oninit(vnode) {
         console.log(vnode.attrs)
-        const { value } = vnode.attrs
-        vnode.state.value = value
+        vnode.state.innitialValue = vnode.attrs.innitialValue
     },
     view(vnode) {
-        console.log(vnode.state)
+        console.log(vnode.attrs)
         return m("div", { "class": "col-lg-6" },
             [
                 m("label",
@@ -32,8 +31,11 @@ const input = {
                 m("div", { "class": "input-group" },
                     [
                         m("input", {
-                            oninput: (e) => vnode.attrs.onChange(e.target.value),
-                            value: vnode.state.value,
+                            oninput: (e) => {
+                                vnode.attrs.innitialValue = e.target.value
+                                vnode.attrs.onChange(e.target.value)
+                            },
+                            value: vnode.attrs.innitialValue,
                             "class": "form-control"
                         }),
                         m("div", { "class": "input-group-append" },
@@ -234,7 +236,7 @@ const order_item = {
             ironing = 0,
             ironing_trousers = 0,
             generalKgs = 0,
-        } = job
+        } = vnode.state
 
         const calculatePrice = () => {
             return (duvets * 600) +
@@ -454,28 +456,28 @@ const order_item = {
                 [
                     m(input, {
                         name: 'Customer Name',
-                        value: name,
+                        innitialValue: name,
                         onChange(value) {
                             vnode.state.name = value
                         }
                     }),
                     m(input, {
                         name: 'Customer Phone Number',
-                        value: phone,
+                        innitialValue: phone,
                         onChange(value) {
                             vnode.state.phone = value
                         }
                     }),
                     m(input, {
                         name: 'Customer Appartment Name',
-                        value: appartmentName,
+                        innitialValue: appartmentName,
                         onChange(value) {
                             vnode.state.appartmentName = value
                         }
                     }),
                     m(input, {
                         name: 'Customer House Number',
-                        value: houseNumber,
+                        innitialValue: houseNumber,
                         onChange(value) {
                             vnode.state.houseNumber = value
                         }
@@ -1081,9 +1083,9 @@ const order_item = {
                                 .map((statusInfo) => {
                                     const { status } = statusInfo
 
-                                    var currentStatus = !vnode.state?.job?.statusInfo ? null : vnode.state?.job?.statusInfo[0].status
+                                    var currentStatus = !vnode.state?.statusInfo ? null : vnode.state?.statusInfo[0].status
                                     // console.log(currentStatus, status)
-                                    return m("label", { "class": `btn btn-info ${currentStatus == status ? "active" : ""}` },
+                                    return m("label", { "class": `btn btn-info ${currentStatus === status ? "active" : ""}` },
                                         [
                                             m("input", {
                                                 "type": "radio",
@@ -1092,16 +1094,16 @@ const order_item = {
                                                 // disabled: date.day() === 0,
                                                 // "checked": pickupDay === date.format('L') ? true : false,
                                                 onchange: () => {
-                                                    console.log(vnode.state.job)
+                                                    console.log(vnode.state)
                                                     // preserve the previous status and keep the time of the change
-                                                    vnode.state.job = Object.assign(vnode.state.job, {
-                                                        statusInfo: !vnode.state.job.statusInfo ? [{
+                                                    vnode.state = Object.assign(vnode.state, {
+                                                        statusInfo: !vnode.state.statusInfo ? [{
                                                             status,
                                                             createdAt: new Date()
                                                         }] : [{
                                                             status,
                                                             createdAt: new Date()
-                                                        }, ...vnode.state.job.statusInfo]
+                                                        }, ...vnode.state.statusInfo]
                                                     }, {
                                                         oninit: undefined,
                                                         oncreate: undefined,
