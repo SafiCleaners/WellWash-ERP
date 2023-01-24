@@ -11,7 +11,7 @@ let token, gClient, decodedToken;
 
 const google_login = {
   async oncreate() {
-    const setStorage = async ({ decodedToken, token }) => {
+    const setStorage = async ({ decodedToken, token },cb) => {
       localStorage.setItem('authToken', token);
       localStorage.setItem('googleId', decodedToken.sub);
       localStorage.setItem('name', decodedToken.name);
@@ -29,7 +29,7 @@ const google_login = {
         };
         const user = await axios.request(options);
         localStorage.setItem('role', user.data.role);
-        window.location.reload();
+        cb()
       } catch (err) {
 
         if (err.response && err.response.status === 404) {
@@ -49,8 +49,9 @@ const google_login = {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('userId', res.data.user._id);
           localStorage.setItem('role', res.data.user.role);
-          window.location.reload();
+          cb()
         } else {
+          cb()
           console.error(err);
         }
       }
@@ -62,8 +63,7 @@ const google_login = {
         callback: (response) => {
           token = response.credential;
           decodedToken = jwtDecode(response.credential);
-          setStorage({ decodedToken, token });
-          window.location.reload()
+          setStorage({ decodedToken, token },()=>window.location.reload());
         },
       });
 
