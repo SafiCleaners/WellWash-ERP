@@ -1376,7 +1376,7 @@ const order_item = {
 
                                 vnode.state.updateOrderOnServer()
 
-                                setTimeout(() => location.reload(), 1000)
+                                setTimeout(() => location.reload(), 500)
                             }
                         }, [
                             m("i", { "class": "flaticon2-mail-1" }),

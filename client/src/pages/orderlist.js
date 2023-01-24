@@ -349,7 +349,8 @@ const orders = {
                                                                 uploading,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+                                                                _id,
+                                                                createdAtAgo
                                                             }) => {
                                                                 return m("tr", {
                                                                     // key: id,
@@ -397,7 +398,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Picked ", + 1 + "Bag", timePickedUpFromNow + " ago"
+                                                                                    "Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
