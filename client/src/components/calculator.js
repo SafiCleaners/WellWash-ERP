@@ -327,7 +327,7 @@ var calculator = () => {
                                                     .map((time) => {
                                                         const { dayName, day, nth, date } = time
 
-                                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "active" : ""}` },
+                                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "focus active" : ""}` },
                                                             [
                                                                 m("input", {
                                                                     "type": "radio",
@@ -398,7 +398,7 @@ var calculator = () => {
                                                 dayRangeCalculator(vnode.state.pickupDay)
                                                     .map((time) => {
                                                         const { dayName, day, nth, date } = time
-                                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "active" : ""}` },
+                                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "focus active" : ""}` },
                                                             [
                                                                 m("input", {
                                                                     "type": "radio",

@@ -131,7 +131,7 @@ const order = {
                                                         m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                                                             [
                                                                 academicLevels.map(level => {
-                                                                    return m("label", { "class": `btn btn-info ${academicLevel == level ? "active" : ""}` },
+                                                                    return m("label", { "class": `btn btn-info ${academicLevel == level ? "focus active" : ""}` },
                                                                         [
                                                                             m("input", {
                                                                                 "type": "radio",
@@ -367,7 +367,7 @@ const order = {
                                                         m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                                                             [
                                                                 paperFormats.map(format => {
-                                                                    return m("label", { "class": `btn btn-info ${paperFormat == format ? "active" : ""}` },
+                                                                    return m("label", { "class": `btn btn-info ${paperFormat == format ? "focus active" : ""}` },
                                                                         [
                                                                             m("input", {
                                                                                 "type": "radio",

@@ -509,7 +509,7 @@ const order_item = {
                                     .map((time) => {
                                         const { dayName, day, nth, date } = time
 
-                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "active" : ""}` },
+                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "focus active" : ""}` },
                                             [
                                                 m("input", {
                                                     "type": "radio",
@@ -580,7 +580,7 @@ const order_item = {
                                 dayRangeCalculator(vnode.state.pickupDay)
                                     .map((time) => {
                                         const { dayName, day, nth, date } = time
-                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "active" : ""}` },
+                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "focus active" : ""}` },
                                             [
                                                 m("input", {
                                                     "type": "radio",
@@ -658,8 +658,11 @@ const order_item = {
                         value: curtains,
                         pricing: [{
                             amount: 200,
-                            label: '250'
+                            label: '200'
                         }, {
+                            status: 250,
+                            label: '250'
+                        },{
                             status: 250,
                             label: '250'
                         }],
@@ -674,8 +677,11 @@ const order_item = {
                             amount: 300,
                             label: '300'
                         }, {
-                            status: 350,
+                            amount: 350,
                             label: '350'
+                        },{
+                            amount: 400,
+                            label: '400'
                         }],
                         value: blankets,
                         onChange(value) {
@@ -687,14 +693,14 @@ const order_item = {
                         charge: 700,
                         value: duvets,
                         pricing: [{
-                            amount: 700,
-                            label: '700'
-                        }, {
-                            status: 600,
+                            amount: 500,
+                            label: '500'
+                        },{
+                            amount: 600,
                             label: '600'
                         },{
-                            status: 500,
-                            label: '500'
+                            amount: 700,
+                            label: '700'
                         }],
                         onChange(value) {
                             vnode.state.duvets = value
@@ -707,10 +713,10 @@ const order_item = {
                             amount: 100,
                             label: '100'
                         }, {
-                            status: 150,
+                            amount: 150,
                             label: '150'
                         },{
-                            status: 200,
+                            amount: 200,
                             label: '200'
                         }],
                         value: generalKgs,
@@ -1137,7 +1143,7 @@ const order_item = {
 
                                     var currentStatus = !vnode.state?.statusInfo ? null : vnode.state?.statusInfo[0].status
                                     // console.log(currentStatus, status)
-                                    return m("label", { "class": `btn btn-info ${currentStatus === status ? "active" : ""}` },
+                                    return m("label", { "class": `btn btn-info ${currentStatus === status ? "focus active" : ""}` },
                                         [
                                             m("input", {
                                                 "type": "radio",

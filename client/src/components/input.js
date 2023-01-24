@@ -2,11 +2,14 @@ import m from "mithril"
 
 
 const dynamicPicker = {
+    oninit(vnode){
+        vnode.state.selectedCharge = vnode.attrs.charge
+    },
     view(vnode) {
-        console.log(vnode.attrs.options)
+        console.log(vnode.state)
         return [
             m("label",
-                `Pricing`
+                `Pricing ~/` + vnode.state.selectedCharge
             ),
             m("br"),
 
@@ -14,11 +17,9 @@ const dynamicPicker = {
                 [
                     vnode.attrs.options
                         .map((statusInfo) => {
-                            const { status, label } = statusInfo
-
-                            var currentStatus = !vnode.state?.statusInfo ? null : vnode.state?.statusInfo[0].status
-                            // console.log(currentStatus, status)
-                            return m("label", { "class": `btn btn-info ${currentStatus === status ? "active" : ""}` },
+                            const { amount, label } = statusInfo
+                            console.log(amount, vnode.state.selectedCharge)
+                            return m("label", { "class": `btn btn-info ${amount === vnode.state.selectedCharge ? "focus active" : ""}` },
                                 [
                                     m("input", {
                                         "type": "radio",
@@ -27,17 +28,7 @@ const dynamicPicker = {
                                         // disabled: date.day() === 0,
                                         // "checked": pickupDay === date.format('L') ? true : false,
                                         onchange: () => {
-                                            console.log(vnode.state)
-                                            // preserve the previous status and keep the time of the change
-                                            vnode.state.statusInfo = !vnode.state.statusInfo ? [{
-                                                status,
-                                                createdAt: new Date()
-                                            }] : [{
-                                                status,
-                                                createdAt: new Date()
-                                            }, ...vnode.state.statusInfo]
-
-                                            vnode.state.updateOrderOnServer()
+                                            vnode.attrs.selectedCharge = amount
                                         }
                                     }),
                                     label
@@ -62,7 +53,8 @@ const input = {
         return [
             m("div", { "class": `col-lg-${pickerSize} col-md-${pickerSize} col-sm-${pickerSize}` },[
                 m(dynamicPicker,{
-                    options: vnode.attrs.pricing
+                    options: vnode.attrs.pricing,
+                    charge: vnode.attrs.charge
                 })
             ]),
             m("div", { "class": `col-lg-${size} col-md-${size} col-sm-${size * 2}` },
