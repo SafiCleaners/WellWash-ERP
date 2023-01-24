@@ -670,6 +670,13 @@ const order_item = {
                     m(incrementableInput, {
                         name: 'Blankets',
                         charge: 350,
+                        pricing: [{
+                            amount: 300,
+                            label: '300'
+                        }, {
+                            status: 350,
+                            label: '350'
+                        }],
                         value: blankets,
                         onChange(value) {
                             vnode.state.blankets = value
@@ -679,6 +686,16 @@ const order_item = {
                         name: 'Duvets',
                         charge: 700,
                         value: duvets,
+                        pricing: [{
+                            amount: 700,
+                            label: '700'
+                        }, {
+                            status: 600,
+                            label: '600'
+                        },{
+                            status: 500,
+                            label: '500'
+                        }],
                         onChange(value) {
                             vnode.state.duvets = value
                         }
@@ -686,6 +703,16 @@ const order_item = {
                     m(incrementableInput, {
                         name: 'General Clothes in Kgs',
                         charge: 150,
+                        pricing: [{
+                            amount: 100,
+                            label: '100'
+                        }, {
+                            status: 150,
+                            label: '150'
+                        },{
+                            status: 200,
+                            label: '200'
+                        }],
                         value: generalKgs,
                         onChange(value) {
                             vnode.state.generalKgs = value
