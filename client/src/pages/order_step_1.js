@@ -447,7 +447,8 @@ const step = (vnode) => {
                                                                                     //         )
                                                                                     //     )
                                                                                     // ),
-                                                                                    m(m.route.Link, {
+                                                                                    m('a', {
+                                                                                        href: "javascript:void(0);",
                                                                                         "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                             const options = {
                                                                                                 method: 'DELETE',

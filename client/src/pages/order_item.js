@@ -499,7 +499,7 @@ const order_item = {
                 m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
                     [
                         m("label",
-                            "When would you like your Pickup? "
+                            "When would the customer like their Pickup? "
                         ),
                         m("br"),
 
@@ -568,7 +568,7 @@ const order_item = {
                 m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
                     [
                         m("label",
-                            "When would you like your DropOff?"
+                            "When would the customer like their DropOff?"
                         ),
                         m("br"),
 
