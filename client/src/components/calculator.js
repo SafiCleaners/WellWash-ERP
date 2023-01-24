@@ -95,7 +95,7 @@ var calculator = () => {
 
 
             // function to update order on the server
-            const updateOrderOnServer = () => {
+            const updateOrderOnServer = (cb) => {
                 if (!['/', ''].includes(m.route.get())) {
                     return;
                 }
@@ -192,6 +192,7 @@ var calculator = () => {
                     order.lastSubmittedAt = undefined;
                     localStorage.setItem("activeOrder", JSON.stringify(order))
                     vnode.state.uploading = false
+                    cb()
                 }).catch(function (error) {
                     order.id = null
                     order.retry_innitial_send = true
@@ -201,6 +202,7 @@ var calculator = () => {
                     // m.route.set("/order2", {
                     //     order
                     // })
+                    cb()
                 });
             }
 
@@ -650,35 +652,35 @@ var calculator = () => {
                                                     // alert("saving order")
 
                                                     vnode.state.saved = true
-                                                    vnode.state.updateOrderOnServer()
-                                                    vnode.state.activeOrderId = null
+                                                    vnode.state.updateOrderOnServer(() => {
+                                                        vnode.state.activeOrderId = null
 
 
-                                                    var {
-                                                        appartmentName,
-                                                        houseNumber,
-                                                        moreDetails,
-                                                        phone,
-                                                        name,
-                                                    } = vnode.state
+                                                        var {
+                                                            appartmentName,
+                                                            houseNumber,
+                                                            moreDetails,
+                                                            phone,
+                                                            name,
+                                                        } = vnode.state
 
-                                                    let order = Object.assign({
-                                                        appartmentName,
-                                                        houseNumber,
-                                                        moreDetails,
-                                                        phone,
-                                                        name,
-                                                    }, {
-                                                        googleId: localStorage.getItem('googleId'),
-                                                        userId: localStorage.getItem('googleId'),
-                                                    });
+                                                        let order = Object.assign({
+                                                            appartmentName,
+                                                            houseNumber,
+                                                            moreDetails,
+                                                            phone,
+                                                            name,
+                                                        }, {
+                                                            googleId: localStorage.getItem('googleId'),
+                                                            userId: localStorage.getItem('googleId'),
+                                                        });
 
-                                                    localStorage.removeItem("activeOrderId")
-                                                    localStorage.setItem("activeOrder", JSON.stringify(order))
-                                                    vnode.state.clearInternalActiveOrderId()
-                                                    vnode.state.updateOrderOnServer()
+                                                        localStorage.removeItem("activeOrderId")
+                                                        localStorage.setItem("activeOrder", JSON.stringify(order))
+                                                        vnode.state.clearInternalActiveOrderId()
+                                                        vnode.state.updateOrderOnServer(() => location.reload())
+                                                    })
 
-                                                    setTimeout(() => location.reload(), 500)
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),

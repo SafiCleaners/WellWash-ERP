@@ -6,7 +6,7 @@ const dynamicPicker = {
         vnode.state.selectedCharge = vnode.attrs.charge
     },
     view(vnode) {
-        console.log(vnode.state)
+        // console.log(vnode.state)
         return [
             m("label",
                 `Pricing ~/` + vnode.state.selectedCharge
@@ -18,7 +18,7 @@ const dynamicPicker = {
                     vnode.attrs.options
                         .map((statusInfo) => {
                             const { amount, label } = statusInfo
-                            console.log(amount, vnode.state.selectedCharge)
+                            // console.log(amount, vnode.state.selectedCharge)
                             return m("label", { "class": `btn btn-info ${amount === vnode.state.selectedCharge ? "focus active" : ""}` },
                                 [
                                     m("input", {

@@ -61,6 +61,12 @@ const order_item = {
         };
 
         axios.request(options).then(function (response) {
+            Object.assign(response.data, {
+                createdAtAgo: moment(response.data.createdAt).fromNow(true),
+                timeDroppedOffFromNow: moment(response.data.dropOffDay).fromNow(true),
+                timePickedUpFromNow: moment(response.data.pickupDay).fromNow(true),
+            })
+
             vnode.state.originalJob = Object.assign({}, response.data)
             localStorage.setItem("activeOrderId", vnode.state.originalJob._id)
             localStorage.setItem("activeOrder", JSON.stringify(vnode.state.originalJob))
@@ -88,7 +94,7 @@ const order_item = {
         vnode.state.id = activeOrderId
 
         // function to update order on the server
-        const updateOrderOnServer = () => {
+        const updateOrderOnServer = (cb) => {
             if (!vnode.state.originalJob) {
                 return;
             }
@@ -180,6 +186,7 @@ const order_item = {
                 order.lastSubmittedAt = undefined;
                 localStorage.setItem("activeOrder", JSON.stringify(order))
                 vnode.state.uploading = false
+                cb()
             }).catch(function (error) {
                 order.id = null
                 order.retry_innitial_send = true
@@ -189,6 +196,7 @@ const order_item = {
                 // m.route.set("/order2", {
                 //     order
                 // })
+                cb()
             });
         }
 
@@ -247,6 +255,7 @@ const order_item = {
             ironing = 0,
             ironing_trousers = 0,
             generalKgs = 0,
+            createdAtAgo,
         } = vnode.state
 
         const calculatePrice = () => {
@@ -355,7 +364,7 @@ const order_item = {
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                 ),
                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -662,7 +671,7 @@ const order_item = {
                         }, {
                             status: 250,
                             label: '250'
-                        },{
+                        }, {
                             status: 250,
                             label: '250'
                         }],
@@ -679,7 +688,7 @@ const order_item = {
                         }, {
                             amount: 350,
                             label: '350'
-                        },{
+                        }, {
                             amount: 400,
                             label: '400'
                         }],
@@ -695,10 +704,10 @@ const order_item = {
                         pricing: [{
                             amount: 500,
                             label: '500'
-                        },{
+                        }, {
                             amount: 600,
                             label: '600'
-                        },{
+                        }, {
                             amount: 700,
                             label: '700'
                         }],
@@ -715,7 +724,7 @@ const order_item = {
                         }, {
                             amount: 150,
                             label: '150'
-                        },{
+                        }, {
                             amount: 200,
                             label: '200'
                         }],
@@ -1162,7 +1171,7 @@ const order_item = {
                                                         createdAt: new Date()
                                                     }, ...vnode.state.statusInfo]
 
-                                                    vnode.state.updateOrderOnServer()
+                                                    vnode.state.updateOrderOnServer(() => { })
                                                 }
                                             }),
                                             label
@@ -1374,9 +1383,7 @@ const order_item = {
                                 // alert("saving order")
 
 
-                                vnode.state.updateOrderOnServer()
-
-                                setTimeout(() => location.reload(), 500)
+                                vnode.state.updateOrderOnServer(() => location.reload())
                             }
                         }, [
                             m("i", { "class": "flaticon2-mail-1" }),
