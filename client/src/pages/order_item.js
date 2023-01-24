@@ -68,8 +68,8 @@ const order_item = {
             })
 
             vnode.state.originalJob = Object.assign({}, response.data)
-            localStorage.setItem("activeOrderId", vnode.state.originalJob._id)
-            localStorage.setItem("activeOrder", JSON.stringify(vnode.state.originalJob))
+            localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id)
+            localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob))
             vnode.state = Object.assign(vnode.state, response.data)
             vnode.state.loading = false
             m.redraw()
@@ -85,13 +85,13 @@ const order_item = {
 
         // create an order if there was not one already running
         // cache order in local storage even accross refreshes
-        let activeOrderId = localStorage.getItem("activeOrderId")
+        let activeOrderBeingEditedId = localStorage.getItem("activeOrderBeingEditedId")
 
-        // if (!activeOrderId) {
-        //     activeOrderId = new ObjectId()
-        //     localStorage.setItem("activeOrderId", activeOrderId)
+        // if (!activeOrderBeingEditedId) {
+        //     activeOrderBeingEditedId = new ObjectId()
+        //     localStorage.setItem("activeOrderBeingEditedId", activeOrderBeingEditedId)
         // }
-        vnode.state.id = activeOrderId
+        vnode.state.id = activeOrderBeingEditedId
 
         // function to update order on the server
         const updateOrderOnServer = (cb) => {
@@ -147,50 +147,52 @@ const order_item = {
                 originalJob: vnode.state.originalJob
             })
 
-            const orderString = JSON.parse(localStorage.getItem("activeOrder"))
+            const orderString = JSON.parse(localStorage.getItem("activeOrderBeingEdited"))
             // compare order in state and order in original job
-            if (equal(order, orderString)) {
-                // console.log("Order has not changed. Not sending request to server.");  
-                return;
-            } else {
-                // localStorage.setItem("activeOrder", JSON.stringify(order))
-                console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromOriginalJob: vnode.state.originalJob })
-            }
+            // if (equal(order, orderString)) {
+            //     // console.log("Order has not changed. Not sending request to server.");  
+            //     return;
+            // } else {
+            //     // localStorage.setItem("activeOrderBeingEdited", JSON.stringify(order))
+            //     console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromOriginalJob: vnode.state.originalJob })
+            // }
 
-            const orderDetailsDiff = _.omit(order, function (v, k) {
-                console.log("=======>", vnode.state.originalJob[k], v)
-                return vnode.state.originalJob[k] === v;
-            })
-            console.log({ order, orderString, orderDetailsDiff })
+            // const orderDetailsDiff = _.omit(order, function (v, k) {
+            //     console.log("=======>", vnode.state.originalJob[k], v)
+            //     return vnode.state.originalJob[k] === v;
+            // })
+            // console.log({ order, orderString, orderDetailsDiff })
 
             // order.lastSubmittedAt = new Date()
             // send request to server
             const options = {
                 method: 'PATCH',
-                url: url + "/jobs/" + activeOrderId,
+                url: url + "/jobs/" + m.route.param("job"),
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': localStorage.getItem('token')
                 },
-                data: orderDetailsDiff
+                data: order
             };
 
             console.log(options)
             vnode.state.uploading = true
             axios.request(options).then(function (response) {
                 //save orderId from server response to local storage
-                const orderIdFromServer = response.data.id;
-                // localStorage.setItem("activeOrderId", orderIdFromServer);
+                // const orderIdFromServer = response.data.id;
+                // localStorage.setItem("activeOrderBeingEditedId", orderIdFromServer);
 
                 // to ensure order stays the same but we know when it was last submitted
                 order.lastSubmittedAt = undefined;
-                localStorage.setItem("activeOrder", JSON.stringify(order))
+                order.saved = false
+                localStorage.removeItem("activeOrderBeingEdited")
+                localStorage.removeItem("activeOrderBeingEditedId")
                 vnode.state.uploading = false
                 cb()
             }).catch(function (error) {
                 order.id = null
                 order.retry_innitial_send = true
-                // vnode.state.activeOrder = order
+                // vnode.state.activeOrderBeingEdited = order
                 vnode.state.uploading = false
                 vnode.state.saved = false
                 // m.route.set("/order2", {

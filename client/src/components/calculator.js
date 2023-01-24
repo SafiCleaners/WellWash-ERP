@@ -163,7 +163,7 @@ var calculator = () => {
                     return;
                 } else {
                     localStorage.setItem("activeOrder", JSON.stringify(order))
-                    console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
+                    console.log("Calc Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
                 }
 
                 const orderDetailsDiff = _.omit(order, function (v, k) { return orderString && orderString[k] === v; })
@@ -678,7 +678,7 @@ var calculator = () => {
                                                         localStorage.removeItem("activeOrderId")
                                                         localStorage.setItem("activeOrder", JSON.stringify(order))
                                                         vnode.state.clearInternalActiveOrderId()
-                                                        vnode.state.updateOrderOnServer(() => location.reload())
+                                                        location.reload()
                                                     })
 
                                                 }
