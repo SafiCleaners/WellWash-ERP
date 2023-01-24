@@ -135,7 +135,8 @@ const step = (vnode) => {
                                                                     timePickedUpFromNow,
                                                                     _id,
                                                                     createdAtAgo,
-                                                                    shortId
+                                                                    shortId,
+                                                                    statusInfo
                                                                 }) => {
                                                                     return m("tr", {
                                                                         // key: id,
@@ -229,7 +230,7 @@ const step = (vnode) => {
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold" },
                                                                                         [
-                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," +
+                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," + ` Status: ${statusInfo[0].status}` + " ," + 
                                                                                             `${paid ? "Paid " : " Not Paid"}`]
                                                                                     ),
                                                                                 ]

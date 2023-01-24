@@ -656,6 +656,13 @@ const order_item = {
                         name: 'Curtains',
                         charge: 200,
                         value: curtains,
+                        pricing: [{
+                            amount: 200,
+                            label: '250'
+                        }, {
+                            status: 250,
+                            label: '250'
+                        }],
                         onChange(value) {
                             vnode.state.curtains = value
                         }
@@ -1121,7 +1128,7 @@ const order_item = {
                                                         status,
                                                         createdAt: new Date()
                                                     }, ...vnode.state.statusInfo]
-                                                   
+
                                                     vnode.state.updateOrderOnServer()
                                                 }
                                             }),
