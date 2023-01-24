@@ -30,6 +30,7 @@ const orders = {
 
             vnode.state.jobs.map(job => {
                 Object.assign(job, {
+                    createdAtAgo: moment(job.createdAt).fromNow(true),
                     timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                     timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                 })
@@ -128,7 +129,8 @@ const orders = {
                                                                 uploading,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+                                                                _id,
+                                                                createdAtAgo
                                                             }) => {
                                                                 return m("tr", {
                                                                     // key: id,
@@ -176,7 +178,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Picked", timePickedUpFromNow + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -395,7 +397,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Picked ", + 1 + "Bag", timePickedUpFromNow + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -612,7 +614,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Order Created " + createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,

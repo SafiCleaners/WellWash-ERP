@@ -175,7 +175,7 @@ var calculator = () => {
                         'Content-Type': 'application/json',
                         'authorization': localStorage.getItem('token')
                     },
-                    data: orderDetailsDiff
+                    data: order
                 };
 
                 console.log(options)
@@ -376,7 +376,7 @@ var calculator = () => {
                                         ),
                                         m("div", { "class": "dropdown" },
                                             [
-                                                m("button", { "class": "btn btn-secondary dropdown-toggle btn-lg", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                                     pickupTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
@@ -439,7 +439,7 @@ var calculator = () => {
                                         ),
                                         m("div", { "class": "dropdown" },
                                             [
-                                                m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                                     dropOffTime
                                                 ),
                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },

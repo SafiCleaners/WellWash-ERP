@@ -32,6 +32,7 @@ const step = (vnode) => {
 
                 vnode.state.jobs.map(job => {
                     Object.assign(job, {
+                        createdAtAgo: moment(job.createdAt).fromNow(true),
                         timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                         timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                     })
@@ -132,80 +133,15 @@ const step = (vnode) => {
                                                                     uploading,
                                                                     timeDroppedOffFromNow,
                                                                     timePickedUpFromNow,
-                                                                    _id
+                                                                    _id,
+                                                                    createdAtAgo
                                                                 }) => {
                                                                     return m("tr", {
                                                                         // key: id,
                                                                         style: { "cursor": "pointer" }
                                                                     },
                                                                         [
-                                                                            // m("td", { "class": "pl-0 py-5" },
-                                                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                                                            //         m("span", { "class": "symbol-label" },
-                                                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                                                            //         )
-                                                                            //     )
-                                                                            // ),
-                                                                            m("td", {
-                                                                                "class": "pl-0", onclick() { m.route.set("/joblist/" + _id) }
-                                                                            },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                        name + " (" + phone + ")"
-                                                                                    ),
-                                                                                    m("div",
-                                                                                        [
-                                                                                            m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
-                                                                                                `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                                                                                    " House:" + houseNumber
-                                                                                                )]
-                                                                                            )
-                                                                                        ]
-                                                                                    )
-                                                                                ]
-                                                                            ),
-
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                        `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
-                                                                                    ),
-                                                                                    m("span", { "class": "text-muted font-weight-bold" },
-                                                                                        paid ? "Paid " : " Not Paid"
-                                                                                    )
-                                                                                ]
-                                                                            ),
-
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
-
-                                                                                        "Was Picked ", timePickedUpFromNow + " ago"
-                                                                                    ),
-                                                                                    m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
-                                                                                        "To be Dropped Off in ", timeDroppedOffFromNow,
-                                                                                    )
-                                                                                ]
-                                                                            ),
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                        " Status " + status ? status : " No Status Updated"
-                                                                                    ),
-                                                                                ]
-                                                                            ),
-                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                            //     m("span", { "class": "text-muted font-weight-500" },
-                                                                            //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
-                                                                            //     )
-                                                                            // ),
-                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
-                                                                            //     m("span", { "class": "label label-lg label-light-info label-inline" },
-                                                                            //         academicLevel
-                                                                            //     )
-                                                                            // ),
-
-                                                                            m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                            m("td", { "class": "text-right pr-5", style: "white-space: nowrap;" },
                                                                                 [
                                                                                     // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
                                                                                     //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
@@ -239,20 +175,80 @@ const step = (vnode) => {
                                                                                             });
                                                                                         }
                                                                                     },
-                                                                                        m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                            m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                                m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                    [
-                                                                                                        m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                        m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                        m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                    ]
-                                                                                                )
-                                                                                            )
-                                                                                        )
+                                                                                        [m("i.las la-truck", [])]
                                                                                     )
                                                                                 ]
-                                                                            )
+                                                                            ),
+                                                                            // m("td", { "class": "pl-0 py-5" },
+                                                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
+                                                                            //         m("span", { "class": "symbol-label" },
+                                                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
+                                                                            //         )
+                                                                            //     )
+                                                                            // ),
+                                                                            m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                                [
+                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
+
+                                                                                        "Requested ", createdAtAgo + " ago"
+                                                                                    ),
+                                                                                    m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
+                                                                                        "To be Dropped Off in ", timeDroppedOffFromNow,
+                                                                                    )
+                                                                                ]
+                                                                            ),
+                                                                            m("td", {
+                                                                                "class": "pl-0", onclick() { m.route.set("/joblist/" + _id) }
+                                                                            },
+                                                                                [
+                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
+                                                                                        name + " (" + phone + ")"
+                                                                                    ),
+                                                                                    m("div",
+                                                                                        [
+                                                                                            m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
+                                                                                                `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
+                                                                                                    " House:" + houseNumber
+                                                                                                )]
+                                                                                            )
+                                                                                        ]
+                                                                                    )
+                                                                                ]
+                                                                            ),
+
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                                [
+                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                        `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    ),
+                                                                                    m("span", { "class": "text-muted font-weight-bold" },
+                                                                                        [
+                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," + 
+                                                                                            `${paid ? "Paid " : " Not Paid"}`]
+                                                                                    ),
+                                                                                ]
+                                                                            ),
+
+
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                                [
+                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                        " Status " + status ? status : " No Status Updated"
+                                                                                    ),
+                                                                                ]
+                                                                            ),
+                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                            //     m("span", { "class": "text-muted font-weight-500" },
+                                                                            //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
+                                                                            //     )
+                                                                            // ),
+                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                                            //     m("span", { "class": "label label-lg label-light-info label-inline" },
+                                                                            //         academicLevel
+                                                                            //     )
+                                                                            // ),
+
+
                                                                         ]
                                                                     )
                                                                 })

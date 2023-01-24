@@ -20,6 +20,7 @@ const app = express();
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
 const { v4: uuidv4 } = require("uuid")
+const crypto = require('crypto');
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +33,8 @@ const MongoDBStore = require('express-mongodb-session')(session);
 
 const {
     JWT_TOKEN = 'shhhhh',
-    DB_URL
+    DB_URL,
+    DB_NAME
 } = process.env
 
 
@@ -99,7 +101,7 @@ const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => 
 })
 
 const routes = async (client) => {
-    const db = await client.db("WellAutoWashers")
+    const db = await client.db(DB_NAME || "WellAutoWashers")
 
     if (app.get('env') === 'production') {
         app.set('trust proxy', 1) // trust first proxy
@@ -140,6 +142,7 @@ const routes = async (client) => {
                 //     delete job.price
                 //     delete job.paid
                 // }
+                job.createdAt = job._id.getTimestamp()
                 return job
             }))
         })
@@ -152,6 +155,19 @@ const routes = async (client) => {
         }, function (err, result) {
             if (err) throw err
 
+            result.createdAt = result._id.getTimestamp()
+            res.send(result)
+        })
+    });
+
+    app.get('/jobs/shortId/:shortId', authMiddleware, (req, res) => {
+        db.collection('jobs').findOne({
+            shortId: req.params.shortId,
+            deleted: false
+        }, function (err, result) {
+            if (err) throw err
+
+            result.createdAt = result._id.getTimestamp()
             res.send(result)
         })
     });
@@ -185,7 +201,7 @@ const routes = async (client) => {
         const device = deviceDetector.parse(req.headers['user-agent']);
 
         // console.log(device)
-        
+
         try {
             let jobId = req.params.id;
             // check if id provided is 'null'
@@ -198,9 +214,14 @@ const routes = async (client) => {
                 deleted: false
             });
             if (!job) {
+                // generate a short ID
+                const shortId = crypto.randomBytes(3).toString('hex');
+                // console.log(shortId); // output: "9a2b7c"
+
                 const newJobData = Object.assign(req.body, {
                     _id: ObjectId(jobId),
                     deleted: false,
+                    shortId,
                     device
                 });
                 // console.log({ newJobData })
@@ -241,9 +262,6 @@ const routes = async (client) => {
 
     // user mannagement
     app.post('/users', (req, res) => {
-
-
-
         const { googleId } = req.body
 
         db.collection('users').findOne({ googleId }, function (err, result) {
