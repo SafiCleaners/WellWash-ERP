@@ -67,7 +67,12 @@ const google_login = {
         },
       });
 
-      await window.google.accounts.id.prompt();
+      await window.google.accounts.id.prompt(async (notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          document.cookie = `g_state=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+          await window.google.accounts.id.prompt()
+        }
+      });
     } catch (err) {
       console.log(err)
     }
@@ -79,7 +84,12 @@ const google_login = {
         type: "button",
         class: "btn btn-danger btn-lg ",
         onclick() {
-          window.google.accounts.id.prompt();
+          window.google.accounts.id.prompt(async (notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              document.cookie = `g_state=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+              await window.google.accounts.id.prompt()
+            }
+          });
         },
       },
       [m("i", { class: "bi bi-google align-text-bottom" }), "Login with Google"]
