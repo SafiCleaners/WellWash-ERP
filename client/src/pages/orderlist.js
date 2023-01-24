@@ -105,7 +105,7 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD')
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === false)
                                                             .map(({
                                                                 appartmentName,
                                                                 name,
