@@ -185,7 +185,8 @@ const users = {
                                                                 ),
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     [
-                                                                        m(m.route.Link, {
+                                                                        m('a', {
+                                                                            href: "javascript:void(0);",
                                                                             "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                                 const options = {
                                                                                     method: 'DELETE',
