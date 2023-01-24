@@ -163,7 +163,7 @@ var calculator = () => {
                     console.log("Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
                 }
 
-                const orderDetailsDiff = _.omit(order, function (v, k) { return orderString[k] === v; })
+                const orderDetailsDiff = _.omit(order, function (v, k) { return orderString && orderString[k] === v; })
                 // console.log({ orderDetailsDiff })
 
                 order.lastSubmittedAt = new Date()
@@ -328,7 +328,7 @@ var calculator = () => {
 
 
 
-                                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                                m("div", { "class": "col-xl-4 col-lg-8 col-md-8 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your Pickup? "
@@ -397,7 +397,7 @@ var calculator = () => {
                                             ]
                                         )
                                     ]),
-                                m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                                m("div", { "class": "col-xl-4 col-lg-8 col-md-8 col-sm-12" },
                                     [
                                         m("label",
                                             "When would you like your DropOff?"

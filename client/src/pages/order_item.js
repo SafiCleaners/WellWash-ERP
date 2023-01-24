@@ -17,11 +17,13 @@ import {
 
 
 const input = {
-    oninit(vnode) {
-        const { value, onChange } = vnode.attrs
+    oncreate(vnode) {
+        console.log(vnode.attrs)
+        const { value } = vnode.attrs
         vnode.state.value = value
     },
     view(vnode) {
+        console.log(vnode.state)
         return m("div", { "class": "col-lg-6" },
             [
                 m("label",
@@ -30,12 +32,8 @@ const input = {
                 m("div", { "class": "input-group" },
                     [
                         m("input", {
-                            oninput: (e) => {
-                                vnode.state.value = Number(vnode.state.value) - 1
-
-                                vnode.attrs.onChange(vnode.state.value)
-                            },
-                            value: vnode.attrs.value,
+                            oninput: (e) => vnode.attrs.onChange(e.target.value),
+                            value: vnode.state.value,
                             "class": "form-control"
                         }),
                         m("div", { "class": "input-group-append" },
@@ -61,9 +59,7 @@ const order_item = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.job = response.data
             vnode.state = Object.assign(vnode.state, response.data)
-            vnode.state.originalJob = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
