@@ -181,7 +181,7 @@ const step = (vnode) => {
                                                                                     // Math.random() < 0.8
                                                                                     //     ? m("i.las la-hiking", { style: { 'font-size': '48px' } }, [])
                                                                                     //     : 
-                                                                                        m("i.las la-truck", { style: { 'font-size': '32px' } }, [])
+                                                                                    m("i.las la-truck", { style: { 'font-size': '32px' } }, [])
                                                                                 ]
                                                                             ),
                                                                             // m("td", { "class": "pl-0 py-5" },
@@ -197,8 +197,10 @@ const step = (vnode) => {
 
                                                                                         `#${shortId} `, 1 + " duvet " + "mild perfume"
                                                                                     ),
-                                                                                    m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
-                                                                                        "To be Dropped Off in ", timeDroppedOffFromNow,
+                                                                                    m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
+                                                                                        `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
+                                                                                            " House:" + houseNumber
+                                                                                        )]
                                                                                     )
                                                                                 ]
                                                                             ),
@@ -211,11 +213,10 @@ const step = (vnode) => {
                                                                                     ),
                                                                                     m("div",
                                                                                         [
-                                                                                            m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
-                                                                                                `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                                                                                    " House:" + houseNumber
-                                                                                                )]
+                                                                                            m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
+                                                                                                "To be Dropped Off in ", timeDroppedOffFromNow,
                                                                                             )
+
                                                                                         ]
                                                                                     )
                                                                                 ]
