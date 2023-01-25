@@ -167,7 +167,7 @@ const map = {
                     // Add circle overlay and bind to marker
                     var circle = new google.maps.Circle({
                         map: map,
-                        radius: (16093 / 5),    // 10 miles in metres
+                        radius: (16093 / 5) * 5,    // 10 miles in metres
                         fillColor: '#66B4ED'
                     });
                     circle.bindTo('center', new google.maps.Marker({
@@ -201,7 +201,7 @@ const map = {
     },
     view(vnode) {
         return m("div", { style: { "padding": "10px" } }, [
-            m('#mapdiv', { style: { height: "300px" } }),
+            m('#mapdiv', { style: { height: "500px" } }),
             // vnode.state.distanceOfUserFromShop && vnode.state.distanceOfUserFromShop > (16093 / 5) 
             //     ? m("h3"," you seem to be too far away from us. we dont service deliveries that far")
             //     : `You seem to be close by. Free delivery and pickup is available ${Math.floor(Number(vnode.state.distanceOfUserFromShop))} meters`

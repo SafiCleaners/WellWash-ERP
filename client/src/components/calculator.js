@@ -692,7 +692,7 @@ var calculator = () => {
 
                                     ]),
 
-                                // m(map),
+                                m(map),
 
                                 // m("div", { "class": "bs-stepper" },
                                 //     [
