@@ -65,17 +65,6 @@ store.on('error', function (error) {
 });
 
 
-const authMiddleware = (req, res, next) => {
-    // let token = req.header('authorization');
-    // // console.log("TOKEN IS ", token)
-    // if (!token) {
-    //     return res.send(401)
-    // }
-
-    // var decoded = jwt.verify(token, JWT_TOKEN);
-    // req.auth = decoded
-    next()
-}
 
 const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => {
     const options = {
@@ -108,21 +97,64 @@ const routes = async (client) => {
         // sess.cookie.secure = true // serve secure cookies
     }
 
+    function userAuthMiddleware(req, res, next) {
+        // Extract the user ID from the authorization header
+        const userId = req.headers.authorization;
+        // Check if the user is logged in
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized: User is not logged in" });
+        }
+        // Increment the login count for the user
+        db.collection('user-tracking').updateOne({ userId }, { $inc: { loginCount: 1 } }, { upsert: true })
+        // Attach the user ID to the request object
+        req.userId = userId;
+        next();
+    }
+
+    function userTrackingMiddleware(req, res, next) {
+        // Extract the user ID from the authorization header
+        const userId = req.headers.authorization;
+        // Extract other relevant information from the req object
+        const { method, url, body, headers } = req;
+        // Increment the count of access for the user
+        db.collection('user-tracking').updateOne({ userId }, { $inc: { count: 1 } }, { upsert: true })
+        // Insert the request information as a new document in the "user-tracking" collection
+        db.collection('user-tracking').insertOne({ userId, method, url, body, headers, timestamp: new Date() });
+        next();
+    }
+
+    function userBlockedMiddleware(req, res, next) {
+        // Extract the token from the headers
+        const token = req.headers.authorization;
+        try {
+            // Verify the token
+            const decoded = jwt.verify(token, JWT_TOKEN);
+            // Extract the user's id from the token
+            const { _id: userId } = decoded;
+            // Find the user in the database
+            db.collection('users').findOne({ _id: ObjectId(userId) }, function (err, user) {
+                if (err) throw err;
+                // Check if the user is blocked
+                if (user.deleted) {
+                    return res.status(403).json({ message: "Forbidden: User is blocked" });
+                }
+                // Attach the user to the request object
+                req.user = user;
+                next();
+            });
+        } catch (err) {
+            return res.status(401).json({ message: "Unauthorized: Invalid token" });
+        }
+    }
+
+
+    const importantMiddleWares = [userAuthMiddleware, userBlockedMiddleware, userTrackingMiddleware]
+
+    app.use(userTrackingMiddleware)
+
     // Routes
     app.use('/health', (req, res) => {
         res.send({ status: "ok" })
-    });
-
-    app.get('/activeOrder', function (req, res) {
-        res.send(req.session);
-    });
-
-    app.get("/api/session", (req, res) => {
-        res.json({
-            clientID: req.session.clientID,
-            activeOrder: req.session.activeOrder,
-            // any other session data you want to retrieve
-        });
     });
 
     // Endpoint to serve the configuration file
@@ -131,7 +163,7 @@ const routes = async (client) => {
     });
 
     // authMiddleware
-    app.get('/jobs', (req, res) => {
+    app.get('/jobs', importantMiddleWares, (req, res) => {
         db.collection('jobs').find({
             deleted: false
         }).toArray(function (err, result) {
@@ -148,7 +180,7 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/jobs/:id', authMiddleware, (req, res) => {
+    app.get('/jobs/:id', importantMiddleWares, (req, res) => {
         db.collection('jobs').findOne({
             _id: ObjectId(req.params.id),
             deleted: false
@@ -160,7 +192,7 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/jobs/shortId/:shortId', authMiddleware, (req, res) => {
+    app.get('/jobs/shortId/:shortId', importantMiddleWares, (req, res) => {
         db.collection('jobs').findOne({
             shortId: req.params.shortId,
             deleted: false
@@ -172,7 +204,7 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/jobs/findByGoogleId/:googleId', authMiddleware, (req, res) => {
+    app.get('/jobs/findByGoogleId/:googleId', importantMiddleWares, (req, res) => {
         db.collection('jobs').find({
             googleId: req.params.googleId,
             deleted: false
@@ -196,7 +228,7 @@ const routes = async (client) => {
         })
     });
 
-    app.patch('/jobs/:id', async (req, res) => {
+    app.patch('/jobs/:id', importantMiddleWares, async (req, res) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
 
@@ -250,9 +282,72 @@ const routes = async (client) => {
         }
     });
 
+    app.get('/jobs-received/:laundryId', importantMiddleWares, (req, res) => {
+        const laundryId = req.params.laundryId;
+        db.collection('jobs').findOne({ _id: ObjectId(laundryId), deleted: false }, (err, job) => {
+            if (err) throw err;
+            if (!job) {
+                res.status(404).send({ error: "Job not found" });
+            } else {
+                db.collection('users').findOne({ _id: job.userId }, (err, user) => {
+                    if (err) throw err;
+                    if (!user) {
+                        res.status(404).send({ error: "User not found" });
+                    } else {
+                        const messages = [
+                            "Great news! We've received your laundry order and everything looks good. Your {{duvets}} duvets, {{curtains}} curtains, {{generalLaundry}} kg of general laundry, and {{shoes}} shoes will be cleaned and ready for pickup at {{totalCost}} total cost. We're excited to take care of your laundry needs!",
+                            "Your laundry details have been confirmed! Your {{duvets}} duvets, {{curtains}} curtains, {{generalLaundry}} kg of general laundry, and {{shoes}} shoes will be freshly cleaned and cost {{totalCost}} in total. Thanks for choosing us!",
+                            "We've got your laundry covered! Your {{duvets}} duvets, {{curtains}} curtains, {{generalLaundry}} kg of general laundry, and {{shoes}} shoes will be cleaned to perfection and the total cost is {{totalCost}}. Looking forward to serving you!",
+                            "Your laundry order is confirmed! Your {{duvets}} duvets, {{curtains}} curtains, {{generalLaundry}} kg of general laundry, and {{shoes}} shoes will be expertly cleaned and the total cost is {{totalCost}}. We're excited to provide you with top-notch service!",
+                            "We've received your laundry order and are excited to take care of it for you! Your {{duvets}} duvets, {{curtains}} curtains, {{generalLaundry}} kg of general laundry, and {{shoes}} shoes will be cleaned and ready at a total cost of {{totalCost}}. Thanks for choosing us!"
+                        ];
+                        const message = messages[Math.floor(Math.random() * messages.length)];
+                        message.replace("{{duvets}}", job.duvets)
+                            .replace("{{curtains}}", job.curtains)
+                            .replace("{{generalLaundry}}", job.generalLaundry)
+                            .replace("{{shoes}}", job.shoes)
+                            .replace("{{totalCost}}", job.totalCost);
+                        func({ phone: user.phone, message: message }, console.log);
+                        res.send({ message: "SMS sent successfully" });
+                    }
+                });
+            }
+        });
+    });
 
+    app.get('/jobs-ready/:laundryId', importantMiddleWares, (req, res) => {
+        const laundryId = req.params.laundryId;
+        db.collection('jobs').findOne({ _id: ObjectId(laundryId), deleted: false }, (err, job) => {
+            if (err) throw err;
+            if (!job) {
+                res.status(404).send({ error: "Job not found" });
+            } else {
+                db.collection('users').findOne({ _id: job.userId }, (err, user) => {
+                    if (err) throw err;
+                    if (!user) {
+                        res.status(404).send({ error: "User not found" });
+                    } else {
+                        const messages = [
+                            "Great news! Your laundry order with ID of {{orderId}} is ready for delivery. Our bike courier is on the way to bring your fresh and clean laundry to you"
+                            , "Your laundry order with ID of {{orderId}} is ready for delivery! Our bike messenger is en route to bring your freshly cleaned laundry to you"
+                            , "Your laundry order with ID of {{orderId}} is all set for delivery. Our bike delivery rider is on the way to your location with your freshly cleaned laundry"
+                            , "Your laundry order with ID of {{orderId}} is ready for pickup. Our bike courier is en route to bring your freshly cleaned laundry to you"
+                            , "Your laundry order with ID of {{orderId}} is ready for pickup. Our bike messenger is on the way to deliver your freshly cleaned laundry to you"];
+                        const message = messages[Math.floor(Math.random() * messages.length)];
+                        message.replace("{{duvets}}", job.duvets)
+                            .replace("{{curtains}}", job.curtains)
+                            .replace("{{generalLaundry}}", job.generalLaundry)
+                            .replace("{{shoes}}", job.shoes)
+                            .replace("{{totalCost}}", job.totalCost);
+                        func({ phone: user.phone, message: message }, console.log);
+                        res.send({ message: "SMS sent successfully" });
+                    }
+                });
+            }
+        });
+    });
 
-    app.delete('/jobs/:id', authMiddleware, (req, res) => {
+    app.delete('/jobs/:id', importantMiddleWares, (req, res) => {
         db.collection('jobs').updateOne({ _id: ObjectId(req.params.id) }, { $set: { deleted: true } }, function (err, result) {
             if (err) throw err
 
@@ -308,7 +403,7 @@ const routes = async (client) => {
         })
     });
 
-    app.patch('/users/roles/:id', authMiddleware, (req, res) => {
+    app.patch('/users/roles/:id', importantMiddleWares, (req, res) => {
         db.collection('roles').updateOne({ _id: ObjectId(req.params.id) }, { $set: req.body }, function (err, result) {
             if (err) throw err
 
@@ -316,7 +411,7 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/users', authMiddleware, (req, res) => {
+    app.get('/users', importantMiddleWares, (req, res) => {
         // if (req.auth.role != "Owner")
         //     res.status(401).send([])
 
@@ -339,14 +434,15 @@ const routes = async (client) => {
         })
     });
 
-    app.get('/users/:googleId', authMiddleware, (req, res) => {
+    app.get('/users/:googleId', (req, res) => {
+        // check google if this is a valid user first
         db.collection('users').findOne({ googleId: req.params.googleId, deleted: false }, function (err, result) {
             if (err) throw err
             res.status(result ? 200 : 404).send(result)
         })
     });
 
-    app.patch('/users/:email', authMiddleware, (req, res) => {
+    app.patch('/users/:email', importantMiddleWares, (req, res) => {
         db.collection('users').updateOne({ email: req.params.email }, { $set: req.body }, function (err, result) {
             if (err) throw err
 
@@ -354,7 +450,7 @@ const routes = async (client) => {
         })
     });
 
-    app.delete('/users/:email', authMiddleware, (req, res) => {
+    app.delete('/users/:email', importantMiddleWares, (req, res) => {
         db.collection('users').findOne({ email: req.params.email }, function (err, result) {
             if (err) throw err
 
@@ -368,7 +464,7 @@ const routes = async (client) => {
 
     });
 
-    app.patch('/users/role/:email', authMiddleware, (req, res) => {
+    app.patch('/users/role/:email', importantMiddleWares, (req, res) => {
         db.collection('user_roles').updateOne(
             { id: req.params.email },
             { $set: req.body },
