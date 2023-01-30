@@ -99,7 +99,7 @@ const google_login = {
           });
         },
       },
-      [m("i", { class: "bi bi-google align-text-bottom" }), "Login with Google"]
+      [m("i", { class: "bi bi-google align-text-bottom" }), "Login"]
     );
 
   },
