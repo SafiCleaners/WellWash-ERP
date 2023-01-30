@@ -20,15 +20,22 @@ const google_login = {
 
       try {
         console.log(client_id, url)
+        const {
+          email, picture, sub, name
+        } = decodedToken
+        const userData = { email, picture, googleId: sub, name };
         const options = {
-          method: 'GET',
-          url: `${url}/users/${decodedToken.sub}`,
+          method: 'POST',
+          url: `${url}/users`,
           headers: {
             'Content-Type': 'application/json',
           },
+          data: userData,
         };
-        const user = await axios.request(options);
-        localStorage.setItem('role', user.data.role);
+        const res = await axios.request(options);
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('role', res.data.user.role);
         cb()
       } catch (err) {
 

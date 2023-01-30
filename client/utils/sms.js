@@ -25,9 +25,8 @@ const func = ({ phone, message }, reply) => {
     };
 
     axios.request(options).then(function (response) {
-        reply(JSON.parse(response));
+        reply(response.data);
     }).catch(console.log);
-
 }
 
 

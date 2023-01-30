@@ -89,10 +89,7 @@ var calculator = () => {
             //     localStorage.setItem("activeOrderId", activeOrderId)
             // }
             vnode.state.id = activeOrderId
-
             vnode.state.clearInternalActiveOrderId = () => { activeOrderId = null }
-
-
 
             // function to update order on the server
             const updateOrderOnServer = (cb) => {

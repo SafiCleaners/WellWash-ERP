@@ -26,7 +26,7 @@ const steps = () => {
                                             "2"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "Wait for Pickup"
+                                            "Rider Picks Up for Free"
                                         )
                                     ]
                                 )
@@ -39,7 +39,7 @@ const steps = () => {
                                             "3"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "Our Team washes, drys and irons your Laundry"
+                                            "Our Team Executes in ~3hrs"
                                         )
                                     ]
                                 )
@@ -52,7 +52,7 @@ const steps = () => {
                                             "4"
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
-                                            "Await Drop Off"
+                                            "Rider Drop Off for free"
                                         )
                                     ]
                                 )

@@ -116,7 +116,7 @@ const order_item = {
                 mpesaConfirmationCode,
                 name,
                 statusInfo,
-                saved
+                saved,
             } = vnode.state
 
             let order = Object.assign({}, vnode.state.originalJob, {
@@ -140,6 +140,11 @@ const order_item = {
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
+                curtainsCharge: 250,
+                blanketsCharge: 350,
+                duvetsCharge: 700,
+                generalKgsCharge : 150,
+                shoesCharge: 150
             });
 
             console.log({
@@ -251,6 +256,7 @@ const order_item = {
             furry_blankets = 0,
             bed_sheets = 0,
             curtains = 0,
+            shoes =  0,
             towels = 0,
             suits_type1 = 0,
             suits_type2 = 0,
@@ -258,6 +264,13 @@ const order_item = {
             ironing_trousers = 0,
             generalKgs = 0,
             createdAtAgo,
+
+            curtainsCharge,
+            blanketsCharge,
+            duvetsCharge,
+            generalKgsCharge,
+            shoesCharge
+
         } = vnode.state
 
         const calculatePrice = () => {
@@ -665,7 +678,7 @@ const order_item = {
                 [
                     m(incrementableInput, {
                         name: 'Curtains',
-                        charge: 200,
+                        charge: curtainsCharge,
                         value: curtains,
                         pricing: [{
                             amount: 200,
@@ -678,12 +691,12 @@ const order_item = {
                             label: '250'
                         }],
                         onChange(value) {
-                            vnode.state.curtains = value
+                            vnode.state.curtainsCharge = value
                         }
                     }),
                     m(incrementableInput, {
                         name: 'Blankets',
-                        charge: 350,
+                        charge: blanketsCharge,
                         pricing: [{
                             amount: 300,
                             label: '300'
@@ -696,12 +709,12 @@ const order_item = {
                         }],
                         value: blankets,
                         onChange(value) {
-                            vnode.state.blankets = value
+                            vnode.state.blanketsCharge = value
                         }
                     }),
                     m(incrementableInput, {
                         name: 'Duvets',
-                        charge: 700,
+                        charge: duvetsCharge,
                         value: duvets,
                         pricing: [{
                             amount: 500,
@@ -714,12 +727,12 @@ const order_item = {
                             label: '700'
                         }],
                         onChange(value) {
-                            vnode.state.duvets = value
+                            vnode.state.duvetsCharge = value
                         }
                     }),
                     m(incrementableInput, {
                         name: 'General Clothes in Kgs',
-                        charge: 150,
+                        charge: generalKgsCharge,
                         pricing: [{
                             amount: 100,
                             label: '100'
@@ -732,12 +745,30 @@ const order_item = {
                         }],
                         value: generalKgs,
                         onChange(value) {
-                            vnode.state.generalKgs = value
+                            vnode.state.generalKgsCharge = value
+                        }
+                    }),
+                    m(incrementableInput, {
+                        name: 'Shoes in Pairs',
+                        charge: shoesCharge,
+                        pricing: [{
+                            amount: 100,
+                            label: '100'
+                        }, {
+                            amount: 150,
+                            label: '150'
+                        }, {
+                            amount: 200,
+                            label: '200'
+                        }],
+                        value: generalKgs,
+                        onChange(value) {
+                            vnode.state.shoesCharge = value
                         }
                     }),
 
                     m("h3", { "class": "display-4" },
-                        `This would cost around KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                        `This would cost around KSH ${(curtains * curtainsCharge) + (blankets * blanketsCharge) + (duvets * duvetsCharge) + (generalKgs * generalKgsCharge) + (shoes * shoesCharge)}`
                     ),
                     m("p", { "class": "font-size-lg" },
                         `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`

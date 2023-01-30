@@ -11,6 +11,7 @@ import order_step_1 from "./pages/order_step_1";
 import OrderList from "./pages/orderlist";
 import OrderItem from "./pages/order_item";
 import thankyou from "./components/thankyou";
+import chat from "./components/chat.js";
 
 import users from "./pages/users";
 
@@ -26,5 +27,6 @@ m.route(root, "/", {
     "/joblist": OrderList,
     "/joblist/:job": OrderItem,
     "/thankyou": thankyou,
-    "/users": users
+    "/users": users,
+    "/REFFER/:REFEERED_BY": chat
 })
