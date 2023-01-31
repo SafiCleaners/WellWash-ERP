@@ -25,7 +25,7 @@ const refferal = () => {
 
 
             setTimeout(()=>{
-                window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=Hello WELLWASH team!, could you come pick up my laundry? \nI was reffered to you guys by ${REFEERED_BY||owned_by} and the discount code i would like to use is ${DISCOUNT_CODE||discount_code} Order Id is #${shortId}`)
+                window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=Hello WELLWASH team!, %0a%0aCould you come pick up my laundry? %0aI was reffered to you guys by ${REFEERED_BY||owned_by} and the discount code i would like to use is ${DISCOUNT_CODE||discount_code} %0a%0a The Order Id is #${shortId}`)
             },6000)
         },
         view(vnode) {
