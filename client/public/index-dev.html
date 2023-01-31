@@ -69,7 +69,18 @@
     }
 
     .share-float {
-      margin-top: 23px;
+      position: fixed;
+      width: 60px;
+      height: 60px;
+      bottom: 80px;
+      right: 40px;
+      background-color: #25d366;
+      color: #FFF;
+      border-radius: 50px;
+      text-align: center;
+      font-size: 30px;
+      box-shadow: 2px 2px 3px #999;
+      z-index: 100;
     }
 
     .icon-xl {
@@ -136,23 +147,16 @@
 <!--begin::Body-->
 
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled page-loading">
+
   <a href="https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
     class="float" target="_blank">
     <i class="icon-xl fa-2 fab fa-whatsapp my-float" style="color: white"></i>
   </a>
-  <a href="https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
-    class="float" target="_blank">
+
+  <a
+    class="share-float" target="_blank">
     <i class="icon-xl fa-2 fab fa-share share-float" style="color: white"></i>
   </a>
-  <!-- <a 
-    href="https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
-    class="float" target="_blank">
-      <i 
-        style="font-family: null"
-       class="fa fa-whatsapp my-float" style="color: white"></i>
-      </a> -->
-
-
 
   <!--begin::Main-->
   <!--begin::Header Mobile-->

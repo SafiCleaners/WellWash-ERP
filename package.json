@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@bugsnag/js": "^7.19.0",
+    "@bugsnag/plugin-express": "^7.19.0",
     "aws-sdk": "^2.983.0",
     "axios": "^0.24.0",
     "cors": "^2.8.5",

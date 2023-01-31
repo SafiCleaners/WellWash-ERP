@@ -31,6 +31,14 @@ app.use(morgan('tiny'))
 const session = require('express-session');
 const MongoDBStore = require('express-mongodb-session')(session);
 
+var Bugsnag = require('@bugsnag/js')
+var BugsnagPluginExpress = require('@bugsnag/plugin-express')
+
+Bugsnag.start({
+    apiKey: 'f088d748c99f920d8b2b9335d95ea7d6',
+    plugins: [BugsnagPluginExpress]
+})
+
 const {
     JWT_TOKEN = 'shhhhh',
     DB_URL,
@@ -147,7 +155,11 @@ const routes = async (client) => {
         }
     }
 
+    // This must be the first piece of middleware in the stack.
+    // It can only capture errors in downstream middleware
+    app.use(Bugsnag.getPlugin('express').requestHandler)
 
+    /* all other middleware and application routes go here */
     const importantMiddleWares = [userAuthMiddleware, userBlockedMiddleware, userTrackingMiddleware]
 
     app.use(userTrackingMiddleware)
@@ -245,7 +257,7 @@ const routes = async (client) => {
             DISCOUNT_CODE,
             device
         });
-        
+
         const trackData = {
             shortId,
             jobId: newJobData._id,
@@ -585,6 +597,9 @@ const routes = async (client) => {
 
         });
     });
+
+    // This handles any errors that Express catches
+    app.use(Bugsnag.getPlugin('express').errorHandler)
 }
 
 const PORT = process.env.PORT || 8002;
