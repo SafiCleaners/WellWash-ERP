@@ -1,48 +1,36 @@
 import m from "mithril"
+import axios from "axios"
 
-const chat = () => {
+import { url } from '../constants';
+
+const refferal = () => {
     return {
-        oninit(vnode) {
-            setTimeout(()=>{
-                window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry? \nI was reffered to you guys by ${vnode.attrs.REFEERED_BY}`)
-            }, 5000)
+        async oninit(vnode) {
+            const { owned_by, discount_code, REFEERED_BY,DISCOUNT_CODE } = vnode.attrs || m.route.get();
+
+            console.log({owned_by, discount_code, REFEERED_BY,DISCOUNT_CODE})
+
+            const options = {
+                method: 'POST',
+                url: `${url}/track-refferals`,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: {
+                    REFEERED_BY : REFEERED_BY ||owned_by,
+                    DISCOUNT_CODE: DISCOUNT_CODE || discount_code
+                },
+            };
+            const {data:{shortId}} = await axios.request(options);
+          
+
+            // setTimeout(()=>{
+            //     window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, could you code pick up my laundry? \nI was reffered to you guys by ${REFEERED_BY||owned_by} and the discount code i would like to use is ${DISCOUNT_CODE||discount_code} Order Id is ${shortId}`)
+            // },7000)
         },
         view(vnode) {
-            var {
-                pickupDay,
-                dropOffDay,
-                pickupTime,
-                dropOffTime,
-                appartmentName,
-                houseNumber,
-                moreDetails,
-                curtains,
-                blankets,
-                duvets,
-                generalKgs,
-                mpesaPhoneNumber,
-                phone,
-                mpesaConfirmationCode,
-                name
-            } = vnode.state
+            const { owned_by, discount_code, REFEERED_BY,DISCOUNT_CODE } = vnode.attrs || m.route.get();
 
-            // console.table({
-            //     pickupDay,
-            //     dropOffDay,
-            //     pickupTime,
-            //     dropOffTime,
-            //     appartmentName,
-            //     houseNumber,
-            //     moreDetails,
-            //     curtains,
-            //     blankets,
-            //     duvets,
-            //     generalKgs,
-            //     mpesaPhoneNumber,
-            //     phone,
-            //     mpesaConfirmationCode,
-            //     name
-            // })
 
             return m("div", { "class": "card-body" },
 
@@ -82,10 +70,10 @@ const chat = () => {
                                                 }
                                             })),
                                             m("h1", { "class": "mb-3" },
-                                                `Wellcome to Wellwash.Online, we are reffering you to whatsapp in a minute, ${vnode.attrs.REFEERED_BY} will Get 25% of your order`
+                                                `Wellcome to Wellwash.Online, we are reffering you to whatsapp in a minute`, m('b',` ${REFEERED_BY||owned_by} will Get 25% commision from your order`)
                                             ),
                                             m("h4", { "class": "mb-3" },
-                                                "We cant wait to serve you"
+                                                `We cant wait to serve you, you'll get a discount `, m("b", `for using ${DISCOUNT_CODE||discount_code} as the discount code`)
                                             ),
                                             m("h4", { "class": "mb-3" },
                                                 "For further tracking please check the details on the messages that you receive."
@@ -98,9 +86,6 @@ const chat = () => {
                                 )
                             )
                         )
-
-
-                        // order ends here 
                     ]
                 )
             )
@@ -108,4 +93,4 @@ const chat = () => {
     }
 }
 
-export default chat;
+export default refferal;

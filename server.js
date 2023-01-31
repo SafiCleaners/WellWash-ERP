@@ -228,6 +228,40 @@ const routes = async (client) => {
         })
     });
 
+    app.post('/track-refferals', async (req, res) => {
+        // generate a short ID
+        const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
+        // console.log(shortId); // output: "9a2b7c"
+        const { REFFERAL_CODE, DISCOUNT_CODE } = req.body;
+
+        const deviceDetector = new DeviceDetector();
+        const device = deviceDetector.parse(req.headers['user-agent']);
+
+        const newJobData = Object.assign(req.body, {
+            _id: new ObjectId(),
+            deleted: false,
+            shortId,
+            REFFERAL_CODE,
+            DISCOUNT_CODE,
+            device
+        });
+        
+        const trackData = {
+            shortId,
+            jobId: newJobData._id,
+            timestamp: Date.now(),
+            REFFERAL_CODE,
+            DISCOUNT_CODE,
+            device
+        };
+
+        // console.log({ newJobData, trackData })
+        db.collection('jobs').insertOne(newJobData);
+        db.collection('track').insertOne(trackData)
+
+        return res.status(201).send(newJobData);
+    });
+
     app.patch('/jobs/:id', importantMiddleWares, async (req, res) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
@@ -247,7 +281,7 @@ const routes = async (client) => {
             });
             if (!job) {
                 // generate a short ID
-                const shortId = crypto.randomBytes(3).toString('hex');
+                const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
                 // console.log(shortId); // output: "9a2b7c"
 
                 const newJobData = Object.assign(req.body, {
