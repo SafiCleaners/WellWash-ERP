@@ -346,7 +346,7 @@ const order_item = {
                                                         //     )
                                                         // ),
                                                         m("td", {
-                                                            "class": "pl-0", onclick() { m.route.set("/joblist/" + _id) }
+                                                            "class": "pl-0", onclick() { m.route.set("/q/" + _id) }
                                                         },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
@@ -364,7 +364,7 @@ const order_item = {
                                                             ]
                                                         ),
 
-                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                     `KSH ${calculatePrice()}`
@@ -375,7 +375,7 @@ const order_item = {
                                                             ]
                                                         ),
 
-                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
@@ -386,19 +386,19 @@ const order_item = {
                                                                 )
                                                             ]
                                                         ),
-                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                     " Status " + status ? status : " No Status Updated"
                                                                 ),
                                                             ]
                                                         ),
-                                                        // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                        // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
                                                         //     m("span", { "class": "text-muted font-weight-500" },
                                                         //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
                                                         //     )
                                                         // ),
-                                                        // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/joblist/" + _id) } },
+                                                        // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
                                                         //     m("span", { "class": "label label-lg label-light-info label-inline" },
                                                         //         academicLevel
                                                         //     )

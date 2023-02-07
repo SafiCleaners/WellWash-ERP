@@ -194,15 +194,23 @@ const routes = async (client) => {
 
     app.get('/jobs/:id', importantMiddleWares, (req, res) => {
         db.collection('jobs').findOne({
-            _id: ObjectId(req.params.id),
+            $or: [
+                { _id: ObjectId(req.params.id) },
+                { shortId: req.params.id }
+            ],
             deleted: false
         }, function (err, result) {
             if (err) throw err
-
-            result.createdAt = result._id.getTimestamp()
-            res.send(result)
-        })
+    
+            if (result) {
+                result.createdAt = result._id.getTimestamp();
+                res.send(result);
+            } else {
+                res.status(404).send({ message: "Job not found" });
+            }
+        });
     });
+    
 
     app.get('/jobs/shortId/:shortId', importantMiddleWares, (req, res) => {
         db.collection('jobs').findOne({

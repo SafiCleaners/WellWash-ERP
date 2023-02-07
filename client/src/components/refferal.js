@@ -23,10 +23,18 @@ const refferal = () => {
             };
             const { data: { shortId } } = await axios.request(options);
 
+            console.log(shortId)
+            const customerMessage = `Hello WELLWASH team!, 
+                                        %0a%0aCould you come pick up my laundry? 
+                                        %0aI was reffered to you guys by ${REFEERED_BY || owned_by} and the discount code i would like to use is ${DISCOUNT_CODE || discount_code} 
+                                        %0a%0aMy Order Id is wellwash.online/q/${shortId}
+                                        
+                                        %0a(i will send my location pin), I am currently located ....`
 
-            setTimeout(()=>{
-                window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=Hello WELLWASH team!, %0a%0aCould you come pick up my laundry? %0aI was reffered to you guys by ${REFEERED_BY||owned_by} and the discount code i would like to use is ${DISCOUNT_CODE||discount_code} %0a%0a The Order Id is #${shortId}`)
-            },6000)
+            console.log({ customerMessage })
+            setTimeout(() => {
+                window.location.replace(`https://api.whatsapp.com/send?phone=+254701173735&text=${customerMessage}`)
+            }, 6000)
         },
         view(vnode) {
             const { owned_by, discount_code, REFEERED_BY, DISCOUNT_CODE } = vnode.attrs || m.route.get();
