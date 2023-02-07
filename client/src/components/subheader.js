@@ -9,7 +9,7 @@ const subheader = () => {
                     [
                         m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-300px" },
                             m(m.route.Link, { "href": "/" },
-                                m("img", { "class": "max-h-50px", "alt": "Logo", "src": "assets/media/exported-wellwash.png" })
+                                m("img", { "class": "max-h-50px", "alt": "Logo", "src": "/assets/media/exported-wellwash.png" })
                             )
                         ),
                         m("div", { "class": "subheader-nav nav flex-grow-1" },

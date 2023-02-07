@@ -11,7 +11,9 @@ aws.config.loadFromPath('./creds.json');
 var jwt = require('jsonwebtoken');
 var querystring = require('querystring');
 const { join } = require("path");
+const YAML = require('json-to-pretty-yaml');
 const sms = require("./client/utils/sms")
+
 
 const DeviceDetector = require("device-detector-js");
 
@@ -269,23 +271,31 @@ const routes = async (client) => {
             _id: new ObjectId(),
             deleted: false,
             shortId,
-            REFFERAL_CODE,
-            DISCOUNT_CODE,
             device
         });
 
         const trackData = {
             shortId,
             jobId: newJobData._id,
-            timestamp: Date.now(),
+            timestamp: Date.now().toLocaleString(),
             REFFERAL_CODE,
-            DISCOUNT_CODE,
-            device
+            DISCOUNT_CODE
         };
 
         // console.log({ newJobData, trackData })
         db.collection('jobs').insertOne(newJobData);
         db.collection('track').insertOne(trackData)
+
+        delete newJobData._id
+        delete newJobData.jobId
+
+        const message = YAML.stringify({ newJobData, trackData })
+        console.log(message.length,message)
+        sms({
+            // phone: "+254701173735",
+            phone: "+254711657108",
+            message 
+        }, console.log)
 
         return res.status(201).send(newJobData);
     });
@@ -320,6 +330,13 @@ const routes = async (client) => {
                 });
                 // console.log({ newJobData })
                 const newJob = await db.collection('jobs').insertOne(newJobData);
+
+                // sms here
+                sms({
+                    // phone: "+254701173735",
+                    phone: "+254711657108",
+                    message: YAML.stringify(newJobData)
+                }, console.log)
                 return res.status(201).send({ id: jobId });
             }
 
