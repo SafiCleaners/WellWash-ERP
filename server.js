@@ -290,11 +290,11 @@ const routes = async (client) => {
         delete newJobData.jobId
 
         const message = YAML.stringify({ newJobData, trackData })
-        console.log(message.length,message)
+        console.log(message.length, message)
         sms({
-            // phone: "+254701173735",
-            phone: "+254711657108",
-            message 
+            phone: "+254701173735",
+            // phone: "+254711657108",
+            message
         }, console.log)
 
         return res.status(201).send(newJobData);
@@ -332,11 +332,13 @@ const routes = async (client) => {
                 const newJob = await db.collection('jobs').insertOne(newJobData);
 
                 // sms here
-                sms({
-                    // phone: "+254701173735",
-                    phone: "+254711657108",
-                    message: YAML.stringify(newJobData)
-                }, console.log)
+                if (newJobData.saved === true)
+                    sms({
+                        // phone: "+254701173735",
+                        phone: "+254711657108",
+                        message: YAML.stringify(newJobData)
+                    }, console.log)
+
                 return res.status(201).send({ id: jobId });
             }
 
