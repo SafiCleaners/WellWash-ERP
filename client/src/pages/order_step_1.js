@@ -192,7 +192,7 @@ const step = (vnode) => {
                                                                             //         )
                                                                             //     )
                                                                             // ),
-                                                                            m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
@@ -206,7 +206,7 @@ const step = (vnode) => {
                                                                                 ]
                                                                             ),
                                                                             m("td", {
-                                                                                "class": "pl-0", onclick() { m.route.set("/q/" + _id) }
+                                                                                "class": "pl-0", onclick() { m.route.set("/j/" + _id) }
                                                                             },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
@@ -223,7 +223,7 @@ const step = (vnode) => {
                                                                                 ]
                                                                             ),
 
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                         `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
@@ -237,19 +237,19 @@ const step = (vnode) => {
                                                                             ),
 
 
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                         " Status " + status ? status : " No Status Updated"
                                                                                     ),
                                                                                 ]
                                                                             ),
-                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             //     m("span", { "class": "text-muted font-weight-500" },
                                                                             //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
                                                                             //     )
                                                                             // ),
-                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             //     m("span", { "class": "label label-lg label-light-info label-inline" },
                                                                             //         academicLevel
                                                                             //     )
@@ -374,7 +374,7 @@ const step = (vnode) => {
                                                                             //     )
                                                                             // ),
                                                                             m("td", {
-                                                                                "class": "pl-0", onclick() { m.route.set("/q/" + _id) }
+                                                                                "class": "pl-0", onclick() { m.route.set("/j/" + _id) }
                                                                             },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
@@ -392,7 +392,7 @@ const step = (vnode) => {
                                                                                 ]
                                                                             ),
 
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                         `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
@@ -403,7 +403,7 @@ const step = (vnode) => {
                                                                                 ]
                                                                             ),
 
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
@@ -414,19 +414,19 @@ const step = (vnode) => {
                                                                                     )
                                                                                 ]
                                                                             ),
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                         " Status " + status ? status : " No Status Updated"
                                                                                     ),
                                                                                 ]
                                                                             ),
-                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            // m("td", { "class": "text-right font-weight-bold", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             //     m("span", { "class": "text-muted font-weight-500" },
                                                                             //         timeLimit === timeTypeDay ? `${days} days ` : `${hrs} hrs`
                                                                             //     )
                                                                             // ),
-                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/q/" + _id) } },
+                                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             //     m("span", { "class": "label label-lg label-light-info label-inline" },
                                                                             //         academicLevel
                                                                             //     )

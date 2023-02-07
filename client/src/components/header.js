@@ -114,8 +114,8 @@ const header = {
                                                 ]
                                             )
                                         )
-                                    ] : [m("li", { "class": "menu-item" + (window.location.hash.includes("q") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                        m(m.route.Link, { "class": "menu-link", "href": "/q" },
+                                    ] : [m("li", { "class": "menu-item" + (window.location.hash.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/j" },
                                             [
                                                 m("span", { "class": "menu-text" },
                                                     "Job Queue"

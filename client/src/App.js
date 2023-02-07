@@ -24,8 +24,8 @@ m.route.prefix = ''
 
 m.route(root, "/", {
     "/": order_step_1,
-    "/q": OrderList,
-    "/q/:job": OrderItem,
+    "/j": OrderList,
+    "/j/:job": OrderItem,
     "/thankyou": thankyou,
     "/users": users,
     "/REFFER/:REFEERED_BY": refferal,

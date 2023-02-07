@@ -27,7 +27,7 @@ const refferal = () => {
             const customerMessage = `Hello WELLWASH team!, 
                                         %0a%0aCould you come pick up my laundry? 
                                         %0aI was reffered to you guys by ${REFEERED_BY || owned_by} and the discount code i would like to use is ${DISCOUNT_CODE || discount_code} 
-                                        %0a%0aMy Order Id is wellwash.online/q/${shortId}
+                                        %0a%0aMy Order Id is wellwash.online/j/${shortId}
                                         
                                         %0a(i will send my location pin), I am currently located ....`
 
