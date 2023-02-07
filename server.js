@@ -292,8 +292,11 @@ const routes = async (client) => {
         const message = YAML.stringify({ newJobData, trackData })
         console.log(message.length, message)
         sms({
+            phone: "+254711657108",
+            message
+        }, console.log)
+        sms({
             phone: "+254701173735",
-            // phone: "+254711657108",
             message
         }, console.log)
 
@@ -334,8 +337,8 @@ const routes = async (client) => {
                 // sms here
                 if (newJobData.saved === true)
                     sms({
-                        // phone: "+254701173735",
-                        phone: "+254711657108",
+                        phone: "+254701173735",
+                        // phone: "+254711657108",
                         message: YAML.stringify(newJobData)
                     }, console.log)
 
