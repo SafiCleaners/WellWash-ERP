@@ -295,11 +295,6 @@ const routes = async (client) => {
             phone: "+254711657108",
             message
         }, console.log)
-        sms({
-            phone: "+254701173735",
-            message
-        }, console.log)
-
         return res.status(201).send(newJobData);
     });
 
@@ -343,6 +338,9 @@ const routes = async (client) => {
                     delete newJobData.userId
                     delete newJobData.mpesaPhoneNumber
 
+                    delete newJobData.curtains
+                    delete newJobData.generalKgs
+
                     newJobData.orderUrl = "http://wellwash.online/j/" + newJobData.shortId
 
                     const message = YAML.stringify(newJobData)
@@ -351,7 +349,11 @@ const routes = async (client) => {
 
                     sms({
                         phone: "+254701173735",
-                        // phone: "+254711657108",
+                        message: YAML.stringify(newJobData)
+                    }, console.log)
+
+                    sms({
+                        phone: "+254711657108",
                         message: YAML.stringify(newJobData)
                     }, console.log)
                 }
