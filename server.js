@@ -335,12 +335,26 @@ const routes = async (client) => {
                 const newJob = await db.collection('jobs').insertOne(newJobData);
 
                 // sms here
-                if (newJobData.saved === true)
+                if (newJobData.saved === true){
+                    delete newJobData.device
+                    delete newJobData._id
+                    delete newJobData.deleted
+                    delete newJobData.googleId
+                    delete newJobData.userId
+                    delete newJobData.mpesaPhoneNumber
+
+                    newJobData.orderUrl = "http://wellwash.online/j/" + newJobData.shortId
+
+                    const message = YAML.stringify(newJobData)
+
+                    console.log(message.length, message)
+
                     sms({
                         phone: "+254701173735",
                         // phone: "+254711657108",
                         message: YAML.stringify(newJobData)
                     }, console.log)
+                }
 
                 return res.status(201).send({ id: jobId });
             }
