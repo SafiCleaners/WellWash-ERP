@@ -26,6 +26,8 @@ m.route(root, "/", {
     "/": order_step_1,
     "/j": OrderList,
     "/j/:job": OrderItem,
+    "/q": OrderList,
+    "/q/:job": OrderItem,
     "/thankyou": thankyou,
     "/users": users,
     "/REFFER/:REFEERED_BY": refferal,
