@@ -193,15 +193,23 @@ const routes = async (client) => {
     });
 
     app.get('/jobs/:id', importantMiddleWares, (req, res) => {
+        let objectId;
+        try {
+            objectId = ObjectId(req.params.id);
+        } catch (error) {
+            // The given id is not a valid BSON ObjectId
+            objectId = null;
+        }
+
         db.collection('jobs').findOne({
             $or: [
-                { _id: ObjectId(req.params.id) },
+                { _id: objectId },
                 { shortId: req.params.id }
             ],
             deleted: false
         }, function (err, result) {
             if (err) throw err
-    
+
             if (result) {
                 result.createdAt = result._id.getTimestamp();
                 res.send(result);
@@ -210,7 +218,7 @@ const routes = async (client) => {
             }
         });
     });
-    
+
 
     app.get('/jobs/shortId/:shortId', importantMiddleWares, (req, res) => {
         db.collection('jobs').findOne({
