@@ -19,10 +19,30 @@ const modal = {
     }
   },
   view() {
-    return m("button", { class: "btn btn-secondary" }, [
-      "Show",
-      m("button", { onclick() {hide()} , close}),
-    ]);
+    return m(
+      "button",
+      {
+        class: "btn btn-secondary",
+        onclick() {
+          show();
+        },
+      },
+      [
+        "Show",
+        m({ class: "modal" }, [
+          m(
+            "button",
+            {
+              onclick() {
+                console.table("clicked")
+                hide();
+              },
+            },
+            "close"
+          ),
+        ]),
+      ]
+    );
   },
 };
 export default modal;
