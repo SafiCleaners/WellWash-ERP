@@ -231,17 +231,16 @@ const order_item = {
         } = vnode.state
 
         const {
-            _id,
-            name,
-            paid,
-            status,
-            pickupDay,
-            dropOffDay,
-            pickupTime,
-            dropOffTime,
-            appartmentName,
-            houseNumber,
-            moreDetails,
+            _id ="",
+            paid ="",
+            status ="",
+            pickupDay ="",
+            dropOffDay ="",
+            pickupTime ="",
+            dropOffTime ="",
+            appartmentName ="",
+            houseNumber ="",
+            moreDetails ="",
 
 
             mpesaPhoneNumber,
