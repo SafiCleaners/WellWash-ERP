@@ -196,7 +196,7 @@ const step = (vnode) => {
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                        `#${shortId} `, 1 + " duvet " + "mild perfume"
+                                                                                        `#${shortId} `,
                                                                                     ),
                                                                                     m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
                                                                                         `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
