@@ -60,9 +60,8 @@ const modal = {
                 {
                   class: "btn btn-primary",
                   type: "button",
-                  onlick() {
-                    console.log("save changes was clicked internal");
-                  },
+                  onclick:vnode.attrs.onclickHandler
+                  ,
                 },
                 vnode.attrs.footerBtnText
               ),
