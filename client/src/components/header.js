@@ -285,20 +285,22 @@ const header = {
               ]
             : m("div", { style: { margin: "auto" } }, [
                 // m("div", { "id": "g_id_onload", "data-callback": "handleGoogleCredentialResponse" }),
-                m(
-                  modal,
-                  {
-                    modalName: "test",
-                    title: "TestModal",
-                    btnColorClass: "btn-danger btn-lg",
-                    btnText: "Login",
-                    footerBtnText: "Save Changes",
-                    onclickHandler: function (e) {
-                      console.log("savechnages was clicked");
-                    },
-                  },
-                  ["Hello there \n", m(google_login)]
-                ),
+                //how to use modal
+                // m(
+                //   modal,
+                //   {
+                //     modalName: "test",
+                //     title: "TestModal",
+                //     btnColorClass: "btn-danger btn-lg",
+                //     btnText: "Login",
+                //     footerBtnText: "Save Changes",
+                //     onclickHandler: function (e) {
+                //       console.log("savechnages was clicked");
+                //     },
+                //   },
+                //   [m(google_login)]
+                // ),
+                m(google_login)
               ]),
         ]),
       ])
