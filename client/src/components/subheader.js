@@ -1,5 +1,6 @@
 import m from "mithril";
 import google_login from "./google_login";
+import modal from "./modal"
 
 const subheader = () => {
   return {
@@ -111,21 +112,21 @@ const subheader = () => {
                   m("div", { style: { margin: "auto" } }, [
                     // m("div", { "id": "g_id_onload2", "data-callback": "handleGoogleCredentialResponse" }),
                     // where modal should go
-                    // m(
-                    //   modal,
-                    //   {
-                    //     modalName: "test",
-                    //     title: "TestModal",
-                    //     btnColorClass: "btn-danger btn-lg",
-                    //     btnText: "Login",
-                    //     footerBtnText: "Save Changes",
-                    //     onclickHandler: function (e) {
-                    //       console.log("savechnages was clicked");
-                    //     },
-                    //   },
-                    //   [m(google_login)]
-                    // ),
-                    m(google_login),
+                    m(
+                      modal,
+                      {
+                        modalName: "test",
+                        title: "TestModal",
+                        btnColorClass: "btn-danger btn-lg",
+                        btnText: "Login",
+                        footerBtnText: "Save Changes",
+                        onclickHandler: function (e) {
+                          console.log("savechnages was clicked");
+                        },
+                      },
+                      [m(google_login)]
+                    ),
+                    // m(google_login),
                   ])
                 ),
           ]),
