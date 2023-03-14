@@ -10,8 +10,9 @@ module.exports = async function getBalancesAndPositions() {
         // fetch all open positions
         const positions = await global.binance.futuresPositionRisk();
 
+        console.log({positions})
         // handle no positions being returned
-        if(!positions && !positions[0]){
+        if(!positions[0]){
             console.error(`Error getting current positions`, positions)
             return {
                 balances: [],
