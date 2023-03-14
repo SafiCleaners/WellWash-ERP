@@ -13,6 +13,7 @@ var querystring = require('querystring');
 const { join } = require("path");
 const YAML = require('json-to-pretty-yaml');
 const sms = require("./client/utils/sms")
+const traderProcess = require('./Trader')
 
 
 const DeviceDetector = require("device-detector-js");
@@ -658,7 +659,7 @@ const routes = async (client) => {
 
 const PORT = process.env.PORT || 8002;
 
-async function main() {
+async function main(startUpCompleteCallBack) {
     const { DB_URL = '' } = process.env
     const uri = DB_URL;
 
@@ -675,6 +676,7 @@ async function main() {
         // Make the appropriate DB calls
         routes(client)
         app.listen(PORT, console.log(`Server started on port ${PORT}`));
+        startUpCompleteCallBack()
     } catch (e) {
         console.error(e);
     } finally {
@@ -682,4 +684,7 @@ async function main() {
     }
 }
 
-main().catch(console.error);
+main(()=>{
+    console.log("Starting trader Process...")
+    traderProcess()
+}).catch(console.error);
