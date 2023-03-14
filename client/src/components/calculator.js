@@ -57,9 +57,9 @@ var calculator = () => {
                 googleId: localStorage.getItem('googleId'),
                 name: '',
                 phone: '',
-                appartmentName: '',
-                houseNumber: '',
-                moreDetails: '',
+                //appartmentName: '',
+               // houseNumber: '',
+                //moreDetails: '',
                 curtains: 0,
                 blankets: 0,
                 duvets: 0,
@@ -102,9 +102,9 @@ var calculator = () => {
                     dropOffDay,
                     pickupTime,
                     dropOffTime,
-                    appartmentName,
-                    houseNumber,
-                    moreDetails,
+                    //appartmentName,
+                   // houseNumber,
+                    //moreDetails,
                     curtains,
                     blankets,
                     duvets,
@@ -122,9 +122,9 @@ var calculator = () => {
                     dropOffDay,
                     pickupTime,
                     dropOffTime,
-                    appartmentName,
-                    houseNumber,
-                    moreDetails,
+                   //appartmentName,
+                    //houseNumber,
+                    //moreDetails,
                     curtains,
                     blankets,
                     duvets,
@@ -219,9 +219,9 @@ var calculator = () => {
                 dropOffDay,
                 pickupTime,
                 dropOffTime,
-                appartmentName,
-                houseNumber,
-                moreDetails,
+               // appartmentName,
+               // houseNumber,
+               // moreDetails,
                 curtains,
                 blankets,
                 duvets,
@@ -505,16 +505,16 @@ var calculator = () => {
 
                                         m("div", { "class": "col-lg-12" },
                                             [
-                                                m("label",
-                                                    "Appartment's Name:"
+                                               m("label",
+                                                 //   "Appartment's Name:"
                                                 ),
                                                 m("div", { "class": "input-group" },
                                                     [
                                                         m("input", {
                                                             oninput: (e) => {
-                                                                vnode.state.appartmentName = e.target.value
+                                                               // vnode.state.appartmentName = e.target.value
                                                             },
-                                                            value: appartmentName,
+                                                           // value: appartmentName,
                                                             "class": "form-control",
                                                             "type": "text",
                                                             "placeholder": "What is your appartment commonly called?"
@@ -540,7 +540,7 @@ var calculator = () => {
                                                     [
                                                         m("input", {
                                                             oninput: (e) => {
-                                                                vnode.state.houseNumber = e.target.value
+                                                               // vnode.state.houseNumber = e.target.value
                                                             },
                                                             value: houseNumber,
                                                             "class": "form-control",
@@ -569,7 +569,7 @@ var calculator = () => {
                                                         oninput: (e) => {
                                                             vnode.state.moreDetails = e.target.value
                                                         },
-                                                        value: moreDetails,
+                                                       // value: moreDetails,
                                                         "class": "form-control",
                                                         "id": "exampleTextarea",
                                                         "rows": "12",
@@ -654,17 +654,17 @@ var calculator = () => {
 
 
                                                         var {
-                                                            appartmentName,
-                                                            houseNumber,
-                                                            moreDetails,
+                                                        //    appartmentName,
+                                                         //   houseNumber,
+                                                          //  moreDetails,
                                                             phone,
                                                             name,
                                                         } = vnode.state
 
                                                         let order = Object.assign({
-                                                            appartmentName,
-                                                            houseNumber,
-                                                            moreDetails,
+                                                          //  appartmentName,
+                                                           // houseNumber,
+                                                          //  moreDetails,
                                                             phone,
                                                             name,
                                                         }, {

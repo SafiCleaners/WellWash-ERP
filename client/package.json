@@ -24,7 +24,7 @@
     "fetch": "^1.1.0",
     "html-minifier": "^4.0.0",
     "jwt-decode": "^3.1.2",
-    "live-server": "^1.2.1",
+    "live-server": "^1.2.2",
     "livereload": "^0.9.3",
     "lodash": "^4.17.21",
     "mithril": "2.0.4",
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "node src/build-prod.js && WEBPACK_ENV=build webpack --config ./prod.config.js",
-    "dev": "WEBPACK_ENV=dev webpack --config ./prod.config.js & nodemon src/build-prod.js & node src/dev-server.js"
+    "dev": "WEBPACK_ENV=dev webpack --config ./prod.config.js & npx nodemon src/build-prod.js & node src/dev-server.js"
   },
   "eslintConfig": {
     "extends": [
