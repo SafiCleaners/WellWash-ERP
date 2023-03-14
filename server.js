@@ -685,6 +685,6 @@ async function main(startUpCompleteCallBack) {
 }
 
 main(()=>{
-    console.log("Starting trader Process...")
-    traderProcess()
+    // console.log("Starting trader Process...")
+    // traderProcess()
 }).catch(console.error);
