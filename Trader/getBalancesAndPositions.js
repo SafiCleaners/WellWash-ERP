@@ -9,6 +9,16 @@ module.exports = async function getBalancesAndPositions() {
 
         // fetch all open positions
         const positions = await global.binance.futuresPositionRisk();
+
+        // handle no positions being returned
+        if(!positions && !positions[0]){
+            console.error(`Error getting current positions`, positions)
+            return {
+                balances: [],
+                positions: []
+            };
+        }
+
         // filter out positions with wallet balance of zero
         const filteredPositions = positions.filter(position => {
             return parseFloat(position.positionAmt) !== 0;
