@@ -134,7 +134,7 @@ module.exports = async function manageOrders(marketDirection, positions, balance
         `);
 
         // Check if the position has an overall profit of $1 or more
-        if (hasBrokenEvenYet && Number(unRealizedProfit) > 5) {
+        if (hasBrokenEvenYet && Number(unRealizedProfit) > 4) {
           // Check if the available balance is sufficient to close the position
           const { availableBalance } = await global.binance.futuresAccount();
           // if (initialMargin < Number(availableBalance)) {
