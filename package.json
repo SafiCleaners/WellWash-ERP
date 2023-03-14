@@ -33,6 +33,7 @@
   },
   "scripts": {
     "start": "node --harmony server.js",
-    "dev": "npx nodemon server.js | pino-pretty"
+    "dev": "npx nodemon server.js | pino-pretty",
+    "dev-trader": "nodemon --inspect --unhandled-rejections=strict v5"
   }
 }
