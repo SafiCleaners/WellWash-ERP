@@ -1,3 +1,6 @@
+const YAML = require('json-to-pretty-yaml');
+const sms = require("../client/utils/sms")
+
 const executeOrder = require('./executeOrder');
 const trailingDistance = 0.02; // 2%
 
@@ -131,7 +134,7 @@ module.exports = async function manageOrders(marketDirection, positions, balance
         `);
 
         // Check if the position has an overall profit of $1 or more
-        if (hasBrokenEvenYet && Number(unRealizedProfit) > 2) {
+        if (hasBrokenEvenYet && Number(unRealizedProfit) > 5) {
           // Check if the available balance is sufficient to close the position
           const { availableBalance } = await global.binance.futuresAccount();
           // if (initialMargin < Number(availableBalance)) {
@@ -150,6 +153,14 @@ module.exports = async function manageOrders(marketDirection, positions, balance
           order.orderToClosePosition = true
           await executeOrder(order);
           console.log(`Position for symbol ${symbol} closed with an overall profit of $1.`);
+
+          const { availableBalance:newAvailableBalance } = await global.binance.futuresAccount();
+          const message = YAML.stringify({ message: `Closing position for symbol ${symbol} with unRealizedProfit: $${unRealizedProfit}, newAvailableBalance: $${newAvailableBalance}`, order })
+          console.log(message.length, message)
+          sms({
+            phone: "+254711657108",
+            message
+          }, console.log)
           // } else {
           //   console.error("InitialMargin is < availableBalance, add balance to account to close this position")
           // }
