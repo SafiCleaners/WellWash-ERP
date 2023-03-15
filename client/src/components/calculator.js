@@ -476,45 +476,45 @@ var calculator = () => {
                                 ),
 
 
-                                m("div", { "class": "bs-stepper" },
-                                    [
-                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                            [
-                                                m("div", { "class": "step", "data-target": "#logins-part" },
-                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                        [
-                                                            m("span", { "class": "bs-stepper-circle" },
-                                                                "3"
-                                                            ),
-                                                            m("span", { "class": "bs-stepper-label" },
-                                                                "Where to pickup and drop off"
-                                                            )
-                                                        ]
-                                                    )
-                                                )]
-                                        )]
-                                ),
+                               // m("div", { "class": "bs-stepper" },
+                                 //   [
+                                  //      m("div", { "class": "bs-stepper-header", "role": "tablist" },
+                                   //         [
+                                      //          m("div", { "class": "step", "data-target": "#logins-part" },
+                                       //             m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
+                                        //                [
+                                           //                 m("span", { "class": "bs-stepper-circle" },
+                                           //                     "2"
+                                             //               ),
+                                              //              m("span", { "class": "bs-stepper-label" },
+                                                //                "Where to pickup and drop off"
+                                                   //         )
+                                                   //     ]
+                                                //    )
+                                               // )]
+                                        //)]
+                                //),
 
 
 
                                 // m(datepicker),
 
 
-                                m("div", { "class": "form-group row" },
-                                    [
+                               // m("div", { "class": "form-group row" },
+                                  //  [
 
                                         m("div", { "class": "col-lg-12" },
                                             [
-                                               m("label",
-                                                 //   "Appartment's Name:"
+                                                m("label",
+                                                    "Appartment's Name:"
                                                 ),
                                                 m("div", { "class": "input-group" },
                                                     [
                                                         m("input", {
                                                             oninput: (e) => {
-                                                               // vnode.state.appartmentName = e.target.value
+                                                                vnode.state.appartmentName = e.target.value
                                                             },
-                                                           // value: appartmentName,
+                                                            value: appartmentName,
                                                             "class": "form-control",
                                                             "type": "text",
                                                             "placeholder": "What is your appartment commonly called?"
@@ -540,7 +540,7 @@ var calculator = () => {
                                                     [
                                                         m("input", {
                                                             oninput: (e) => {
-                                                               // vnode.state.houseNumber = e.target.value
+                                                                vnode.state.houseNumber = e.target.value
                                                             },
                                                             value: houseNumber,
                                                             "class": "form-control",
@@ -569,7 +569,7 @@ var calculator = () => {
                                                         oninput: (e) => {
                                                             vnode.state.moreDetails = e.target.value
                                                         },
-                                                       // value: moreDetails,
+                                                        value: moreDetails,
                                                         "class": "form-control",
                                                         "id": "exampleTextarea",
                                                         "rows": "12",
@@ -593,7 +593,7 @@ var calculator = () => {
                                                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
                                                         [
                                                             m("span", { "class": "bs-stepper-circle" },
-                                                                "4"
+                                                                "2"
                                                             ),
                                                             m("span", { "class": "bs-stepper-label" },
                                                                 "Laundry service Status"
@@ -681,7 +681,9 @@ var calculator = () => {
                                                 }
                                             }, [
                                                 m("i", { "class": "flaticon2-mail-1" }),
-                                                " Save My order"
+                                               m("a",{"href": "https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"}, "Save My order"
+                                               ) 
+                                            
                                             ]),
                                         ]),
                                         // ])
