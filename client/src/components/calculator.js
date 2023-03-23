@@ -503,62 +503,62 @@ var calculator = () => {
                                 m("div", { "class": "form-group row" },
                                     [
 
-                                        m("div", { "class": "col-lg-12" },
-                                            [
-                                               m("label",
-                                                 //   "Appartment's Name:"
-                                                ),
-                                                m("div", { "class": "input-group" },
-                                                    [
-                                                        m("input", {
-                                                            oninput: (e) => {
-                                                               // vnode.state.appartmentName = e.target.value
-                                                            },
-                                                           // value: appartmentName,
-                                                            "class": "form-control",
-                                                            "type": "text",
-                                                            "placeholder": "What is your appartment commonly called?"
-                                                        }),
-                                                        m("div", { "class": "input-group-append" },
-                                                            m("span", { "class": "input-group-text" },
-                                                                m("i", { "class": "la la-align-center" })
-                                                            )
-                                                        )
-                                                    ]
-                                                ),
-                                                // m("span", { "class": "form-text text-muted" },
-                                                //     "The name of the appartment to find"
-                                                // )
-                                            ]
-                                        ),
-                                        m("div", { "class": "col-lg-12" },
-                                            [
-                                                m("label",
-                                                    "House Number:"
-                                                ),
-                                                m("div", { "class": "input-group" },
-                                                    [
-                                                        m("input", {
-                                                            oninput: (e) => {
-                                                               // vnode.state.houseNumber = e.target.value
-                                                            },
-                                                            value: houseNumber,
-                                                            "class": "form-control",
-                                                            "type": "text",
-                                                            "placeholder": "Whats the house number?"
-                                                        }),
-                                                        m("div", { "class": "input-group-append" },
-                                                            m("span", { "class": "input-group-text" },
-                                                                m("i", { "class": "la la-align-center" })
-                                                            )
-                                                        )
-                                                    ]
-                                                ),
-                                                // m("span", { "class": "form-text text-muted" },
-                                                //     "The name of the house in the appartment"
-                                                // )
-                                            ]
-                                        ),
+                                        // m("div", { "class": "col-lg-12" },
+                                        //     [
+                                        //        m("label",
+                                        //          //   "Appartment's Name:"
+                                        //         ),
+                                        //         m("div", { "class": "input-group" },
+                                        //             [
+                                        //                 m("input", {
+                                        //                     oninput: (e) => {
+                                        //                        // vnode.state.appartmentName = e.target.value
+                                        //                     },
+                                        //                    // value: appartmentName,
+                                        //                     "class": "form-control",
+                                        //                     "type": "text",
+                                        //                     "placeholder": "What is your appartment commonly called?"
+                                        //                 }),
+                                        //                 m("div", { "class": "input-group-append" },
+                                        //                     m("span", { "class": "input-group-text" },
+                                        //                         m("i", { "class": "la la-align-center" })
+                                        //                     )
+                                        //                 )
+                                        //             ]
+                                        //         ),
+                                        //         // m("span", { "class": "form-text text-muted" },
+                                        //         //     "The name of the appartment to find"
+                                        //         // )
+                                        //     ]
+                                        // ),
+                                        // m("div", { "class": "col-lg-12" },
+                                        //     [
+                                        //         m("label",
+                                        //             "House Number:"
+                                        //         ),
+                                        //         m("div", { "class": "input-group" },
+                                        //             [
+                                        //                 m("input", {
+                                        //                     oninput: (e) => {
+                                        //                        // vnode.state.houseNumber = e.target.value
+                                        //                     },
+                                        //                     value: houseNumber,
+                                        //                     "class": "form-control",
+                                        //                     "type": "text",
+                                        //                     "placeholder": "Whats the house number?"
+                                        //                 }),
+                                        //                 m("div", { "class": "input-group-append" },
+                                        //                     m("span", { "class": "input-group-text" },
+                                        //                         m("i", { "class": "la la-align-center" })
+                                        //                     )
+                                        //                 )
+                                        //             ]
+                                        //         ),
+                                        //         // m("span", { "class": "form-text text-muted" },
+                                        //         //     "The name of the house in the appartment"
+                                        //         // )
+                                        //     ]
+                                        // ),
                                         m("div", { "class": "col-lg-12" },
                                             m("div", { "class": "form-group mb-1" },
                                                 [
