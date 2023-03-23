@@ -794,7 +794,7 @@ var calculator = () => {
 
 
                         // order ends here 
-                    ]
+                    
                 )
             )
         }
