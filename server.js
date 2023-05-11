@@ -146,7 +146,7 @@ const routes = async (client) => {
             db.collection('users').findOne({ _id: ObjectId(userId) }, function (err, user) {
                 if (err) throw err;
                 // Check if the user is blocked
-                if (user.deleted) {
+                if ( user?.deleted) {
                     return res.status(403).json({ message: "Forbidden: User is blocked" });
                 }
                 // Attach the user to the request object
