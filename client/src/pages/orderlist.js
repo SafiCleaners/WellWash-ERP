@@ -26,7 +26,12 @@ const orders = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.jobs = response.data
+            vnode.state.jobs = response.data.filter((job) => {
+                const googleId = localStorage.getItem('googleId')
+                const role = localStorage.getItem('role')
+                if(role && role === 'OWNER') return true
+                return job.googleId === googleId
+            })
 
             vnode.state.jobs.map(job => {
                 Object.assign(job, {
@@ -105,12 +110,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === false)
                                                             .map(({
                                                                 appartmentName,
@@ -331,12 +330,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === true)
                                                             .map(({
                                                                 appartmentName,
@@ -556,12 +549,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'PICKED_UP')
                                                             .map(({
                                                                 appartmentName,
@@ -781,12 +768,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'WASHED')
                                                             .map(({
                                                                 appartmentName,
@@ -1005,12 +986,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'FOLDED')
                                                             .map(({
                                                                 appartmentName,
@@ -1229,12 +1204,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'DELIVERED')
                                                             .map(({
                                                                 appartmentName,
@@ -1453,12 +1422,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                             .map(({
                                                                 appartmentName,
@@ -1677,12 +1640,6 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter((job) => {
-                                                                const googleId = localStorage.getItem('googleId')
-                                                                const role = localStorage.getItem('role')
-                                                                if(role && role === 'OWNER') return true
-                                                                return job.googleId === googleId
-                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'BLOCKED')
                                                             .map(({
                                                                 appartmentName,
