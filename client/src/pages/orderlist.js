@@ -105,6 +105,12 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
+                                                            .filter((job) => {
+                                                                const googleId = localStorage.getItem('googleId')
+                                                                const role = localStorage.getItem('role')
+                                                                if(role === 'OWNER') return true
+                                                                return job.googleId === googleId
+                                                            })
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === false)
                                                             .map(({
                                                                 appartmentName,
