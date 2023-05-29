@@ -26,7 +26,12 @@ const orders = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.jobs = response.data
+            vnode.state.jobs = response.data.filter((job) => {
+                const googleId = localStorage.getItem('googleId')
+                const role = localStorage.getItem('role')
+                if(role && role === 'OWNER') return true
+                return job.googleId === googleId
+            })
 
             vnode.state.jobs.map(job => {
                 Object.assign(job, {
