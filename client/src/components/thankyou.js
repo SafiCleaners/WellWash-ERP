@@ -2,12 +2,28 @@ import m from "mithril"
 
 const thankyou = () => {
     return {
-        oninit() {
-            setTimeout(()=>{
-                m.route.set("/")
-            }, 5000)
+        oninit(vnode) {
+
+            //const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735=${encodeURIComponent(orderUrl)}";
+            const orderUrl = vnode.attrs.order.orderUrl;
+
+
+            setTimeout(() => {
+                console.log("Redirecting to /thankyou");
+                const encodedOrderUrl = encodeURIComponent(orderUrl);
+                const redirectUrl = {encodedOrderUrl};
+                const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
+                window.location.href = whatsappLink;
+
+            }, 5000);
         },
+
         view(vnode) {
+            const order = vnode.attrs.order;
+            const orderUrl = order.orderUrl;
+
+            // Access and use the order data as needed
+            console.log(order);
             var {
                 pickupDay,
                 dropOffDay,
@@ -25,6 +41,7 @@ const thankyou = () => {
                 mpesaConfirmationCode,
                 name
             } = vnode.state
+            // console.log("pickupDay:", pickupDay);
 
             // console.table({
             //     pickupDay,
@@ -92,7 +109,11 @@ const thankyou = () => {
                                             ),
                                             m("h5", { "class": "mb-3" },
                                                 "Make sure to sign in with google and talk to us on whatsapp"
-                                            )
+                                            ),
+                                            m("h1", [
+                                                m("a", { href: "https://api.whatsapp.com/send?phone=+254701173735" }, "Thank you for your order!")
+                                            ]),
+
                                         ]
                                     )
                                 )
@@ -106,6 +127,7 @@ const thankyou = () => {
             )
         },
     }
+
 }
 
 export default thankyou;

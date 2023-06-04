@@ -189,6 +189,13 @@ var calculator = () => {
                     order.lastSubmittedAt = undefined;
                     localStorage.setItem("activeOrder", JSON.stringify(order))
                     vnode.state.uploading = false
+                    // Check if the order is saved successfully
+                    
+                        // Internal routing using m.route.set
+                        m.route.set("/thankyou", {
+                            order:order
+                        });
+                    
                     cb()
                 }).catch(function (error) {
                     order.id = null
@@ -199,6 +206,11 @@ var calculator = () => {
                     // m.route.set("/order2", {
                     //     order
                     // })
+                    console.log("Error while saving order:", error);
+                   
+                    // External redirection using window.location
+
+
                     cb()
                 });
             }
@@ -221,7 +233,7 @@ var calculator = () => {
                 dropOffTime,
                 // appartmentName,
                 // houseNumber,
-                 moreDetails,
+                moreDetails,
                 curtains,
                 blankets,
                 duvets,
@@ -646,7 +658,9 @@ var calculator = () => {
                                         type: "button",
                                         "class": "btn btn-lg btn-info",
                                         onclick() {
+
                                             // alert("saving order")
+
 
                                             vnode.state.saved = true
                                             vnode.state.updateOrderOnServer(() => {
@@ -676,12 +690,13 @@ var calculator = () => {
                                                 localStorage.setItem("activeOrder", JSON.stringify(order))
                                                 vnode.state.clearInternalActiveOrderId()
                                                 location.reload()
-                                            })
+
+                                            });
 
                                         }
                                     }, [
                                         m("i", { "class": "flaticon2-mail-1" }),
-                                        m("a", { "href": "https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?" }, "Save My order"
+                                        m("span", "Save My order"
                                         )
 
                                     ]),

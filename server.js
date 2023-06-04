@@ -262,6 +262,7 @@ const routes = async (client) => {
     app.post('/track-refferals', async (req, res) => {
         // generate a short ID
         const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
+        console.log(shortId);
         // console.log(shortId); // output: "9a2b7c"
         const { REFFERAL_CODE, DISCOUNT_CODE } = req.body;
 
@@ -358,8 +359,9 @@ const routes = async (client) => {
                         message: YAML.stringify(newJobData)
                     }, console.log)
                 }
-
-                return res.status(201).send({ id: jobId });
+                
+               // const link = "http://wellwash.online/j/${shortId}";
+                return res.status(201).send({ id: jobId, jobUrl:newJobData.orderUrl});
             }
 
             // update job
