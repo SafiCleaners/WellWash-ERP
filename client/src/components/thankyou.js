@@ -4,17 +4,17 @@ const thankyou = () => {
     return {
         oninit(vnode) {
 
-            //const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735=${encodeURIComponent(orderUrl)}";
-            const orderUrl = vnode.attrs.order.orderUrl;
-
+            const order = vnode.attrs.order;
+            const jobUrl = order.jobUrl;
+            console.log("vnode attributes:", vnode.attrs);
+            console.log("order:", order);
 
             setTimeout(() => {
+               
                 console.log("Redirecting to /thankyou");
-                const encodedOrderUrl = encodeURIComponent(orderUrl);
-                const redirectUrl = {encodedOrderUrl};
-                const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735&text=Hello!, can you help me with my laundry?"
-                window.location.href = whatsappLink;
-
+                const encodedjobUrl = encodeURIComponent(jobUrl);
+                const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735&text=Hello! Can you help me with my laundry? Order URL: ";
+                window.location.href = whatsappLink + encodedjobUrl;
             }, 5000);
         },
 

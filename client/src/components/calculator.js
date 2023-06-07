@@ -184,19 +184,22 @@ var calculator = () => {
                     //save orderId from server response to local storage
                     const orderIdFromServer = response.data.id;
                     localStorage.setItem("activeOrderId", orderIdFromServer);
+                    console.log("Order ID from server:", response.data);
+
 
                     // to ensure order stays the same but we know when it was last submitted
                     order.lastSubmittedAt = undefined;
                     localStorage.setItem("activeOrder", JSON.stringify(order))
                     vnode.state.uploading = false
                     // Check if the order is saved successfully
-                    
-                        // Internal routing using m.route.set
-                        m.route.set("/thankyou", {
-                            order:order
-                        });
+                    order.jobUrl = response.data.jobUrl
+                    // Internal routing using m.route.set
+                    m.route.set("/thankyou", {
+                        order: order
+                    });
                     
                     cb()
+
                 }).catch(function (error) {
                     order.id = null
                     order.retry_innitial_send = true
@@ -207,7 +210,7 @@ var calculator = () => {
                     //     order
                     // })
                     console.log("Error while saving order:", error);
-                   
+
                     // External redirection using window.location
 
 
