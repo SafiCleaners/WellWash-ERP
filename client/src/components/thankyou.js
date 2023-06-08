@@ -12,9 +12,11 @@ const thankyou = () => {
             setTimeout(() => {
                
                 console.log("Redirecting to /thankyou");
+                const whatsappTemplate = `Hi there! I just placed a laundry order and I would appreciate your assistance. Here is the order URL: ${jobUrl}. Thank you in advance!`;
+
                 const encodedjobUrl = encodeURIComponent(jobUrl);
-                const whatsappLink = "https://api.whatsapp.com/send?phone=+254701173735&text=Hello! Can you help me with my laundry? Order URL: ";
-                window.location.href = whatsappLink + encodedjobUrl;
+                const whatsappLink = `https://api.whatsapp.com/send?phone=+254701173735&text=${encodeURIComponent(whatsappTemplate)} `;
+                window.location.href = whatsappLink;
             }, 5000);
         },
 
