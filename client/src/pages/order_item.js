@@ -143,7 +143,7 @@ const order_item = {
                 curtainsCharge: 250,
                 blanketsCharge: 350,
                 duvetsCharge: 700,
-                generalKgsCharge : 150,
+                generalKgsCharge: 150,
                 shoesCharge: 150
             });
 
@@ -231,16 +231,16 @@ const order_item = {
         } = vnode.state
 
         const {
-            _id ="",
-            paid ="",
-            status ="",
-            pickupDay ="",
-            dropOffDay ="",
-            pickupTime ="",
-            dropOffTime ="",
-            appartmentName ="",
-            houseNumber ="",
-            moreDetails ="",
+            _id = "",
+            paid = "",
+            status = "",
+            pickupDay = "",
+            dropOffDay = "",
+            pickupTime = "",
+            dropOffTime = "",
+            appartmentName = "",
+            houseNumber = "",
+            moreDetails = "",
 
 
             mpesaPhoneNumber,
@@ -255,7 +255,7 @@ const order_item = {
             furry_blankets = 0,
             bed_sheets = 0,
             curtains = 0,
-            shoes =  0,
+            shoes = 0,
             towels = 0,
             suits_type1 = 0,
             suits_type2 = 0,
@@ -264,7 +264,9 @@ const order_item = {
             generalKgs = 0,
             createdAtAgo,
 
+            curtainsAmount,
             curtainsCharge,
+
             blanketsCharge,
             duvetsCharge,
             generalKgsCharge,
@@ -677,20 +679,23 @@ const order_item = {
                 [
                     m(incrementableInput, {
                         name: 'Curtains',
-                        charge: curtainsCharge,
+                        charge: curtainsCharge || 200, // use this to set a default
+                        amount: curtainsAmount || 0,
                         value: curtains,
                         pricing: [{
                             amount: 200,
                             label: '200'
                         }, {
-                            status: 250,
+                            amount: 250,
                             label: '250'
                         }, {
-                            status: 250,
-                            label: '250'
+                            amount: 300,
+                            label: '300'
                         }],
-                        onChange(value) {
-                            vnode.state.curtainsCharge = value
+                        onChange({ amountValue, chargeValue }) {
+                            console.log(amountValue, chargeValue)
+                            vnode.state.curtainsCharge = chargeValue
+                            vnode.state.curtainsAmount = amountValue
                         }
                     }),
                     m(incrementableInput, {
