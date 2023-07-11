@@ -266,10 +266,13 @@ const order_item = {
 
             curtainsAmount,
             curtainsCharge,
-
+            blanketsAmount,
             blanketsCharge,
+            duvetsAmount,
             duvetsCharge,
+            generalKgsAmount,
             generalKgsCharge,
+            shoesAmount,
             shoesCharge
 
         } = vnode.state
@@ -700,7 +703,9 @@ const order_item = {
                     }),
                     m(incrementableInput, {
                         name: 'Blankets',
-                        charge: blanketsCharge,
+                        charge: blanketsCharge || 500,
+                        amount: blanketsAmount || 0,
+                        value:blankets,
                         pricing: [{
                             amount: 300,
                             label: '300'
@@ -711,14 +716,16 @@ const order_item = {
                             amount: 400,
                             label: '400'
                         }],
-                        value: blankets,
-                        onChange(value) {
-                            vnode.state.blanketsCharge = value
+                       
+                        onChange({amountValue, chargeValue}) {
+                            vnode.state.blanketsCharge = chargeValue
+                            vnode.state.blanketsAmount =amountValue
                         }
                     }),
                     m(incrementableInput, {
                         name: 'Duvets',
-                        charge: duvetsCharge,
+                        charge: duvetsCharge || 600,
+                        amount: duvetsAmount || 0,
                         value: duvets,
                         pricing: [{
                             amount: 500,
@@ -730,13 +737,16 @@ const order_item = {
                             amount: 700,
                             label: '700'
                         }],
-                        onChange(value) {
-                            vnode.state.duvetsCharge = value
+                        onChange({amountValue, chargeValue}) {
+                            vnode.state.duvetsCharge = chargeValue
+                            vnode.state.duvetsAmount =amountValue
                         }
                     }),
                     m(incrementableInput, {
                         name: 'General Clothes in Kgs',
-                        charge: generalKgsCharge,
+                        charge: generalKgsCharge || 91,
+                        amount: generalKgsAmount || 0,
+                        value: generalKgs,
                         pricing: [{
                             amount: 100,
                             label: '100'
@@ -747,14 +757,17 @@ const order_item = {
                             amount: 200,
                             label: '200'
                         }],
-                        value: generalKgs,
-                        onChange(value) {
-                            vnode.state.generalKgsCharge = value
+                        
+                        onChange({amountValue, chargeValue}) {
+                            vnode.state.generalKgsCharge = chargeValue
+                            vnode.state.generalKgsAmount = amountValue
                         }
                     }),
                     m(incrementableInput, {
                         name: 'Shoes in Pairs',
-                        charge: shoesCharge,
+                        charge: shoesCharge || 100,
+                        amount: shoesAmount || 0,
+                        value: shoes,
                         pricing: [{
                             amount: 100,
                             label: '100'
@@ -765,9 +778,10 @@ const order_item = {
                             amount: 200,
                             label: '200'
                         }],
-                        value: generalKgs,
-                        onChange(value) {
-                            vnode.state.shoesCharge = value
+                        
+                        onChange({amountValue, chargeValue}) {
+                            vnode.state.shoesCharge = chargeValue
+                            vnode.state.shoesAmount = amountValue
                         }
                     }),
 
