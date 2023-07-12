@@ -73,6 +73,7 @@ const order_item = {
             vnode.state = Object.assign(vnode.state, response.data)
             vnode.state.loading = false
             m.redraw()
+            console.log("Retrieved order data:", vnode.state.originalJob);
         }).catch(function (error) {
             vnode.state.loading = false
             m.redraw()
@@ -291,7 +292,7 @@ const order_item = {
                 (ironing_trousers * 70) +
                 (generalKgs * 91)
         }
-
+       
         return [
             m("div", { "class": "card-body pt-0 pb-4" },
                 // content id
@@ -705,7 +706,7 @@ const order_item = {
                         name: 'Blankets',
                         charge: blanketsCharge || 500,
                         amount: blanketsAmount || 0,
-                        value:blankets,
+                        value: blankets,
                         pricing: [{
                             amount: 300,
                             label: '300'
@@ -716,10 +717,10 @@ const order_item = {
                             amount: 400,
                             label: '400'
                         }],
-                       
-                        onChange({amountValue, chargeValue}) {
+
+                        onChange({ amountValue, chargeValue }) {
                             vnode.state.blanketsCharge = chargeValue
-                            vnode.state.blanketsAmount =amountValue
+                            vnode.state.blanketsAmount = amountValue
                         }
                     }),
                     m(incrementableInput, {
@@ -737,9 +738,9 @@ const order_item = {
                             amount: 700,
                             label: '700'
                         }],
-                        onChange({amountValue, chargeValue}) {
+                        onChange({ amountValue, chargeValue }) {
                             vnode.state.duvetsCharge = chargeValue
-                            vnode.state.duvetsAmount =amountValue
+                            vnode.state.duvetsAmount = amountValue
                         }
                     }),
                     m(incrementableInput, {
@@ -757,8 +758,8 @@ const order_item = {
                             amount: 200,
                             label: '200'
                         }],
-                        
-                        onChange({amountValue, chargeValue}) {
+
+                        onChange({ amountValue, chargeValue }) {
                             vnode.state.generalKgsCharge = chargeValue
                             vnode.state.generalKgsAmount = amountValue
                         }
@@ -778,15 +779,17 @@ const order_item = {
                             amount: 200,
                             label: '200'
                         }],
-                        
-                        onChange({amountValue, chargeValue}) {
+
+                        onChange({ amountValue, chargeValue }) {
                             vnode.state.shoesCharge = chargeValue
                             vnode.state.shoesAmount = amountValue
                         }
                     }),
 
                     m("h3", { "class": "display-4" },
-                        `This would cost around KSH ${(curtains * curtainsCharge) + (blankets * blanketsCharge) + (duvets * duvetsCharge) + (generalKgs * generalKgsCharge) + (shoes * shoesCharge)}`
+
+                        `This would cost around KSH ${(curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)}`
+
                     ),
                     m("p", { "class": "font-size-lg" },
                         `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`
@@ -1432,7 +1435,7 @@ const order_item = {
                             "class": "btn btn-lg btn-info",
                             onclick() {
                                 // alert("saving order")
-
+                                console.log("Button clicked!");
 
                                 vnode.state.updateOrderOnServer(() => location.reload())
                             }
