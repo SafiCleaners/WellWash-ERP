@@ -141,11 +141,17 @@ const order_item = {
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
-                curtainsCharge: 250,
-                blanketsCharge: 350,
-                duvetsCharge: 700,
-                generalKgsCharge: 150,
-                shoesCharge: 150
+               curtainsCharge: vnode.state.curtainsCharge,
+               curtainsAmount:vnode.state.curtainsAmount,
+                blanketsCharge: vnode.state.blanketsCharge,
+                blanketsAmount:vnode.state.blanketsAmount,
+                duvetsCharge: vnode.state.duvetsCharge,
+                duvetsAmount:vnode.state.duvetsAmount,
+                generalKgsCharge: vnode.state.generalKgsCharge,
+                generalKgsAmount:vnode.state.generalKgsAmount,
+                shoesCharge: vnode.state.shoesCharge,
+                shoesAmount:vnode.state.shoesAmount,
+                clientName:vnode.state.clientName
             });
 
             console.log({
@@ -183,7 +189,10 @@ const order_item = {
 
             console.log(options)
             vnode.state.uploading = true
+            console.log("order:", order);
             axios.request(options).then(function (response) {
+                console.log("Request succeeded. Response:", response.data);
+
                 //save orderId from server response to local storage
                 // const orderIdFromServer = response.data.id;
                 // localStorage.setItem("activeOrderBeingEditedId", orderIdFromServer);
@@ -196,6 +205,8 @@ const order_item = {
                 vnode.state.uploading = false
                 cb()
             }).catch(function (error) {
+                console.error("Request failed. Error:", error);
+
                 order.id = null
                 order.retry_innitial_send = true
                 // vnode.state.activeOrderBeingEdited = order
@@ -242,6 +253,7 @@ const order_item = {
             appartmentName = "",
             houseNumber = "",
             moreDetails = "",
+            clientName,
 
 
             mpesaPhoneNumber,
@@ -292,7 +304,7 @@ const order_item = {
                 (ironing_trousers * 70) +
                 (generalKgs * 91)
         }
-       
+
         return [
             m("div", { "class": "card-body pt-0 pb-4" },
                 // content id
@@ -355,7 +367,7 @@ const order_item = {
                                                         },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                    name + " (" + phone + ")"
+                                                                    clientName + " (" + phone + ")"
                                                                 ),
                                                                 m("div",
                                                                     [
@@ -496,9 +508,9 @@ const order_item = {
                 [
                     m(input, {
                         name: 'Customer Name',
-                        innitialValue: name,
+                        innitialValue: clientName,
                         onChange(value) {
-                            vnode.state.name = value
+                            vnode.state.clientName = value
                         }
                     }),
                     m(input, {
@@ -1436,7 +1448,6 @@ const order_item = {
                             onclick() {
                                 // alert("saving order")
                                 console.log("Button clicked!");
-
                                 vnode.state.updateOrderOnServer(() => location.reload())
                             }
                         }, [

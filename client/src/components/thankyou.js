@@ -39,7 +39,7 @@ const thankyou = () => {
                 mpesaPhoneNumber,
                 phone,
                 mpesaConfirmationCode,
-                name
+                clientName
             } = vnode.state
             // console.log("pickupDay:", pickupDay);
 

@@ -55,7 +55,7 @@ var calculator = () => {
                 pickupTime: '10am-11am',
                 dropOffTime: '10am-11am',
                 googleId: localStorage.getItem('googleId'),
-                name: '',
+                clientName: '',
                 phone: '',
                 //appartmentName: '',
                 // houseNumber: '',

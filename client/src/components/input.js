@@ -21,6 +21,7 @@ const dynamicPicker = {
                                 "type": "radio",
                                 "name": "price" + vnode.attrs.name,
                                 onchange: () => {
+                                    console.log("selected price;", charge)
                                     vnode.attrs.charge = charge
                                     vnode.attrs.onChange(charge)
                                 }
