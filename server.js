@@ -303,10 +303,11 @@ const routes = async (client) => {
     app.patch('/jobs/:id', importantMiddleWares, async (req, res) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
-
+    
         // console.log(device)
-
+    
         try {
+            
             let jobId = req.params.id;
             // check if id provided is 'null'
             if (jobId === 'null') {
@@ -321,62 +322,110 @@ const routes = async (client) => {
                 // generate a short ID
                 const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
                 // console.log(shortId); // output: "9a2b7c"
-
+    
                 const newJobData = Object.assign(req.body, {
                     _id: ObjectId(jobId),
                     deleted: false,
                     shortId,
                     device
                 });
-                // console.log({ newJobData })
-                const newJob = await db.collection('jobs').insertOne(newJobData);
-
+    
                 // sms here
-                if (newJobData.saved === true){
-                    delete newJobData.device
-                    delete newJobData._id
-                    delete newJobData.deleted
-                    delete newJobData.googleId
-                    delete newJobData.userId
-                    delete newJobData.mpesaPhoneNumber
-
-                    delete newJobData.curtains
-                    delete newJobData.generalKgs
-
-                    newJobData.orderUrl = "http://wellwash.online/j/" + newJobData.shortId
-
-                    const message = YAML.stringify(newJobData)
-
-                    console.log(message.length, message)
-
+                if (newJobData.saved === true && newJobData.sendSMSOption === true) {
+                    delete newJobData.device;
+                    delete newJobData._id;
+                    delete newJobData.deleted;
+                    delete newJobData.googleId;
+                    delete newJobData.userId;
+                    delete newJobData.mpesaPhoneNumber;
+                    delete newJobData.curtains;
+                    delete newJobData.generalKgs;
+    
+                    newJobData.orderUrl = "http://wellwash.online/j/" + newJobData.shortId;
+    
+                    const message = YAML.stringify(newJobData);
+    
+                    console.log(message.length, message);
+    
                     sms({
-                        phone: "+254701173735",
+                        phone: "+254759639728, +254711657108",
                         message: YAML.stringify(newJobData)
-                    }, console.log)
-
+                    }, console.log);
+    
                     sms({
-                        phone: "+254711657108",
+                        phone: "+254769617948, +254711657108",
                         message: YAML.stringify(newJobData)
-                    }, console.log)
+                    }, console.log);
                 }
-                
-               // const link = "http://wellwash.online/j/${shortId}";
-                return res.status(201).send({ id: jobId, jobUrl:newJobData.orderUrl});
+    
+                // const link = "http://wellwash.online/j/${shortId}";
+                return res.status(201).send({ id: jobId, jobUrl: newJobData.orderUrl });
             }
-
+    
             // update job
             // console.log({ oldJobData: req.body })
-            const jobBody = req.body
+            const jobBody = req.body;
             const updatedJob = await db.collection('jobs').updateOne(
                 { _id: ObjectId(jobId) },
                 { $set: Object.assign(jobBody, { device }) },
                 { upsert: true }
             );
+            console.log("Request Body:", req.body);
 
-            if (req.body.saved === true) {
-                sms
-            } else {
-                req.session.activeOrder = req.body
+            if (req.body.saved == true) {
+                const selectedItems= [];
+                if (req.body.sendSMSOption == true) {
+                    if (req.body.curtainsAmount > 0) {
+                        selectedItems.push(`${req.body.curtainsAmount} Curtains`);
+                    }
+                
+                    if (req.body.blanketsAmount > 0) {
+                        selectedItems.push(`${req.body.blanketsAmount} Blankets`);
+                    }
+                
+                    if (req.body.duvetsAmount > 0) {
+                        selectedItems.push(`${req.body.duvetsAmount} Duvets`);
+                    }
+                
+                    if (req.body.generalKgsAmount > 0) {
+                        selectedItems.push(`${req.body.generalKgsAmount} Kgs of General Clothes`);
+                    }
+                
+                    if (req.body.shoesAmount > 0) {
+                        selectedItems.push(`${req.body.shoesAmount} Pairs of Shoes`);
+                    }
+                
+                    const totalCost = (req.body.curtainsAmount || 0) * (req.body.curtainsCharge || 0) +
+                                      (req.body.blanketsAmount || 0) * (req.body.blanketsCharge || 0) +
+                                      (req.body.duvetsAmount || 0) * (req.body.duvetsCharge || 0) +
+                                      (req.body.generalKgsAmount || 0) * (req.body.generalKgsCharge || 0) +
+                                      (req.body.shoesAmount || 0) * (req.body.shoesCharge || 0);
+                
+                    const message = `Hello there! We hope you had a fantastic laundry experience with us. Your laundry bill is Ksh ${totalCost} for the following items:\n${selectedItems.join(", ")}.\nTo make the payment, please use Till number 8062238. Thank you for choosing us, and we look forward to serving you again soon at Well Auto Washers! Have a wonderful day!`;
+                    sms({
+                        phone: "+254759639728, +254711657108", // Update with the desired phone number
+                        message: message
+                    }, (error, response) => {
+                        if (error) {
+                            console.error("error sending sms:", error);
+                        } else {
+                            console.log("sms sent successfully:", response);
+                        }
+                    });
+    
+                    sms({
+                        phone: "+254769617948, +254711657108", // Update with the desired phone number
+                        message: message
+                    }, (error, response) => {
+                        if (error) {
+                            console.error("error sending sms:", error);
+                        } else {
+                            console.log("sms sent successfully:", response);
+                        }
+                    });
+                } else {
+                    req.session.activeOrder = req.body;
+                }
             }
             res.status(200).send({ id: jobId });
         } catch (err) {
@@ -384,7 +433,7 @@ const routes = async (client) => {
             res.status(500).send({ message: 'Server error' });
         }
     });
-
+    
     app.get('/jobs-received/:laundryId', importantMiddleWares, (req, res) => {
         const laundryId = req.params.laundryId;
         db.collection('jobs').findOne({ _id: ObjectId(laundryId), deleted: false }, (err, job) => {

@@ -119,7 +119,7 @@ const order_item = {
                 statusInfo,
                 saved,
             } = vnode.state
-
+            const sendSMSOption = vnode.state.sendSMSOption;
             let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
                 dropOffDay,
@@ -137,21 +137,22 @@ const order_item = {
                 mpesaConfirmationCode,
                 name,
                 statusInfo,
-                saved
+                saved,
+                sendSMSOption
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
-               curtainsCharge: vnode.state.curtainsCharge,
-               curtainsAmount:vnode.state.curtainsAmount,
+                curtainsCharge: vnode.state.curtainsCharge,
+                curtainsAmount: vnode.state.curtainsAmount,
                 blanketsCharge: vnode.state.blanketsCharge,
-                blanketsAmount:vnode.state.blanketsAmount,
+                blanketsAmount: vnode.state.blanketsAmount,
                 duvetsCharge: vnode.state.duvetsCharge,
-                duvetsAmount:vnode.state.duvetsAmount,
+                duvetsAmount: vnode.state.duvetsAmount,
                 generalKgsCharge: vnode.state.generalKgsCharge,
-                generalKgsAmount:vnode.state.generalKgsAmount,
+                generalKgsAmount: vnode.state.generalKgsAmount,
                 shoesCharge: vnode.state.shoesCharge,
-                shoesAmount:vnode.state.shoesAmount,
-                clientName:vnode.state.clientName
+                shoesAmount: vnode.state.shoesAmount,
+                clientName: vnode.state.clientName
             });
 
             console.log({
@@ -1429,6 +1430,25 @@ const order_item = {
                 //     )
                 // ])]
             ]),
+            m("div", {class:"form-group row", style:{padding:"10px"}},
+            m("label", { for: "myCheckbox" }, "send SMS"),
+            m("input", {
+                type: "checkbox",
+                checked: vnode.state.sendSMSOption,
+                id: "myCheckbox",
+                onchange: (event) => {
+                    vnode.state.sendSMSOption=event.target.checked;
+                    console.log("checked", event.target.checked)
+                },
+                style: {
+                    width: "20px",
+                    height: "20px",
+                },
+                
+            }),
+            
+            ),
+            
 
             m("div", { "class": "form-group row", style: { "padding": "10px" } },
                 [
