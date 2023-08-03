@@ -12,6 +12,15 @@ import moment from "moment"
 
 
 const step = (vnode) => {
+    const detailsString = (job) => {
+        const orderItems = ["duvets", "blankets", "curtains", "generalKgs",]; 
+        return Object.keys(job)
+          .filter((key) => orderItems.includes(key))
+          .map((key) => {
+            return `${job[key]} ${key}`;
+          })
+          .join(", ");
+      };
     return {
         oninit(vnode) {
             vnode.state.jobs = []
@@ -29,7 +38,7 @@ const step = (vnode) => {
 
             axios.request(options).then(function (response) {
                 vnode.state.jobs = response.data
-
+                console.log("response:", vnode.state.jobs)
                 vnode.state.jobs.map(job => {
                     Object.assign(job, {
                         createdAtAgo: moment(job.createdAt).fromNow(true),
@@ -192,11 +201,12 @@ const step = (vnode) => {
                                                                             //         )
                                                                             //     )
                                                                             // ),
+                                                                            
                                                                             m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                        `#${shortId} `, 1 + " duvet " + "mild perfume"
+                                                                                    `#${shortId} , ${detailsString(vnode.state.jobs.find((j) => j._id === _id))} `
                                                                                     ),
                                                                                     m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
                                                                                         `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
@@ -230,7 +240,7 @@ const step = (vnode) => {
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold" },
                                                                                         [
-                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," + ` Status: ${statusInfo[0].status}` + " ," + 
+                                                                                            `${paid ? "Finished " : "Not Finished"}` + "," + ` Status: ${statusInfo[0].status}` + " ," +
                                                                                             `${paid ? "Paid " : " Not Paid"}`]
                                                                                     ),
                                                                                 ]

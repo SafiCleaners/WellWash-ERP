@@ -348,14 +348,11 @@ const routes = async (client) => {
                     console.log(message.length, message);
     
                     sms({
-                        phone: "+254759639728, +254711657108",
+                        phone:req.body.phone,
                         message: YAML.stringify(newJobData)
                     }, console.log);
     
-                    sms({
-                        phone: "+254769617948, +254711657108",
-                        message: YAML.stringify(newJobData)
-                    }, console.log);
+                    
                 }
     
                 // const link = "http://wellwash.online/j/${shortId}";
@@ -401,9 +398,9 @@ const routes = async (client) => {
                                       (req.body.generalKgsAmount || 0) * (req.body.generalKgsCharge || 0) +
                                       (req.body.shoesAmount || 0) * (req.body.shoesCharge || 0);
                 
-                    const message = `Hello there! We hope you had a fantastic laundry experience with us. Your laundry bill is Ksh ${totalCost} for the following items:\n${selectedItems.join(", ")}.\nTo make the payment, please use Till number 8062238. Thank you for choosing us, and we look forward to serving you again soon at Well Auto Washers! Have a wonderful day!`;
+                    const message = `Hello there! We hope you had a fantastic laundry experience with us. Your laundry bill is Ksh ${totalCost} for the following items:\n${selectedItems.join("\n")}.\nTo make the payment, please use Till number 8062238. Thank you for choosing us, and we look forward to serving you again soon at Well Auto Washers! Have a wonderful day!`;
                     sms({
-                        phone: "+254759639728, +254711657108", // Update with the desired phone number
+                        phone:req.body.phone,
                         message: message
                     }, (error, response) => {
                         if (error) {
@@ -413,16 +410,6 @@ const routes = async (client) => {
                         }
                     });
     
-                    sms({
-                        phone: "+254769617948, +254711657108", // Update with the desired phone number
-                        message: message
-                    }, (error, response) => {
-                        if (error) {
-                            console.error("error sending sms:", error);
-                        } else {
-                            console.log("sms sent successfully:", response);
-                        }
-                    });
                 } else {
                     req.session.activeOrder = req.body;
                 }
