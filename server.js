@@ -407,8 +407,10 @@ const routes = async (client) => {
             }
     
             // Logic to send SMS based on selected status
-            const selectedStatus = req.body.statusInfo;
-    
+            //const selectedStatus = req.body.statusInfo || [];
+            const statusInfo = req.body.statusInfo || [];
+            const selectedStatus = statusInfo.length > 0 ? statusInfo[0].status : null; 
+            
             console.log("Received Status:", selectedStatus);
             const statusToMessageMap = {
                 'PICK_UP': "Pick-Up Reminder: Hi [Customer Name], just a friendly reminder that we will be picking up your laundry today between [time window]. Thank you!",

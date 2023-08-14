@@ -1231,8 +1231,10 @@ const order_item = {
                                                 // disabled: date.day() === 0,
                                                 // "checked": pickupDay === date.format('L') ? true : false,
                                                 onchange: () => {
-                                                    console.log("Selected Status:", vnode.state.statusInfo);
-                                                    console.log(vnode.state)
+                                                    // console.log("Selected Status:", vnode.state.statusInfo);
+                                                    // console.log(vnode.state)
+                                                    console.log("Before Status Update - Selected StatusInfo:", vnode.state.statusInfo);
+                                                    
                                                 
                                                     // preserve the previous status and keep the time of the change
                                                     vnode.state.statusInfo = !vnode.state.statusInfo ? [{
@@ -1242,7 +1244,8 @@ const order_item = {
                                                         status,
                                                         createdAt: new Date()
                                                     }, ...vnode.state.statusInfo]
-                                                   
+                                                    console.log("After Status Update - Selected StatusInfo:", vnode.state.statusInfo);
+                                                    
                                                     m.request({
                                                         method: "PATCH",
                                                         url: `${url}/jobs/${_id}`,
@@ -1251,12 +1254,12 @@ const order_item = {
                                                             'authorization': localStorage.getItem('token')
                                                         },
                                                         data: {
-                                                            status: status,
+                                                            status:vnode.state,
                                                             // Include other data you need to send to the server
                                                         },
                                                     }).then((response) => {
                                                         // Handle the response if needed
-                                                        vnode.state.updateOrderOnServer(() => { });
+                                                         vnode.state.updateOrderOnServer(() => { });
                                                     }).catch((error) => {
                                                         console.error("Error making request:", error);
                                                         
