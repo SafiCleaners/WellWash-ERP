@@ -9,8 +9,17 @@ import m from "mithril"
 import moment from "moment"
 
 import loader from "../components/loader"
-
+const detailsString = (job) => {
+    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",]; 
+    return Object.keys(job)
+      .filter((key) => orderItems.includes(key))
+      .map((key) => {
+        return `${job[key]} ${key}`;
+      })
+      .join(", ");
+  };
 const orders = {
+    
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.loading = true
@@ -137,6 +146,12 @@ const orders = {
                                                                 _id,
                                                                 createdAtAgo
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -162,12 +177,19 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        )
+                                                                                        ),
+                                                                                        
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -357,6 +379,12 @@ const orders = {
                                                                 _id,
                                                                 createdAtAgo
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -382,12 +410,19 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        )
+                                                                                        ),
+                                                                                        
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -576,6 +611,12 @@ const orders = {
                                                                 _id,
                                                                 createdAtAgo
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -606,7 +647,13 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -794,6 +841,12 @@ const orders = {
                                                                 timePickedUpFromNow,
                                                                 _id
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -824,7 +877,13 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -1012,6 +1071,12 @@ const orders = {
                                                                 timePickedUpFromNow,
                                                                 _id
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -1042,7 +1107,13 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -1230,6 +1301,12 @@ const orders = {
                                                                 timePickedUpFromNow,
                                                                 _id
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -1255,12 +1332,19 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        )
+                                                                                        ),
+                                                                                        
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -1448,6 +1532,13 @@ const orders = {
                                                                 timePickedUpFromNow,
                                                                 _id
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
+
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -1478,7 +1569,13 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -1666,6 +1763,12 @@ const orders = {
                                                                 timePickedUpFromNow,
                                                                 _id
                                                             }) => {
+                                                                const orderDetails = detailsString({
+                                                                    blankets,
+                                                                    curtains,
+                                                                    duvets,
+                                                                    generalKgs,
+                                                                });
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -1696,7 +1799,13 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-
+                                                                        m("tr",
+                                                                        [
+                                                                            m("td", { "colspan": "6" },
+                                                                                orderDetails // Display order details in a single cell
+                                                                            )
+                                                                        ]
+                                                                    ),
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },

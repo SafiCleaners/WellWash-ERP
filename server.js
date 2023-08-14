@@ -146,7 +146,7 @@ const routes = async (client) => {
             db.collection('users').findOne({ _id: ObjectId(userId) }, function (err, user) {
                 if (err) throw err;
                 // Check if the user is blocked
-                if ( user?.deleted) {
+                if (user?.deleted) {
                     return res.status(403).json({ message: "Forbidden: User is blocked" });
                 }
                 // Attach the user to the request object
@@ -304,24 +304,19 @@ const routes = async (client) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
     
-        // console.log(device)
-    
         try {
-            
             let jobId = req.params.id;
-            // check if id provided is 'null'
             if (jobId === 'null') {
                 jobId = new ObjectId();
             }
-            // Find the job by its id, if it exists
+    
             const job = await db.collection('jobs').findOne({
                 _id: ObjectId(jobId),
                 deleted: false
             });
+    
             if (!job) {
-                // generate a short ID
                 const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
-                // console.log(shortId); // output: "9a2b7c"
     
                 const newJobData = Object.assign(req.body, {
                     _id: ObjectId(jobId),
@@ -330,7 +325,7 @@ const routes = async (client) => {
                     device
                 });
     
-                // sms here
+                // SMS here
                 if (newJobData.saved === true && newJobData.sendSMSOption === true) {
                     delete newJobData.device;
                     delete newJobData._id;
@@ -348,19 +343,14 @@ const routes = async (client) => {
                     console.log(message.length, message);
     
                     sms({
-                        phone:req.body.phone,
+                        phone: req.body.phone,
                         message: YAML.stringify(newJobData)
                     }, console.log);
-    
-                    
                 }
     
-                // const link = "http://wellwash.online/j/${shortId}";
                 return res.status(201).send({ id: jobId, jobUrl: newJobData.orderUrl });
             }
     
-            // update job
-            // console.log({ oldJobData: req.body })
             const jobBody = req.body;
             const updatedJob = await db.collection('jobs').updateOne(
                 { _id: ObjectId(jobId) },
@@ -368,52 +358,88 @@ const routes = async (client) => {
                 { upsert: true }
             );
             console.log("Request Body:", req.body);
-
+    
+    
             if (req.body.saved == true) {
-                const selectedItems= [];
+                const selectedItems = [];
                 if (req.body.sendSMSOption == true) {
                     if (req.body.curtainsAmount > 0) {
                         selectedItems.push(`${req.body.curtainsAmount} Curtains`);
                     }
-                
+    
                     if (req.body.blanketsAmount > 0) {
                         selectedItems.push(`${req.body.blanketsAmount} Blankets`);
                     }
-                
+    
                     if (req.body.duvetsAmount > 0) {
                         selectedItems.push(`${req.body.duvetsAmount} Duvets`);
                     }
-                
+    
                     if (req.body.generalKgsAmount > 0) {
                         selectedItems.push(`${req.body.generalKgsAmount} Kgs of General Clothes`);
                     }
-                
+    
                     if (req.body.shoesAmount > 0) {
                         selectedItems.push(`${req.body.shoesAmount} Pairs of Shoes`);
                     }
-                
+    
                     const totalCost = (req.body.curtainsAmount || 0) * (req.body.curtainsCharge || 0) +
                                       (req.body.blanketsAmount || 0) * (req.body.blanketsCharge || 0) +
                                       (req.body.duvetsAmount || 0) * (req.body.duvetsCharge || 0) +
                                       (req.body.generalKgsAmount || 0) * (req.body.generalKgsCharge || 0) +
                                       (req.body.shoesAmount || 0) * (req.body.shoesCharge || 0);
-                
+    
                     const message = `Hello there! We hope you had a fantastic laundry experience with us. Your laundry bill is Ksh ${totalCost} for the following items:\n${selectedItems.join("\n")}.\nTo make the payment, please use Till number 8062238. Thank you for choosing us, and we look forward to serving you again soon at Well Auto Washers! Have a wonderful day!`;
+    
                     sms({
-                        phone:req.body.phone,
+                        phone: req.body.phone,
                         message: message
                     }, (error, response) => {
                         if (error) {
-                            console.error("error sending sms:", error);
+                            console.error("Error sending SMS:", error);
                         } else {
-                            console.log("sms sent successfully:", response);
+                            console.log("SMS sent successfully:", response);
                         }
                     });
-    
                 } else {
                     req.session.activeOrder = req.body;
                 }
             }
+    
+            // Logic to send SMS based on selected status
+            //const selectedStatus = req.body.statusInfo || [];
+            const statusInfo = req.body.statusInfo || [];
+            const selectedStatus = statusInfo.length > 0 ? statusInfo[0].status : null; 
+            
+            console.log("Received Status:", selectedStatus);
+            const statusToMessageMap = {
+                'PICK_UP': "Pick-Up Reminder: Hi [Customer Name], just a friendly reminder that we will be picking up your laundry today between [time window]. Thank you!",
+                'COLLECTED': "Order Collected:Great news! We've collected your laundry and it's on its way to our facility. We'll keep you updated on the progress. ",
+                'PROCESSING': "Order Processing: Your laundry is now being processed. Our team is taking care of everything to ensure your clothes come out fresh and clean!",
+                'QUALITY_CHECK':"Quality Check and Pressing: We've completed the quality checks and pressing. Your clothes are looking fantastic and will be on their way to you soon.",
+                'DISPATCH': "Dispatch for Delivery: Your order is on its way to you! Expect our delivery personnel to arrive between [time window]. We hope you're satisfied with our service!",
+                'DELIVERED': "Delivery Confirmation:Your laundry has been delivered! Thank you for choosing us. We'd love to hear about your experience. Leave a review at [link].",
+                'BLOCKED': ""
+            };
+    
+            const statusMessage = statusToMessageMap[selectedStatus];
+            if (statusMessage) {
+                console.log("Sending SMS with status message:", statusMessage);
+                console.log("Sending SMS with status message:", statusMessage);
+                console.log("Phone:", req.body.phone);
+               
+                sms({
+                    phone: req.body.phone,
+                    message: statusMessage
+                }, (error, response) => {
+                    if (error) {
+                        console.error("Error sending SMS:", error);
+                    } else {
+                        console.log("SMS sent successfully:", response);
+                    }
+                });
+            }
+    
             res.status(200).send({ id: jobId });
         } catch (err) {
             console.log(err);
@@ -722,7 +748,7 @@ async function main(startUpCompleteCallBack) {
     }
 }
 
-main(()=>{
+main(() => {
     // console.log("Starting trader Process...")
     // traderProcess()
 }).catch(console.error);

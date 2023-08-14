@@ -120,6 +120,7 @@ const order_item = {
                 saved,
             } = vnode.state
             const sendSMSOption = vnode.state.sendSMSOption;
+            
             let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
                 dropOffDay,
@@ -138,7 +139,8 @@ const order_item = {
                 name,
                 statusInfo,
                 saved,
-                sendSMSOption
+                sendSMSOption,
+                
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
@@ -1193,26 +1195,26 @@ const order_item = {
                     m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                         [
                             [{
-                                status: "LEAD",
-                                label: 'lead'
+                                status: "PICK_UP",
+                                label: 'PICK_UP'
                             }, {
-                                status: "PICKED_UP",
-                                label: 'Picked'
+                                status: "COLLECTED",
+                                label: 'COLLECTED'
                             }, {
-                                status: "WASHED",
-                                label: 'Washed'
+                                status: "PROCESSING",
+                                label: 'PROCESSING'
                             }, {
-                                status: "FOLDED",
-                                label: 'Folded'
+                                status: "QUALITY_CHECK",
+                                label: 'QUALITY_CHECK'
+                            }, {
+                                status: "DISPATCH",
+                                label: 'DISPATCH'
                             }, {
                                 status: "DELIVERED",
-                                label: 'Delivered'
-                            }, {
-                                status: "CONFIRMED_PAYMENT",
-                                label: 'Paid'
+                                label: 'DELIVERED'
                             }, {
                                 status: "BLOCKED",
-                                label: 'Blocked'
+                                label: 'BLOCKED'
                             }]
                                 .map((statusInfo) => {
                                     const { status, label } = statusInfo
@@ -1224,11 +1226,16 @@ const order_item = {
                                             m("input", {
                                                 "type": "radio",
                                                 "name": "pickupDay",
-                                                "id": pickupDay,
+                                                "id": `pickupDay_${status}`,
+                                                //"id": pickupDay,
                                                 // disabled: date.day() === 0,
                                                 // "checked": pickupDay === date.format('L') ? true : false,
                                                 onchange: () => {
-                                                    console.log(vnode.state)
+                                                    // console.log("Selected Status:", vnode.state.statusInfo);
+                                                    // console.log(vnode.state)
+                                                    console.log("Before Status Update - Selected StatusInfo:", vnode.state.statusInfo);
+                                                    
+                                                
                                                     // preserve the previous status and keep the time of the change
                                                     vnode.state.statusInfo = !vnode.state.statusInfo ? [{
                                                         status,
@@ -1237,8 +1244,29 @@ const order_item = {
                                                         status,
                                                         createdAt: new Date()
                                                     }, ...vnode.state.statusInfo]
-
-                                                    vnode.state.updateOrderOnServer(() => { })
+                                                    console.log("After Status Update - Selected StatusInfo:", vnode.state.statusInfo);
+                                                    
+                                                    m.request({
+                                                        method: "PATCH",
+                                                        url: `${url}/jobs/${_id}`,
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'authorization': localStorage.getItem('token')
+                                                        },
+                                                        data: {
+                                                            status:vnode.state,
+                                                            // Include other data you need to send to the server
+                                                        },
+                                                    }).then((response) => {
+                                                        // Handle the response if needed
+                                                         vnode.state.updateOrderOnServer(() => { });
+                                                    }).catch((error) => {
+                                                        console.error("Error making request:", error);
+                                                        
+                                                        // Handle the error or provide appropriate feedback to the user
+                                                    });
+                                                    
+                                                    
                                                 }
                                             }),
                                             label
