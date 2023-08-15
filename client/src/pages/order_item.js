@@ -119,7 +119,7 @@ const order_item = {
                 statusInfo,
                 saved,
             } = vnode.state
-            const sendSMSOption = vnode.state.sendSMSOption;
+           // const sendSMSOption = vnode.state.sendSMSOption;
             
             let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
@@ -139,7 +139,7 @@ const order_item = {
                 name,
                 statusInfo,
                 saved,
-                sendSMSOption,
+                //sendSMSOption,
                 
             }, {
                 // googleId: localStorage.getItem('googleId'),
@@ -1231,8 +1231,7 @@ const order_item = {
                                                 // disabled: date.day() === 0,
                                                 // "checked": pickupDay === date.format('L') ? true : false,
                                                 onchange: () => {
-                                                    // console.log("Selected Status:", vnode.state.statusInfo);
-                                                    // console.log(vnode.state)
+                                                    
                                                     console.log("Before Status Update - Selected StatusInfo:", vnode.state.statusInfo);
                                                     
                                                 
@@ -1458,24 +1457,24 @@ const order_item = {
                 //     )
                 // ])]
             ]),
-            m("div", {class:"form-group row", style:{padding:"10px"}},
-            m("label", { for: "myCheckbox" }, "send SMS"),
-            m("input", {
-                type: "checkbox",
-                checked: vnode.state.sendSMSOption,
-                id: "myCheckbox",
-                onchange: (event) => {
-                    vnode.state.sendSMSOption=event.target.checked;
-                    console.log("checked", event.target.checked)
-                },
-                style: {
-                    width: "20px",
-                    height: "20px",
-                },
+            // m("div", {class:"form-group row", style:{padding:"10px"}},
+            // m("label", { for: "myCheckbox" }, "send SMS"),
+            // m("input", {
+            //     type: "checkbox",
+            //     checked: vnode.state.sendSMSOption,
+            //     id: "myCheckbox",
+            //     onchange: (event) => {
+            //         vnode.state.sendSMSOption=event.target.checked;
+            //         console.log("checked", event.target.checked)
+            //     },
+            //     style: {
+            //         width: "20px",
+            //         height: "20px",
+            //     },
                 
-            }),
+            // }),
             
-            ),
+            // ),
             
 
             m("div", { "class": "form-group row", style: { "padding": "10px" } },
