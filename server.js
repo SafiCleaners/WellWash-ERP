@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-
+const moment = require ('moment');
 const aws = require('aws-sdk');
 const morgan = require('morgan');
 const multer = require('multer');
@@ -395,51 +395,44 @@ const routes = async (client) => {
                 const pickupTime = req.body.pickupTime
                 const dropOffTime = req.body.dropOffTime
                 const dropOffDay = req.body.dropOffDay
-                const statusToMessageMap = {
-                    'PICK_UP': `Hi ${customerName}, a quick reminder that we'll pick up your laundry today between ${pickupTime}. Thank you for choosing us!`,
-                    'COLLECTED': `Good news, ${customerName}! Your laundry is on its way to us. We'll keep you updated on the progress.
-Order Details:
-${selectedItems.join('\n')}
-Total Cost: Ksh ${totalCost}
-Payment via Till 8062238.
-Thank you and see you soon!`,
-                    'PROCESSING': `Hi there! Your laundry is being processed. We're making sure your clothes come out fresh and clean. Expect your order on ${dropOffDay} between ${dropOffTime}.`,
-                    'QUALITY_CHECK': "Your clothes are now going through quality checks and pressing. They'll be ready to go soon.",
-                    'DISPATCH': `Your order is on the way! Our delivery personnel will arrive between ${dropOffTime}. We hope you'll be satisfied with our service!`,
-                    'DELIVERED': `Your laundry has been delivered! Thanks for choosing us. Your feedback is valuable. Leave a review at [link].`,
-                    'BLOCKED': ""
-                };
-
-                const statusMessage = statusToMessageMap[selectedStatus];
-                if (statusMessage) {
-                    console.log("Sending SMS with status message:", statusMessage);
-                    console.log("Sending SMS with status message:", statusMessage);
-                    console.log("Phone:", req.body.phone);
-
-                    sms({
-                        phone: req.body.phone,
-                        message: statusMessage
-                    }, (error, response) => {
-                        if (error) {
-                            console.error("Error sending SMS:", error);
-                        } else {
-                            console.log("SMS sent successfully:", response);
-                        }
-                    });
+                const formattedDropOffDay = moment(dropOffDay, 'YYYY-MM-DD').format('Do MMM');
+                if (!req.body.skipSms) {
+                    const statusToMessageMap = {
+                        'PICK_UP': `Hi ${customerName}, a quick reminder that we'll pick up your laundry today between ${pickupTime}. Thank you for choosing us!`,
+                        'COLLECTED': `Good news, ${customerName}! Your laundry is on its way to us. We'll keep you updated on the progress.
+    Order Details:
+    ${selectedItems.join('\n')}
+    Total Cost: Ksh ${totalCost}
+    Payment via Till 8062238.
+    Thank you and see you soon!`,
+                        'PROCESSING': `Hi there! Your laundry is being processed. We're making sure your clothes come out fresh and clean. Expect your order on ${formattedDropOffDay} between ${dropOffTime}.`,
+                        'QUALITY_CHECK': "Your clothes are now going through quality checks and pressing. They'll be ready to go soon.",
+                        'DISPATCH': `Your order is on the way! Our delivery personnel will arrive between ${dropOffTime}. We hope you'll be satisfied with our service!`,
+                        'DELIVERED': `Your laundry has been delivered! Thanks for choosing us. Your feedback is valuable. Leave a review at [link].`,
+                        'BLOCKED': ""
+                    };
+                    
+                    const statusMessage = statusToMessageMap[selectedStatus];
+                    if (statusMessage) {
+                        
+                        console.log("Sending SMS with status message:", statusMessage);
+                        console.log("Phone:", req.body.phone);
+    
+                        sms({
+                            phone: req.body.phone,
+                            message: statusMessage
+                        }, (error, response) => {
+                            if (error) {
+                                console.error("Error sending SMS:", error);
+                            } else {
+                                console.log("SMS sent successfully:", response);
+                            }
+                        });
+                    }
                 }
+                
 
-                // const smsMessage = `Hello there! We hope you had a fantastic laundry experience with us. Your laundry bill is Ksh ${totalCost} for the following items:\n${selectedItems.join("\n")}.\nTo make the payment, please use Till number 8062238. Thank you for choosing us, and we look forward to serving you again soon at Well Auto Washers! Have a wonderful day!`;
-
-                // sms({
-                //     phone: req.body.phone,
-                //     message: smsMessage
-                // }, (error, response) => {
-                //     if (error) {
-                //         console.error("Error sending SMS:", error);
-                //     } else {
-                //         console.log("SMS sent successfully:", response);
-                //     }
-                // });
+              
             } else {
                 req.session.activeOrder = req.body;
             }

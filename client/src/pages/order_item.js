@@ -119,8 +119,8 @@ const order_item = {
                 statusInfo,
                 saved,
             } = vnode.state
-           // const sendSMSOption = vnode.state.sendSMSOption;
-            
+            const skipSms = vnode.state.skipSms;
+
             let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
                 dropOffDay,
@@ -139,8 +139,8 @@ const order_item = {
                 name,
                 statusInfo,
                 saved,
-                //sendSMSOption,
-                
+                skipSms,
+
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
@@ -1216,6 +1216,7 @@ const order_item = {
                                 status: "BLOCKED",
                                 label: 'BLOCKED'
                             }]
+                              
                                 .map((statusInfo) => {
                                     const { status, label } = statusInfo
 
@@ -1231,10 +1232,10 @@ const order_item = {
                                                 // disabled: date.day() === 0,
                                                 // "checked": pickupDay === date.format('L') ? true : false,
                                                 onchange: () => {
-                                                    
+
                                                     console.log("Before Status Update - Selected StatusInfo:", vnode.state.statusInfo);
-                                                    
-                                                
+
+
                                                     // preserve the previous status and keep the time of the change
                                                     vnode.state.statusInfo = !vnode.state.statusInfo ? [{
                                                         status,
@@ -1244,7 +1245,7 @@ const order_item = {
                                                         createdAt: new Date()
                                                     }, ...vnode.state.statusInfo]
                                                     console.log("After Status Update - Selected StatusInfo:", vnode.state.statusInfo);
-                                                    
+
                                                     m.request({
                                                         method: "PATCH",
                                                         url: `${url}/jobs/${_id}`,
@@ -1253,19 +1254,19 @@ const order_item = {
                                                             'authorization': localStorage.getItem('token')
                                                         },
                                                         data: {
-                                                            status:vnode.state,
+                                                            status: vnode.state,
                                                             // Include other data you need to send to the server
                                                         },
                                                     }).then((response) => {
                                                         // Handle the response if needed
-                                                         vnode.state.updateOrderOnServer(() => { });
+                                                        vnode.state.updateOrderOnServer(() => { });
                                                     }).catch((error) => {
                                                         console.error("Error making request:", error);
-                                                        
+
                                                         // Handle the error or provide appropriate feedback to the user
                                                     });
-                                                    
-                                                    
+
+
                                                 }
                                             }),
                                             label
@@ -1276,6 +1277,24 @@ const order_item = {
                     )
                 ]
             ),
+              m("div", {class:"form-group row", style:{padding:"10px"}},
+                                m("label", { for: "myCheckbox" }, "skip SMS"),
+                                m("input", {
+                                    type: "checkbox",
+                                    checked: vnode.state.skipSms,
+                                    id: "myCheckbox",
+                                    onchange: (event) => {
+                                        vnode.state.skipSms=event.target.checked;
+                                        console.log("checked", event.target.checked)
+                                    },
+                                    style: {
+                                        width: "20px",
+                                        height: "20px",
+                                    },
+
+                                }),
+
+                                ),
 
             // vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
             m(".row", [
@@ -1457,25 +1476,8 @@ const order_item = {
                 //     )
                 // ])]
             ]),
-            // m("div", {class:"form-group row", style:{padding:"10px"}},
-            // m("label", { for: "myCheckbox" }, "send SMS"),
-            // m("input", {
-            //     type: "checkbox",
-            //     checked: vnode.state.sendSMSOption,
-            //     id: "myCheckbox",
-            //     onchange: (event) => {
-            //         vnode.state.sendSMSOption=event.target.checked;
-            //         console.log("checked", event.target.checked)
-            //     },
-            //     style: {
-            //         width: "20px",
-            //         height: "20px",
-            //     },
-                
-            // }),
-            
-            // ),
-            
+
+
 
             m("div", { "class": "form-group row", style: { "padding": "10px" } },
                 [
