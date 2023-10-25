@@ -1370,11 +1370,14 @@ caseless@~0.12.0:
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 charts.css@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/charts.css/-/charts.css-0.9.0.tgz#df0da443226d549b2ab36ed6532fa04571c59916"
   integrity sha512-gOqyyRZGifTNCdyVdMwO6/9+5sHyue1csqOrCr7V/FwzuAiaj+gGL6DX7LGPXCHIQBumsM5/mKiIe/BadwzvzA==
 =======
+=======
+>>>>>>> 193f453 (added order receipt)
 chalk@^4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz"
@@ -1382,7 +1385,16 @@ chalk@^4.1.2:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+<<<<<<< HEAD
 >>>>>>> 317338f (fix: order flow for internal users, more cleanup for all tables and forms. more testing full user flow fixes (#28))
+=======
+=======
+charts.css@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/charts.css/-/charts.css-0.9.0.tgz#df0da443226d549b2ab36ed6532fa04571c59916"
+  integrity sha512-gOqyyRZGifTNCdyVdMwO6/9+5sHyue1csqOrCr7V/FwzuAiaj+gGL6DX7LGPXCHIQBumsM5/mKiIe/BadwzvzA==
+>>>>>>> a9daba1 (added order receipt)
+>>>>>>> 193f453 (added order receipt)
 
 chokidar@^2.0.4:
   version "2.1.8"
