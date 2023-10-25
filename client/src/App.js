@@ -10,6 +10,7 @@ import landing from "./components/landing"
 import order_step_1 from "./pages/order_step_1";
 import OrderList from "./pages/orderlist";
 import OrderItem from "./pages/order_item";
+import OrderItemPrint from "./pages/order_item_print";
 import thankyou from "./components/thankyou";
 import refferal from "./components/refferal.js";
 
@@ -26,10 +27,12 @@ m.route(root, "/", {
     "/": order_step_1,
     "/j": OrderList,
     "/j/:job": OrderItem,
+    "/j/:job/print": OrderItemPrint,
     "/q": OrderList,
     "/q/:job": OrderItem,
     "/thankyou": thankyou,
     "/users": users,
     "/REFFER/:REFEERED_BY": refferal,
     "/refferal": refferal
+
 })

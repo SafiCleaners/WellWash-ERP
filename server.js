@@ -422,10 +422,26 @@ const routes = async (client) => {
                             phone: req.body.phone,
                             message: statusMessage
                         }, (error, response) => {
+                            //console.log("Response received:", response);
                             if (error) {
                                 console.error("Error sending SMS:", error);
                             } else {
-                                console.log("SMS sent successfully:", response);
+                                console.log("SMS sent successfully:");
+                                // Save SMS details to the database
+                                const smsData = {
+                                    //jobId: shortId ,
+                                    //phone: req.body.phone,
+                                    message: statusMessage,
+                                    // response: response,
+                                    //createdAt: new Date()
+                                };
+                                db.collection('sms').insertOne(smsData, (err) => {
+                                    if (err) {
+                                        console.error("Error saving SMS to the database:", err);
+                                    } else {
+                                        console.log("SMS saved to the database:");
+                                    }
+                                });
                             }
                         });
                     }

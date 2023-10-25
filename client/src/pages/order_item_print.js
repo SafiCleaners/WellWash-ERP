@@ -13,21 +13,34 @@ import incrementableInput from "../components/input";
 import {
     oninit,
     oncreate
-} from "../pages/order_step_1"
+} from "./order_step_1"
 
-
+const detailsString = (job) => {
+    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",];
+    return Object.keys(job)
+        .filter((key) => orderItems.includes(key))
+        .map((key) => {
+            return `${job[key]} ${key}`;
+        })
+        .join(", ");
+};
 const input = {
+
     oninit(vnode) {
         // console.log(vnode.attrs)
         vnode.state.innitialValue = vnode.attrs.innitialValue
+        vnode.state.jobs = []
     },
     view(vnode) {
+        const orderDetails = vnode.attrs.order
         // console.log(vnode.attrs)
         return m("div", { "class": "col-lg-6" },
             [
                 m("label",
                     vnode.attrs.name
+
                 ),
+
                 m("div", { "class": "input-group" },
                     [
                         m("input", {
@@ -307,6 +320,46 @@ const order_item = {
                 (ironing_trousers * 70) +
                 (generalKgs * 91)
         }
+        const orderDetails = vnode.state;
+        const items = [
+            { name: "Curtains", amount: vnode.state.curtainsAmount, charge: vnode.state.curtainsCharge },
+            { name: "Blankets", amount: vnode.state.blanketsAmount, charge: vnode.state.blanketsCharge },
+            { name: "Duvets", amount: vnode.state.duvetsAmount, charge: vnode.state.duvetsCharge },
+            { name: "General Clothes in Kgs", amount: vnode.state.generalKgsAmount, charge: vnode.state.generalKgsCharge },
+            { name: "Shoes in Pairs", amount: vnode.state.shoesAmount, charge: vnode.state.shoesCharge }
+        ];
+        
+        const totalCost = items.reduce((total, item) => {
+            // Provide default values of 0 if item.amount or item.charge is falsy
+            const parsedAmount = item.amount || 0;
+            const parsedCharge = item.charge || 0;
+        
+            // Add the product of parsedAmount and parsedCharge to the total
+            if (parsedAmount > 0 && parsedCharge > 0) {
+                total += parsedAmount * parsedCharge;
+            }
+        
+            return total;
+        }, 0);
+        
+        // ... (other code for rendering the items in the receipt)
+        
+        // Render the total cost row in the table footer
+        m("tfoot", [
+            m("tr", [
+                m("th.colspan=4.text-right", "Total Cost:"),
+                m("th.text-center", totalCost) // Display total cost calculated using the reduce function
+            ])
+        ])
+        
+
+        // const itemsArray = [];
+        // for (const key in orderDetails) {
+        //     if (orderDetails.hasOwnProperty(key)) {
+        //         const value = orderDetails[key];
+        //         itemsArray.push({ name: key, quantity: value }); // Assuming you want to use the property names as item names
+        //     }
+        // }
 
         return [
             m("div", { "class": "card-body pt-0 pb-4" },
@@ -1216,7 +1269,7 @@ const order_item = {
                                 status: "BLOCKED",
                                 label: 'BLOCKED'
                             }]
-                              
+
                                 .map((statusInfo) => {
                                     const { status, label } = statusInfo
 
@@ -1277,24 +1330,24 @@ const order_item = {
                     )
                 ]
             ),
-              m("div", {class:"form-group row", style:{padding:"10px"}},
-                                m("label", { for: "myCheckbox" }, "skip SMS"),
-                                m("input", {
-                                    type: "checkbox",
-                                    checked: vnode.state.skipSms,
-                                    id: "myCheckbox",
-                                    onchange: (event) => {
-                                        vnode.state.skipSms=event.target.checked;
-                                        console.log("checked", event.target.checked)
-                                    },
-                                    style: {
-                                        width: "20px",
-                                        height: "20px",
-                                    },
+            m("div", { class: "form-group row", style: { padding: "10px" } },
+                m("label", { for: "myCheckbox" }, "skip SMS"),
+                m("input", {
+                    type: "checkbox",
+                    checked: vnode.state.skipSms,
+                    id: "myCheckbox",
+                    onchange: (event) => {
+                        vnode.state.skipSms = event.target.checked;
+                        console.log("checked", event.target.checked)
+                    },
+                    style: {
+                        width: "20px",
+                        height: "20px",
+                    },
 
-                                }),
+                }),
 
-                                ),
+            ),
 
             // vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
             m(".row", [
@@ -1479,9 +1532,9 @@ const order_item = {
 
 
 
-           m("div", { "class": "form-group row", style: { "padding": "10px" } },
+            m("div", { "class": "form-group row", style: { "padding": "10px" } },
                 [
- 
+
                     // m("div", { "class": "col-lg-12" },
                     //     [
 
@@ -1503,12 +1556,102 @@ const order_item = {
                             m("i", { "class": "flaticon2-mail-1" }),
                             " Save My order"
                         ]),
+
+                        m(".container.bootdey", [
+                            m(".row.invoice.row-printable", [
+                                m(".col-md-10", [
+                                    m(".panel.panel-default.plain#dash_0", [
+                                        m(".panel-body.p30", [
+                                            m(".row", [
+                                                m(".col-lg-6", [
+                                                    // m(".invoice-logo", [
+                                                    //     m("img", { width: "100", src: "https://bootdey.com/img/Content/avatar/avatar7.png", alt: "Invoice logo" })
+                                                    // ])
+                                                ]),
+                                                m(".col-lg-6", [
+                                                    m(".invoice-from", [
+                                                        m("ul.list-unstyled.text-right", [
+                                                            m("li", "WellWash"),
+                                                            // m("li", "2500 Ridgepoint Dr, Suite 105-C"),
+                                                            // m("li", "Austin TX 78754"),
+                                                            m("li", "Order No:")
+                                                        ])
+                                                    ])
+                                                ]),
+                                                m(".col-lg-12", [
+                                                    m(".invoice-details.mt25", [
+                                                        m(".well", [
+                                                            m("ul.list-unstyled.mb0", [
+
+                                                                m("li", m("strong", "Invoice Date:") + " " + orderDetails.pickupDay),
+                                                                m("li", m("strong", "Due Date:") + " " + orderDetails.dropOffDay),
+
+                                                            ])
+                                                        ])
+                                                    ]),
+                                                    m(".invoice-to.mt25", [
+                                                        m("ul.list-unstyled", [
+                                                            m("li", m("strong", "Invoiced To")),
+                                                            m("li", orderDetails.clientName),
+                                                            m("li", orderDetails.phone),
+
+                                                        ])
+                                                    ]),
+                                                    // Define an array of items with their quantities and charges
+
+                                                    m(".invoice-items", [
+                                                        m(".table-responsive", [
+                                                            m("table.table.table-bordered", [
+                                                                m("thead", [
+                                                                    m("tr", [
+                                                                        m("th.per70.text-center", "Description"),
+                                                                        m("th.per5.text-center", "Qty"),
+                                                                        m("th.per10.text-center", "Amount"),
+                                                                        m("th.per15.text-center", "Charge"),
+                                                                        m("th.per25.text-center", "Total")
+                                                                    ])
+                                                                ]),
+                                                                // Iterate through the items array and render items on the receipt
+                                                                items.map(item => {
+                                                                    if (item.amount > 0) {
+                                                                        const total = item.amount * item.charge;
+                                                                        return m("tr", [
+                                                                            m("td", item.name), // Description
+                                                                            m("td.text-center", item.amount), // Qty
+                                                                            m("td.text-center", item.charge), // Amount
+                                                                            m("td.text-center", item.charge), // Charge
+                                                                            m("td.text-center", total) // Total
+                                                                        ]);
+                                                                    }
+                                                                }),
+                                                                m("tfoot", [
+                                                                    m("tr", [
+                                                                        m("th.colspan=4.text-right", "Total Cost:"),
+                                                                        // Calculate and display total cost for all items with a quantity greater than 0
+                                                                        m("th.text-center", items.reduce((total, item) => total + (item.amount * item.charge) || 0))
+                                                                    ])
+                                                                ])
+                                                            ])
+                                                        ])
+                                                    ]),
+
+
+                                                    m(".invoice-footer.mt25", [
+                                                        // Add additional invoice details here if needed
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ])
+                        ]),
                         m("button", {
                             type: "button",
                             class: "btn btn-lg btn-secondary ml-2",
                             onclick() {
                                 console.log("button clicked");
-                                
+
                                 window.print(); // This line triggers the print functionality
                             }
                         }, [
@@ -1520,8 +1663,10 @@ const order_item = {
 
 
                 ])
+
         ]
     }
+
     // view(){
     //     return [];
     // }
