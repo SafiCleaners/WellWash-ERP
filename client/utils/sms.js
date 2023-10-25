@@ -25,9 +25,11 @@ const func = ({ phone, message }, reply) => {
     };
 
     axios.request(options).then(function (response) {
-        console.log('SMS sent successfully:', response.data);
-        reply(response.data);
-    }).catch(console.log);
+       // console.log('SMS sent successfully:', response.data);
+        reply(null, response.data);
+    }).catch(function(error){
+        reply(error, null);
+    });
 }
 
 
