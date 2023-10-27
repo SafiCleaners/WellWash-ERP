@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
-const moment = require ('moment');
+const moment = require('moment');
 const aws = require('aws-sdk');
 const morgan = require('morgan');
 const multer = require('multer');
@@ -304,6 +304,8 @@ const routes = async (client) => {
         const deviceDetector = new DeviceDetector();
         const device = deviceDetector.parse(req.headers['user-agent']);
 
+        req.session.activeOrder = req.body;
+
         try {
             let jobId = req.params.id;
             if (jobId === 'null') {
@@ -325,42 +327,24 @@ const routes = async (client) => {
                     device
                 });
 
-                // SMS here
-                if (newJobData.saved === true) {
-                    delete newJobData.device;
-                    delete newJobData._id;
-                    delete newJobData.deleted;
-                    delete newJobData.googleId;
-                    delete newJobData.userId;
-                    delete newJobData.mpesaPhoneNumber;
-                    delete newJobData.curtains;
-                    delete newJobData.generalKgs;
+                const updatedJob = await db.collection('jobs').updateOne(
+                    { _id: ObjectId(jobId) },
+                    { $set: Object.assign(newJobData, { device }) },
+                    { upsert: true }
+                );
 
-                    newJobData.orderUrl = "http://wellwash.online/j/" + newJobData.shortId;
+                console.log(updatedJob)
 
-                    const message = YAML.stringify(newJobData);
+                res.status(201).send({ id: jobId, jobUrl: newJobData.orderUrl });
+            } else {
+                const updatedJob = await db.collection('jobs').updateOne(
+                    { _id: ObjectId(jobId) },
+                    { $set: Object.assign(req.body, { device }) },
+                    { upsert: true }
+                );
 
-                    console.log(message.length, message);
+                console.log(updatedJob)
 
-                    sms({
-                        phone: req.body.phone,
-                        message: YAML.stringify(newJobData)
-                    }, console.log);
-                }
-
-                return res.status(201).send({ id: jobId, jobUrl: newJobData.orderUrl });
-            }
-
-            const jobBody = req.body;
-            const updatedJob = await db.collection('jobs').updateOne(
-                { _id: ObjectId(jobId) },
-                { $set: Object.assign(jobBody, { device }) },
-                { upsert: true }
-            );
-            console.log("Request Body:", req.body);
-
-
-            if (req.body.saved == true) {
                 const selectedItems = [];
                 if (req.body.curtainsAmount > 0) {
                     selectedItems.push(`${req.body.curtainsAmount} Curtains`);
@@ -396,7 +380,8 @@ const routes = async (client) => {
                 const dropOffTime = req.body.dropOffTime
                 const dropOffDay = req.body.dropOffDay
                 const formattedDropOffDay = moment(dropOffDay, 'YYYY-MM-DD').format('Do MMM');
-                if (!req.body.skipSms) {
+
+                if (req.body.skipSms) {
                     const statusToMessageMap = {
                         'PICK_UP': `Hi ${customerName}, a quick reminder that we'll pick up your laundry today between ${pickupTime}. Thank you for choosing us!`,
                         'COLLECTED': `Good news, ${customerName}! Your laundry is on its way to us. We'll keep you updated on the progress.
@@ -411,13 +396,13 @@ const routes = async (client) => {
                         'DELIVERED': `Your laundry has been delivered! Thanks for choosing us. Your feedback is valuable. Leave a review at [link].`,
                         'BLOCKED': ""
                     };
-                    
+
                     const statusMessage = statusToMessageMap[selectedStatus];
                     if (statusMessage) {
-                        
+
                         console.log("Sending SMS with status message:", statusMessage);
                         console.log("Phone:", req.body.phone);
-    
+
                         sms({
                             phone: req.body.phone,
                             message: statusMessage
@@ -429,20 +414,14 @@ const routes = async (client) => {
                             }
                         });
                     }
+                    console.log("SMS sent")
+                } else {
+                    console.log("No sms sent")
                 }
-                
 
-              
-            } else {
-                req.session.activeOrder = req.body;
+
+                res.status(201).send({ id: jobId, job});
             }
-
-
-
-            // Logic to send SMS based on selected status
-
-
-            res.status(200).send({ id: jobId });
         } catch (err) {
             console.log(err);
             res.status(500).send({ message: 'Server error' });
@@ -551,19 +530,22 @@ const routes = async (client) => {
 
             } else if (result) {
 
-                db.collection('users').updateOne({ googleId }, { $set: req.body, }, { upsert: true }, function (err, _) {
+                db.collection('roles').findOne({ _id: new ObjectId(result._id) }, function (err, role) {
                     if (err) throw err
 
-                    var token = jwt.sign(result, JWT_TOKEN);
 
-                    console.log({
-                        user: result,
-                        token
-                    })
 
-                    res.send({
-                        user: result,
-                        token
+                    db.collection('users').updateOne({ googleId }, { $set: req.body, }, { upsert: true }, function (err, _) {
+                        if (err) throw err
+
+                        var token = jwt.sign(result, JWT_TOKEN);
+
+                        res.send({
+                            user: Object.assign({}, result, {
+                                role:role.role
+                            }),
+                            token
+                        })
                     })
                 })
             }

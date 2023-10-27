@@ -33,6 +33,8 @@ const google_login = {
           data: userData,
         };
         const res = await axios.request(options);
+
+        console.log(res)
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userId', res.data.user._id);
         localStorage.setItem('role', res.data.user.role);

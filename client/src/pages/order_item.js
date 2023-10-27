@@ -118,8 +118,9 @@ const order_item = {
                 name,
                 statusInfo,
                 saved,
+                skipSms,
+                paid
             } = vnode.state
-            const skipSms = vnode.state.skipSms;
 
             let order = Object.assign({}, vnode.state.originalJob, {
                 pickupDay,
@@ -140,7 +141,7 @@ const order_item = {
                 statusInfo,
                 saved,
                 skipSms,
-
+                paid
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
@@ -236,17 +237,7 @@ const order_item = {
         console.log({ state: vnode.state })
 
         const {
-            whites,
-            whites_wash_units,
-            blacks,
-            black_wash_units,
-            coloured,
-            coloured_wash_units,
-            job = {}
-        } = vnode.state
-
-        const {
-            _id = "",
+            _id,
             paid = "",
             status = "",
             pickupDay = "",
@@ -293,19 +284,12 @@ const order_item = {
 
         } = vnode.state
 
+        if (!_id) {
+            return m("h1", "Loading Order Details...")
+        }
+
         const calculatePrice = () => {
-            return (duvets * 600) +
-                (coat_hoodie * 50) +
-                (blankets * 500) +
-                (furry_blankets * 600) +
-                (bed_sheets * 200) +
-                (curtains * 200) +
-                (towels * 70) +
-                (suits_type1 * 350) +
-                (suits_type2 * 400) +
-                (ironing * 50) +
-                (ironing_trousers * 70) +
-                (generalKgs * 91)
+            return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
         }
 
         return [
@@ -696,10 +680,11 @@ const order_item = {
 
             m("div", { "class": "form-group row" },
                 [
+                    
                     m(incrementableInput, {
                         name: 'Curtains',
-                        charge: curtainsCharge || 200, // use this to set a default
-                        amount: curtainsAmount || 0,
+                        charge: curtainsCharge, // use this to set a default
+                        amount: curtainsAmount,
                         value: curtains,
                         pricing: [{
                             amount: 200,
@@ -715,12 +700,15 @@ const order_item = {
                             console.log(amountValue, chargeValue)
                             vnode.state.curtainsCharge = chargeValue
                             vnode.state.curtainsAmount = amountValue
-                        }
+                        },
+                        pickerSize: 12,
+                        pickerSizeMD: 6,
+                        pickerSizeLG: 6
                     }),
                     m(incrementableInput, {
                         name: 'Blankets',
-                        charge: blanketsCharge || 500,
-                        amount: blanketsAmount || 0,
+                        charge: blanketsCharge,
+                        amount: blanketsAmount,
                         value: blankets,
                         pricing: [{
                             amount: 300,
@@ -736,12 +724,15 @@ const order_item = {
                         onChange({ amountValue, chargeValue }) {
                             vnode.state.blanketsCharge = chargeValue
                             vnode.state.blanketsAmount = amountValue
-                        }
+                        },
+                        pickerSize: 12,
+                        pickerSizeMD: 6,
+                        pickerSizeLG: 6
                     }),
                     m(incrementableInput, {
                         name: 'Duvets',
-                        charge: duvetsCharge || 600,
-                        amount: duvetsAmount || 0,
+                        charge: duvetsCharge,
+                        amount: duvetsAmount,
                         value: duvets,
                         pricing: [{
                             amount: 500,
@@ -756,12 +747,15 @@ const order_item = {
                         onChange({ amountValue, chargeValue }) {
                             vnode.state.duvetsCharge = chargeValue
                             vnode.state.duvetsAmount = amountValue
-                        }
+                        },
+                        pickerSize: 12,
+                        pickerSizeMD: 6,
+                        pickerSizeLG: 6
                     }),
                     m(incrementableInput, {
                         name: 'General Clothes in Kgs',
-                        charge: generalKgsCharge || 91,
-                        amount: generalKgsAmount || 0,
+                        charge: generalKgsCharge,
+                        amount: generalKgsAmount,
                         value: generalKgs,
                         pricing: [{
                             amount: 100,
@@ -777,19 +771,23 @@ const order_item = {
                         onChange({ amountValue, chargeValue }) {
                             vnode.state.generalKgsCharge = chargeValue
                             vnode.state.generalKgsAmount = amountValue
-                        }
+                        },
+                        pickerSize: 12,
+                        pickerSizeMD: 6,
+                        pickerSizeLG: 6
                     }),
                     m(incrementableInput, {
                         name: 'Shoes in Pairs',
-                        charge: shoesCharge || 100,
-                        amount: shoesAmount || 0,
+                        charge: shoesCharge,
+                        amount: shoesAmount,
                         value: shoes,
                         pricing: [{
                             amount: 100,
                             label: '100'
                         }, {
                             amount: 150,
-                            label: '150'
+                            label: '150',
+                            selectedCharge: true
                         }, {
                             amount: 200,
                             label: '200'
@@ -798,12 +796,15 @@ const order_item = {
                         onChange({ amountValue, chargeValue }) {
                             vnode.state.shoesCharge = chargeValue
                             vnode.state.shoesAmount = amountValue
-                        }
+                        },
+                        pickerSize: 12,
+                        pickerSizeMD: 6,
+                        pickerSizeLG: 6
                     }),
 
                     m("h3", { "class": "display-4" },
 
-                        `This would cost around KSH ${(curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)}`
+                        `This would cost around KSH ${calculatePrice()}`
 
                     ),
                     m("p", { "class": "font-size-lg" },
@@ -1185,6 +1186,38 @@ const order_item = {
             //     ]
             // ),
 
+            m("div", { class: "form-group row", style: { padding: "10px" } }, [
+                m("div", { "class": "d-flex flex-stack" },
+                    [
+                        m("div", { "class": "d-flex", style: { "padding-right": 30 } },
+                            m("div", { "class": "d-flex flex-column" },
+                                m("a", { "class": "fs-5 text-dark text-hover-primary fw-bold", "href": "#" },
+                                    "Send SMS to " + vnode.state.phone + " when i change order status"
+                                )
+                            )
+                        ),
+                        m("div", { "class": "d-flex justify-content-end" },
+                            m("div", { "class": "form-check form-check-solid form-check-custom form-switch" },
+                                [
+                                    m("input", {
+                                        "class": "form-check-input w-45px h-30px",
+                                        "type": "checkbox",
+                                        "id": "smsswitch",
+                                        checked: vnode.state.skipSms,
+                                        onchange: (event) => {
+                                            vnode.state.skipSms = event.target.checked;
+                                            console.log("checked", event.target.checked)
+                                        }
+                                    }),
+
+                                ]
+                            )
+                        )
+                    ]
+                )
+
+            ]),
+
             m("div", { "class": "col-lg-12 col-md-12 col-sm-12" },
                 [
                     m("label",
@@ -1216,7 +1249,7 @@ const order_item = {
                                 status: "BLOCKED",
                                 label: 'BLOCKED'
                             }]
-                              
+
                                 .map((statusInfo) => {
                                     const { status, label } = statusInfo
 
@@ -1277,24 +1310,7 @@ const order_item = {
                     )
                 ]
             ),
-              m("div", {class:"form-group row", style:{padding:"10px"}},
-                                m("label", { for: "myCheckbox" }, "skip SMS"),
-                                m("input", {
-                                    type: "checkbox",
-                                    checked: vnode.state.skipSms,
-                                    id: "myCheckbox",
-                                    onchange: (event) => {
-                                        vnode.state.skipSms=event.target.checked;
-                                        console.log("checked", event.target.checked)
-                                    },
-                                    style: {
-                                        width: "20px",
-                                        height: "20px",
-                                    },
-
-                                }),
-
-                                ),
+            
 
             // vnode.state?.job?.statusInfo ? m("rel", "Current Status: " + vnode.state?.job?.statusInfo[0].status) : [],
             m(".row", [
@@ -1324,7 +1340,7 @@ const order_item = {
                     m("div", { "class": "form-group mb-1" },
                         [
                             m("label", { "for": "exampleTextarea" },
-                                "Mpesa Confirmation message"
+                                "Mpesa Confirmation Code"
                             ),
                             m("textarea", {
                                 oninput: (e) => {
@@ -1333,12 +1349,44 @@ const order_item = {
                                 value: mpesaConfirmationCode,
                                 "class": "form-control",
                                 "id": "exampleTextarea",
-                                "rows": "12",
+                                "rows": "2",
                                 "spellcheck": "true"
                             })
                         ]
                     )
                 ])
+            ]),
+
+            m("div", { class: "form-group row", style: { padding: "10px" } }, [
+                m("div", { "class": "d-flex flex-stack" },
+                    [
+                        m("div", { "class": "d-flex", style: { "padding-right": 30 } },
+                            m("div", { "class": "d-flex flex-column" },
+                                m("a", { "class": "fs-5 text-dark text-hover-primary fw-bold", "href": "#" },
+                                    "Paid"
+                                )
+                            )
+                        ),
+                        m("div", { "class": "d-flex justify-content-end" },
+                            m("div", { "class": "form-check form-check-solid form-check-custom form-switch" },
+                                [
+                                    m("input", {
+                                        "class": "form-check-input w-45px h-30px",
+                                        "type": "checkbox",
+                                        "id": "payswitch",
+                                        checked: vnode.state.paid,
+                                        onchange: (event) => {
+                                            vnode.state.paid = event.target.checked;
+                                            console.log("checked", event.target.checked)
+                                        }
+                                    }),
+
+                                ]
+                            )
+                        )
+                    ]
+                )
+
             ]),
 
             m(".row", [

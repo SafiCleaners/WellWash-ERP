@@ -53,7 +53,7 @@ const header = {
                                 [
                                     m("li", {
                                         "class": "menu-item" + (
-                                            ["/", ""].includes(window.location.hash) ? " menu-item-active" : ""), "aria-haspopup": "true"
+                                            ["/", ""].includes(window.location.pathname) ? " menu-item-active" : ""), "aria-haspopup": "true"
                                     },
                                         m(m.route.Link, { "class": "menu-link", "href": "/" },
                                             m("span", { "class": "menu-text" },
@@ -63,7 +63,7 @@ const header = {
                                     ),
 
                                     !localStorage.getItem('authToken') ? [
-                                        m("li", { "class": "menu-item" + (window.location.hash === "/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname === "/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/discounts" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -73,7 +73,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname === "/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/about" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -83,7 +83,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname === "/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/guarantees" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -93,7 +93,7 @@ const header = {
                                                 ]
                                             )
                                         ),
-                                        m("li", { "class": "menu-item" + (window.location.hash === "/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname === "/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/services" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -104,7 +104,7 @@ const header = {
                                             )
                                         ),
 
-                                        m("li", { "class": "menu-item" + (window.location.hash === "/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname === "/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/FAQ" },
                                                 [
                                                     m("span", { "class": "menu-text" },
@@ -114,7 +114,7 @@ const header = {
                                                 ]
                                             )
                                         )
-                                    ] : [m("li", { "class": "menu-item" + (window.location.hash.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                    ] : [m("li", { "class": "menu-item" + (window.location.pathname.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         m(m.route.Link, { "class": "menu-link", "href": "/j" },
                                             [
                                                 m("span", { "class": "menu-text" },
@@ -124,7 +124,7 @@ const header = {
                                             ]
                                         )
                                     ),
-                                    m("li", { "class": "menu-item" + (window.location.hash.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                             [
                                                 m("span", { "class": "menu-text" },
