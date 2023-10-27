@@ -13,11 +13,11 @@ import moment from "moment"
 
 const step = (vnode) => {
     const detailsString = (job) => {
-        const orderItems = ["duvets", "blankets", "curtains", "generalKgs",]; 
+        const orderItems = ["curtainsAmount", "blanketsAmount", "duvetsAmount", "generalKgsAmount","shoesAmount"]; 
         return Object.keys(job)
           .filter((key) => orderItems.includes(key))
           .map((key) => {
-            return `${job[key]} ${key}`;
+              return `${job[key]} ${key.replace("Amount", "")}`;
           })
           .join(", ");
       };
@@ -99,6 +99,8 @@ const step = (vnode) => {
                                         )
                                     ),
 
+                                    
+
                                     m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                         m("div", { "class": "table-responsive" },
                                             !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -122,6 +124,7 @@ const step = (vnode) => {
                                                                 .map(({
                                                                     appartmentName,
                                                                     name,
+                                                                    clientName,
                                                                     phone,
                                                                     blankets,
                                                                     curtains,
@@ -145,8 +148,22 @@ const step = (vnode) => {
                                                                     _id,
                                                                     createdAtAgo,
                                                                     shortId,
-                                                                    statusInfo
+                                                                    statusInfo,
+
+                                                                    curtainsAmount,
+                                                                    curtainsCharge,
+                                                                    blanketsAmount,
+                                                                    blanketsCharge,
+                                                                    duvetsAmount,
+                                                                    duvetsCharge,
+                                                                    generalKgsAmount,
+                                                                    generalKgsCharge,
+                                                                    shoesAmount,
+                                                                    shoesCharge
                                                                 }) => {
+                                                                    const calculatePrice = () => {
+                                                                        return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                    }
                                                                     return m("tr", {
                                                                         // key: id,
                                                                         style: { "cursor": "pointer" }
@@ -206,11 +223,17 @@ const step = (vnode) => {
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    `#${shortId} , ${detailsString(vnode.state.jobs.find((j) => j._id === _id))} `
+                                                                                        `#${shortId} ${clientName}`
                                                                                     ),
                                                                                     m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
                                                                                         `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                             " House:" + houseNumber
+                                                                                        )]
+                                                                                    ),
+                                                                                    m("br"),
+                                                                                    m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
+                                                                                        [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
+                                                                                            [`${detailsString(vnode.state.jobs.find((j) => j._id === _id))}`]
                                                                                         )]
                                                                                     )
                                                                                 ]
@@ -236,7 +259,7 @@ const step = (vnode) => {
                                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                                 [
                                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                        `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                        `KSH ${calculatePrice()}`
                                                                                     ),
                                                                                     m("span", { "class": "text-muted font-weight-bold" },
                                                                                         [

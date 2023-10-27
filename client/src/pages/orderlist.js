@@ -119,38 +119,61 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === false)
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id,
-                                                                createdAtAgo
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
                                                                     duvets,
-                                                                    generalKgs
+                                                                    generalKgs,
                                                                 });
                                                                 return m("tr", {
                                                                     // key: id,
@@ -169,7 +192,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -177,23 +200,16 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        ),
-                                                                                        
+                                                                                        )
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -205,7 +221,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Picked", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -230,56 +246,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m("a", {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm",
-                                                                                    onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -352,33 +369,56 @@ const orders = {
                                                 m("tbody",
                                                     [
                                                         vnode.state.jobs
-                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD' && job.saved === true)
+                                                            .filter(job => job.statusInfo && job.statusInfo[0].status === 'LEAD')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id,
-                                                                createdAtAgo
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -402,7 +442,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -410,23 +450,16 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        ),
-                                                                                        
+                                                                                        )
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -438,7 +471,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Requested ", createdAtAgo + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -463,55 +496,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -586,31 +621,54 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'PICKED_UP')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id,
-                                                                createdAtAgo
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -634,7 +692,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -647,17 +705,11 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -669,7 +721,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Order Created " + createdAtAgo + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -694,55 +746,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -817,30 +871,54 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'WASHED')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -864,7 +942,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -877,17 +955,11 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -899,7 +971,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -924,55 +996,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -1047,30 +1121,54 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'FOLDED')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -1094,7 +1192,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -1107,17 +1205,11 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -1129,7 +1221,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -1154,55 +1246,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -1277,30 +1371,54 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'DELIVERED')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -1324,7 +1442,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -1332,23 +1450,16 @@ const orders = {
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
                                                                                             )]
-                                                                                        ),
-                                                                                        
+                                                                                        )
                                                                                     ]
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -1360,7 +1471,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -1385,55 +1496,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -1508,37 +1621,60 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
                                                                     duvets,
                                                                     generalKgs,
                                                                 });
-
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -1556,7 +1692,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -1569,17 +1705,11 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -1591,7 +1721,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -1616,55 +1746,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
@@ -1739,30 +1871,54 @@ const orders = {
                                                         vnode.state.jobs
                                                             .filter(job => job.statusInfo && job.statusInfo[0].status === 'BLOCKED')
                                                             .map(({
-                                                                appartmentName,
-                                                                name,
-                                                                phone,
-                                                                blankets,
-                                                                curtains,
-                                                                status,
-                                                                duvets,
-                                                                generalKgs,
-                                                                houseNumber,
-                                                                id,
-                                                                paid,
-                                                                lastSyncTime,
-                                                                moreDetails,
-                                                                mpesaConfirmationCode,
+                                                                _id,
+                                                                paid = "",
+                                                                status = "",
+                                                                pickupDay = "",
+                                                                dropOffDay = "",
+                                                                pickupTime = "",
+                                                                dropOffTime = "",
+                                                                appartmentName = "",
+                                                                houseNumber = "",
+                                                                moreDetails = "",
+                                                                clientName,
+
+
                                                                 mpesaPhoneNumber,
-                                                                partial,
-                                                                pickupDay,
-                                                                pickupTime,
-                                                                saved,
-                                                                uploading,
+                                                                phone,
+                                                                mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-                                                                _id
+
+                                                                duvets = 0,
+                                                                coat_hoodie = 0,
+                                                                blankets = 0,
+                                                                furry_blankets = 0,
+                                                                bed_sheets = 0,
+                                                                curtains = 0,
+                                                                shoes = 0,
+                                                                towels = 0,
+                                                                suits_type1 = 0,
+                                                                suits_type2 = 0,
+                                                                ironing = 0,
+                                                                ironing_trousers = 0,
+                                                                generalKgs = 0,
+                                                                createdAtAgo,
+
+                                                                curtainsAmount,
+                                                                curtainsCharge,
+                                                                blanketsAmount,
+                                                                blanketsCharge,
+                                                                duvetsAmount,
+                                                                duvetsCharge,
+                                                                generalKgsAmount,
+                                                                generalKgsCharge,
+                                                                shoesAmount,
+                                                                shoesCharge
                                                             }) => {
+                                                                const calculatePrice = () => {
+                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                }
                                                                 const orderDetails = detailsString({
                                                                     blankets,
                                                                     curtains,
@@ -1786,7 +1942,7 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    name + " (" + phone + ")"
+                                                                                    clientName + " (" + phone + ")"
                                                                                 ),
                                                                                 m("div",
                                                                                     [
@@ -1799,17 +1955,11 @@ const orders = {
                                                                                 )
                                                                             ]
                                                                         ),
-                                                                        m("tr",
-                                                                        [
-                                                                            m("td", { "colspan": "6" },
-                                                                                orderDetails // Display order details in a single cell
-                                                                            )
-                                                                        ]
-                                                                    ),
+
                                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
+                                                                                    `KSH ${calculatePrice()}`
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : " Not Paid"
@@ -1821,7 +1971,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    "Was Picked ", timePickedUpFromNow + " ago"
+                                                                                    "Was Requested ", createdAtAgo + " ago"
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     "To be Dropped Off in ", timeDroppedOffFromNow,
@@ -1846,55 +1996,57 @@ const orders = {
                                                                         //     )
                                                                         // ),
 
-                                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
-                                                                                //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                //                 [
-                                                                                //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
-                                                                                //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
-                                                                                //                 ]
-                                                                                //             )
-                                                                                //         )
-                                                                                //     )
-                                                                                // ),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/jobs/${_id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
 
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            location.reload()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                                                [
-                                                                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                                                    m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                                                    m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                                                ]
-                                                                                            )
-                                                                                        )
-                                                                                    )
-                                                                                )
-                                                                            ]
-                                                                        )
+
+                                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                        //     [
+
+                                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // ),
+                                                                        // m(m.route.Link, {
+                                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                                        //         const options = { 
+                                                                        //             method: 'DELETE', 
+                                                                        //             url: `${url}/jobs/${_id}`,
+                                                                        //             headers: { 
+                                                                        //                 'Content-Type': 'application/json',
+                                                                        //                 'authorization': localStorage.getItem('token')
+                                                                        //             },
+                                                                        //         };
+
+                                                                        //         axios.request(options).then(function (response) {
+                                                                        //             console.log(response.data);
+                                                                        //             location.reload()
+                                                                        //         }).catch(function (error) {
+                                                                        //             console.error(error);
+                                                                        //         });
+                                                                        //     }
+                                                                        // },
+                                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                                        //                 [
+                                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                                        //                 ]
+                                                                        //             )
+                                                                        //         )
+                                                                        //     )
+                                                                        // )
+                                                                        //     ]
+                                                                        // )
                                                                     ]
                                                                 )
                                                             })
