@@ -1,21 +1,24 @@
 import m from "mithril"
 
 const dynamicPicker = {
-    oncreate(vnode) {
+    oninit(vnode) {
         console.log(vnode)
-        vnode.state = Object.assign(vnode.state, {
-            selectedCharge: vnode.attrs.charge
-        })
+
+        if (!vnode.state.selectedCharge)
+            vnode.state = Object.assign(vnode.state, {
+                selectedCharge: vnode.attrs.options.find(option => option.selectedCharge == true)?.amount || vnode.attrs.charge
+            })
     },
     view(vnode) {
-        console.log(vnode)
+        console.log(vnode.state, vnode.attrs)
         return [
-            m("label", `Pricing ~/` + vnode.attrs.amount + " ,each at " +  vnode.attrs.charge + " = " + (Number(vnode.attrs.charge) * Number(vnode.attrs.amount)) ),
+            m("label", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount))),
             m("br"),
             m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
                 vnode.attrs.options.map((statusInfo) => {
-                    const { amount:charge, label } = statusInfo
-                    return m("label", { "class": `btn btn-info ${charge === vnode.state.selectedCharge ? " active" : ""}` },
+                    const { amount: charge, label, selectedCharge } = statusInfo
+                    // console.log(charge, vnode.state.selectedCharge, selectedCharge, charge == vnode.state.selectedCharge)
+                    return m("label", { "class": `btn btn-info ${selectedCharge ? "active" : (charge == vnode.state.selectedCharge ? "active" : "")}` },
                         [
                             m("input", {
                                 "type": "radio",
@@ -23,6 +26,7 @@ const dynamicPicker = {
                                 onchange: () => {
                                     console.log("selected price;", charge)
                                     vnode.attrs.charge = charge
+                                    vnode.state.selectedCharge = charge
                                     vnode.attrs.onChange(charge)
                                 }
                             }),
@@ -36,32 +40,19 @@ const dynamicPicker = {
 }
 
 const input = {
-    oncreate(vnode) {
+    oninit(vnode) {
+        // console.log(vnode.state, vnode.attrs)
         vnode.state = Object.assign(vnode.state, {
-            value: vnode.attrs.value
+            amount: vnode.attrs.amount,
+            value: vnode.attrs.amount
         })
+        // console.log(vnode.state, vnode.attrs)
     },
     view(vnode) {
-        console.log(vnode)
-        return [
-            m("div", { "class": `col-lg-${vnode.attrs.pickerSize} col-md-${vnode.attrs.pickerSize} col-sm-${vnode.attrs.pickerSize}` }, [
-                m(dynamicPicker, {
-                    options: vnode.attrs.pricing,
-                    charge: vnode.state.chargeValue || vnode.attrs.charge,
-                    amount: vnode.attrs.amount,
-                    name: vnode.attrs.name,
-                    onChange(charge) {
-                        // console.log(charge)
-                        vnode.state.chargeValue = charge
 
-                        vnode.attrs.onChange({
-                            amountValue: vnode.state.value,
-                            chargeValue: vnode.state.chargeValue
-                        })
-                    }
-                })
-            ]),
-            m("div", { "class": `col-lg-${vnode.attrs.size} col-md-${vnode.attrs.size} col-sm-${vnode.attrs.size * 2}` },
+        return [
+
+            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}` },
                 [
                     m("label", vnode.attrs.name),
                     m("div", { "class": "form-group" }, [
@@ -115,7 +106,24 @@ const input = {
                         )
                     ])
                 ]
-            )
+            ),
+            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}` }, [
+                m(dynamicPicker, {
+                    options: vnode.attrs.pricing,
+                    charge: vnode.state.chargeValue || vnode.attrs.charge,
+                    amount: vnode.attrs.amount,
+                    name: vnode.attrs.name,
+                    onChange(charge) {
+                        // console.log(charge)
+                        vnode.state.chargeValue = charge
+
+                        vnode.attrs.onChange({
+                            amountValue: vnode.state.value,
+                            chargeValue: vnode.state.chargeValue
+                        })
+                    }
+                })
+            ]),
         ]
     }
 }

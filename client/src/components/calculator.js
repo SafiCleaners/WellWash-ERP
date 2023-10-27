@@ -91,6 +91,11 @@ var calculator = () => {
             vnode.state.id = activeOrderId
             vnode.state.clearInternalActiveOrderId = () => { activeOrderId = null }
 
+            const role = localStorage.getItem('role')
+            if (role && ['OWNER', "INTERNAL"].includes(role)) {
+                vnode.state.isInternaluser = true
+            }
+
             // function to update order on the server
             const updateOrderOnServer = (cb) => {
                 if (!['/', ''].includes(m.route.get())) {
@@ -104,7 +109,7 @@ var calculator = () => {
                     dropOffTime,
                     //appartmentName,
                     // houseNumber,
-                    //moreDetails,
+                    moreDetails,
                     curtains,
                     blankets,
                     duvets,
@@ -113,6 +118,7 @@ var calculator = () => {
                     phone,
                     mpesaConfirmationCode,
                     name,
+                    clientName,
                     statusInfo,
                     saved
                 } = vnode.state
@@ -124,7 +130,7 @@ var calculator = () => {
                     dropOffTime,
                     //appartmentName,
                     //houseNumber,
-                    //moreDetails,
+                    moreDetails,
                     curtains,
                     blankets,
                     duvets,
@@ -133,6 +139,7 @@ var calculator = () => {
                     phone,
                     mpesaConfirmationCode,
                     name,
+                    clientName,
                     statusInfo,
                     saved
                 }, {
@@ -194,10 +201,16 @@ var calculator = () => {
                     // Check if the order is saved successfully
                     order.jobUrl = response.data.jobUrl
                     // Internal routing using m.route.set
-                    m.route.set("/thankyou", {
-                        order: order
-                    });
-                    
+
+                    if (!vnode.state.isInternaluser) {
+                        m.route.set("/thankyou", {
+                            order: order
+                        });
+                    } else {
+                        m.location.reload()
+                    }
+
+
                     cb()
 
                 }).catch(function (error) {
@@ -220,11 +233,8 @@ var calculator = () => {
 
             vnode.state.updateOrderOnServer = updateOrderOnServer
 
-            // call updateOrderOnServer function once 
-            // updateOrderOnServer();
-            // call updateOrderOnServerPeriodically function with a suitable time period 
-            // setInterval(updateOrderOnServer, 2000);
-            // Or you can call it on certain events like onblur of an input, on click of a button, or on specific route change
+
+
 
         },
         view(vnode) {
@@ -244,7 +254,8 @@ var calculator = () => {
                 mpesaPhoneNumber,
                 phone,
                 mpesaConfirmationCode,
-                name
+                name,
+                clientName
             } = vnode.state
 
             return m("div", { "class": "card-body" },
@@ -300,31 +311,6 @@ var calculator = () => {
                                         // )
                                     ]
                                 ),
-
-
-
-
-
-
-
-                                // m("div", { "class": "bs-stepper d-md-block" },
-                                //     [
-                                //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                //             [
-                                //                 m("div", { "class": "step", "data-target": "#logins-part" },
-                                //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                //                         [
-                                //                             m("span", { "class": "bs-stepper-circle" },
-                                //                                 "2"
-                                //                             ),
-                                //                             m("span", { "class": "bs-stepper-label" },
-                                //                                 "Pickup and DropOff Time"
-                                //                             )
-                                //                         ]
-                                //                     )
-                                //                 )]
-                                //         )]
-                                // ),
 
 
 
@@ -461,6 +447,35 @@ var calculator = () => {
                                         )
                                     ]),
 
+                                !vnode.state.isInternaluser ? [] : m("div", { "class": "col-lg-6" },
+                                    [
+                                        m("label",
+                                            "What the name of the client?"
+                                        ),
+                                        m("div", { "class": "input-group" },
+                                            [
+                                                m("input", {
+                                                    oninput: (e) => {
+                                                        vnode.state.clientName = e.target.value
+                                                    },
+                                                    value: clientName,
+                                                    "class": "form-control",
+                                                    "type": "text",
+                                                    "placeholder": "ie Jane Doe"
+                                                }),
+                                                m("div", { "class": "input-group-append" },
+                                                    m("span", { "class": "input-group-text" },
+                                                        m("i", { "class": "la la-align-center" })
+                                                    )
+                                                )
+                                            ]
+                                        ),
+                                        m("span", { "class": "form-text text-muted" },
+                                            "The name will be used for messaging"
+                                        )
+                                    ]
+                                ),
+
                                 m("div", { "class": "col-lg-6" },
                                     [
                                         m("label",
@@ -490,90 +505,6 @@ var calculator = () => {
                                     ]
                                 ),
 
-
-                                // m("div", { "class": "bs-stepper" },
-                                //   [
-                                //      m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                //         [
-                                //          m("div", { "class": "step", "data-target": "#logins-part" },
-                                //             m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                //                [
-                                //                 m("span", { "class": "bs-stepper-circle" },
-                                //                     "2"
-                                //               ),
-                                //              m("span", { "class": "bs-stepper-label" },
-                                //                "Where to pickup and drop off"
-                                //         )
-                                //     ]
-                                //    )
-                                // )]
-                                //)]
-                                //),
-
-
-
-                                // m(datepicker),
-
-
-                                // m("div", { "class": "form-group row" },
-                                //  [
-
-                                // m("div", { "class": "col-lg-12" },
-                                //     [
-                                //         m("label",
-                                //             "Appartment's Name:"
-                                //         ),
-                                //         m("div", { "class": "input-group" },
-                                //             [
-                                //                 m("input", {
-                                //                     oninput: (e) => {
-                                //                         vnode.state.appartmentName = e.target.value
-                                //                     },
-                                //                     value: appartmentName,
-                                //                     "class": "form-control",
-                                //                     "type": "text",
-                                //                     "placeholder": "What is your appartment commonly called?"
-                                //                 }),
-                                //                 m("div", { "class": "input-group-append" },
-                                //                     m("span", { "class": "input-group-text" },
-                                //                         m("i", { "class": "la la-align-center" })
-                                //                     )
-                                //                 )
-                                //             ]
-                                //         ),
-                                //         // m("span", { "class": "form-text text-muted" },
-                                //         //     "The name of the appartment to find"
-                                //         // )
-                                //     ]
-                                // ),
-                                // m("div", { "class": "col-lg-12" },
-                                //     [
-                                //         m("label",
-                                //             "House Number:"
-                                //         ),
-                                //         m("div", { "class": "input-group" },
-                                //             [
-                                //                 m("input", {
-                                //                     oninput: (e) => {
-                                //                         vnode.state.houseNumber = e.target.value
-                                //                     },
-                                //                     value: houseNumber,
-                                //                     "class": "form-control",
-                                //                     "type": "text",
-                                //                     "placeholder": "Whats the house number?"
-                                //                 }),
-                                //                 m("div", { "class": "input-group-append" },
-                                //                     m("span", { "class": "input-group-text" },
-                                //                         m("i", { "class": "la la-align-center" })
-                                //                     )
-                                //                 )
-                                //             ]
-                                //         ),
-                                //         // m("span", { "class": "form-text text-muted" },
-                                //         //     "The name of the house in the appartment"
-                                //         // )
-                                //     ]
-                                // ),
                                 m("div", { "class": "col-lg-12" },
                                     m("div", { "class": "form-group mb-1" },
                                         [
@@ -673,17 +604,19 @@ var calculator = () => {
                                                 var {
                                                     //    appartmentName,
                                                     //   houseNumber,
-                                                    //  moreDetails,
+                                                    moreDetails,
                                                     phone,
                                                     name,
+                                                    clientName
                                                 } = vnode.state
 
                                                 let order = Object.assign({
                                                     //  appartmentName,
                                                     // houseNumber,
-                                                    //  moreDetails,
+                                                    moreDetails,
                                                     phone,
                                                     name,
+                                                    clientName
                                                 }, {
                                                     googleId: localStorage.getItem('googleId'),
                                                     userId: localStorage.getItem('googleId'),
@@ -710,98 +643,6 @@ var calculator = () => {
                             ]),
 
                         m(map),
-
-                        // m("div", { "class": "bs-stepper" },
-                        //     [
-                        //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                        //             [
-                        //                 m("div", { "class": "step", "data-target": "#logins-part" },
-                        //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                        //                         [
-                        //                             m("span", { "class": "bs-stepper-circle" },
-                        //                                 "4.1"
-                        //                             ),
-                        //                             m("span", { "class": "bs-stepper-label" },
-                        //                                 "Theoretical Calculator Pricing"
-                        //                             )
-                        //                         ]
-                        //                     )
-                        //                 )]
-                        //         )]
-                        // ),
-
-
-                        // m("div", { "class": "form-group row" },
-                        //     [
-                        //         m(input, {
-                        //             name: 'Curtains',
-                        //             value: 0,
-                        //             charge: 200,
-                        //             value: curtains,
-                        //             onChange(value) {
-                        //                 vnode.state.curtains = value
-                        //             }
-                        //         }),
-                        //         m(input, {
-                        //             name: 'Blankets',
-                        //             value: 0,
-                        //             charge: 350,
-                        //             value: blankets,
-                        //             onChange(value) {
-                        //                 vnode.state.blankets = value
-                        //             }
-                        //         }),
-                        //         m(input, {
-                        //             name: 'Duvets',
-                        //             value: 0,
-                        //             charge: 700,
-                        //             value: duvets,
-                        //             onChange(value) {
-                        //                 vnode.state.duvets = value
-                        //             }
-                        //         }),
-                        //         m(input, {
-                        //             name: 'General Clothes in Kgs',
-                        //             value: 0,
-                        //             charge: 150,
-                        //             value: generalKgs,
-                        //             onChange(value) {
-                        //                 vnode.state.generalKgs = value
-                        //             }
-                        //         }),
-
-                        //         m("h3", { "class": "display-4" },
-                        //             `This would cost around KSH ${(curtains * 200) + (blankets * 350) + (duvets * 700) + (generalKgs * 99)}`
-                        //         ),
-                        //         m("p", { "class": "font-size-lg" },
-                        //             `During Pickup a weigh will be done on premise to collect the exact details for a better estimate`
-                        //         )
-                        //     ]),
-
-
-
-
-
-                        // m("div", { "class": "bs-stepper" },
-                        //     [
-                        //         m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                        //             [
-                        //                 m("div", { "class": "step", "data-target": "#logins-part" },
-                        //                     m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                        //                         [
-                        //                             m("span", { "class": "bs-stepper-circle" },
-                        //                                 "6"
-                        //                             ),
-                        //                             m("span", { "class": "bs-stepper-label" },
-                        //                                 "Payment"
-                        //                             )
-                        //                         ]
-                        //                     )
-                        //                 )]
-                        //         )]
-                        // ),
-
-
 
 
                     ]
