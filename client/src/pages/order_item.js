@@ -681,7 +681,7 @@ const order_item = {
 
             m("div", { "class": "form-group row" },
                 [
-                    
+
                     m(incrementableInput, {
                         name: 'Curtains',
                         charge: curtainsCharge, // use this to set a default
@@ -761,6 +761,9 @@ const order_item = {
                         pricing: [{
                             amount: 100,
                             label: '100'
+                        }, {
+                            amount: 130,
+                            label: '130'
                         }, {
                             amount: 150,
                             label: '150'
