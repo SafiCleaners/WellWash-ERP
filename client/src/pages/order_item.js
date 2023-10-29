@@ -681,15 +681,7 @@ const order_item = {
 
             m("div", { "class": "form-group row" },
                 [
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-                    
->>>>>>> 68c28db (fix: order flow for internal users, more cleanup for all tables and forms. more testing full user flow fixes)
-=======
-                    
->>>>>>> 317338f (fix: order flow for internal users, more cleanup for all tables and forms. more testing full user flow fixes (#28))
                     m(incrementableInput, {
                         name: 'Curtains',
                         charge: curtainsCharge, // use this to set a default
