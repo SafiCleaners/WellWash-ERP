@@ -14,7 +14,7 @@ import {
     oninit,
     oncreate
 } from "../pages/order_step_1"
-
+import OrderItemPrint from "./order_item_print";
 
 const input = {
     oninit(vnode) {
@@ -74,6 +74,7 @@ const order_item = {
             vnode.state.loading = false
             m.redraw()
             console.log("Retrieved order data:", vnode.state.originalJob);
+          
         }).catch(function (error) {
             vnode.state.loading = false
             m.redraw()
@@ -1551,18 +1552,20 @@ const order_item = {
                             m("i", { "class": "flaticon2-mail-1" }),
                             " Save My order"
                         ]),
+                        
                         m("button", {
                             type: "button",
-                            class: "btn btn-lg btn-secondary ml-2",
-                            onclick() {
-                                console.log("button clicked");
-                                
-                                window.print(); // This line triggers the print functionality
+                            class: "btn btn-primary", // Add Bootstrap classes for styling
+                            onclick: () => {
+                                // Redirect to the print page
+                                m.route.set(`/j/${m.route.param("job")}/print`);
+                            },
+                            style: {
+                                marginLeft: "10px", // Add left margin to create space between buttons
+                                // Add more inline styles if needed
                             }
-                        }, [
-                            m("i", { class: "flaticon2-print" }),
-                            " Print"
-                        ]),
+                        }, "Print Order")
+                        
                     ]),
                     // ])
 
