@@ -1554,6 +1554,18 @@ const order_item = {
                             m("i", { "class": "flaticon2-mail-1" }),
                             " Save My order"
                         ]),
+                        m("button", {
+                            type: "button",
+                            class: "btn btn-primary", // Add Bootstrap classes for styling
+                            onclick: () => {
+                                // Redirect to the print page
+                                m.route.set(`/j/${m.route.param("job")}/print`);
+                            },
+                            style: {
+                                marginLeft: "10px", // Add left margin to create space between buttons
+                                // Add more inline styles if needed
+                            }
+                        }, "Print Order")
                     ]),
                     // ])
 
