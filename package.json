@@ -10,7 +10,7 @@
     "cors": "^2.8.5",
     "csv": "^6.2.1",
     "device-detector-js": "^3.0.3",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "express-mongodb-session": "^3.2.1",
     "express-session": "^1.17.3",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "webpack-cli": "^5.0.1"
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack-cli": "^5.1.4"
   }
 }
