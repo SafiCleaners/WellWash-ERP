@@ -7,7 +7,11 @@ const map = {
     oncreate: function (vnode) {
         console.log("initialize component")
 
-        const shopLocation = { lat: -1.1542309, lng: 36.9225647 }
+        const shopLocation =[
+            { lat: -1.1542309, lng: 36.9225647 },
+            { lat: -1.11794, lng: 37.00889 },
+            { lat: -1.13678, lng: 36.9702 }
+        ]
 
         const google = window.google
         let map, infoWindow;
@@ -57,19 +61,29 @@ const map = {
 
             // draw cicle around shop
             // Add circle overlay and bind to marker
-            var circle = new google.maps.Circle({
-                map: map,
-                radius: (16093 / 5),    // 10 miles in metres
-                fillColor: '#66B4ED'
-            });
-            circle.bindTo('center', new google.maps.Marker({
-                position: shopLocation,
-                map,
-                title: "WellWash...",
-                icon: image
-            }), 'position');
 
-            map.setCenter(shopLocation);
+            // draw circles and markers for multiple shop locations
+
+            // Add circle overlay
+            shopLocation.forEach(location => {
+                // Create a marker for each location
+                const marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: "WellWash...",
+                    icon: image
+                });
+            
+                // Create a circle for each location
+                const circle = new google.maps.Circle({
+                    map: map,
+                    radius: (16093 / 5),
+                    fillColor: '#66B4ED'
+                });
+            
+                // Bind the circle's center to the marker's position
+                circle.bindTo('center', marker, 'position');
+            });
         }
 
 
@@ -193,7 +207,7 @@ const map = {
             handleLocationError(false, infoWindow, map.getCenter());
         }
 
-    
+
 
 
 
