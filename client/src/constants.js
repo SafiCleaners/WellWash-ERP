@@ -17,4 +17,9 @@ const operationTimes = [
   "7pm - 8pm"
 ]
 
-export { client_id, url, operationTimes };
+const unitTypes = [
+  "Piece(s)",
+  "Kilogram(s)",
+]
+
+export { client_id, url, operationTimes, unitTypes };

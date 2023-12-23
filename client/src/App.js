@@ -16,6 +16,8 @@ import refferal from "./components/refferal.js";
 
 import users from "./pages/users";
 
+import pricing from "./pages/pricing";
+
 var root = document.getElementById("order_reciever")
 
 m.mount(document.getElementById("kt_header_in"), header)
@@ -33,5 +35,6 @@ m.route(root, "/", {
     "/thankyou": thankyou,
     "/users": users,
     "/REFFER/:REFEERED_BY": refferal,
-    "/refferal": refferal
+    "/refferal": refferal,
+    "/pricing": pricing,
 })
