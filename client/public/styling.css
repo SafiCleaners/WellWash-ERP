@@ -12287,11 +12287,25 @@ fieldset:disabled .btn {
     margin: 15% auto;
     padding: 15px;
     border: 1px solid #888;
-    width: 30%;
+    width: 40%;
 }
 
 @media only screen and (max-width: 768px) {
     .modal-content {
+        width: 95% !important;
+    }
+}
+
+.order-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 15px;
+    border: 1px solid #888;
+    width: 60%;
+}
+
+@media only screen and (max-width: 768px) {
+    .order-modal-content {
         width: 95% !important;
     }
 }
