@@ -76,9 +76,9 @@ store.on('error', function (error) {
 });
 
 const logActivity = (db, entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted) => {
-    db.collection('activity_log').insertOne({ 
+    db.collection('activity_log').insertOne({
         entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted,
-        deleted:false, 
+        deleted: false,
     });
 }
 
@@ -425,7 +425,7 @@ const routes = async (client) => {
                 }
 
 
-                res.status(201).send({ id: jobId, job});
+                res.status(201).send({ id: jobId, job });
             }
         } catch (err) {
             console.log(err);
@@ -547,7 +547,7 @@ const routes = async (client) => {
 
                         res.send({
                             user: Object.assign({}, result, {
-                                role:role.role
+                                role: role.role
                             }),
                             token
                         })
@@ -672,6 +672,167 @@ const routes = async (client) => {
         })
     });
 
+    app.get('/clients-list', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('users').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            const users = await Promise.all(result.map(user => new Promise((resolve, reject) => {
+                db.collection('roles').findOne({ _id: new ObjectId(user._id) }, function (err, result) {
+                    if (err) throw err
+                    // res.status(result ? 200 : 404).send(result)
+                    user.role = result.role
+                    resolve(user)
+                })
+            })))
+
+            result3 = users.filter((user) => user.role == "CLIENT");
+
+            console.log(result3)
+            res.send(result3)
+        })
+    });
+
+    app.get('/stores-list', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('stores').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.get('/pricings-list', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        // const { store } = req.params;
+
+        db.collection('pricings').find({
+            // storeId: store,
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.get('/stores', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('stores').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/stores', async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const { title, phone, email, address } = req.body;
+
+        try {
+            // Try to find an existing entity by title
+            let existingEntity = await db.collection('stores').findOne({ title, deleted: false });
+
+            if (existingEntity) {
+                // If the entity already exists, update its fields
+                var response = await db.collection('stores').updateOne({ title }, {
+                    $set: {
+                        email, phone, address,
+                        updatedAtDateTime: dateTime,
+                        updatedAtTimestamp: timestamp,
+                        updatedAtFormatted: formatted
+                    }
+                });
+                let updatedEntity = await db.collection('stores').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Store", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(200).json({ message: 'Store updated successfully' });
+            } else {
+                // If the entity doesn't exist, insert a new one
+                var response = await db.collection('stores').insertOne({
+                    title, email, phone, address, userId, userTitle,
+                    user: decoded,
+                    createdAtDateTime: dateTime,
+                    createdAtTimestamp: timestamp,
+                    createdAtFormatted: formatted,
+                    deleted: false
+                });
+                let newEntity = await db.collection('stores').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Store", "CREATE", {}, newEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(201).json({ message: 'Store created successfully' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/stores/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('stores').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('stores').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('stores').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Store", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Store deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/pricings', importantMiddleWares, (req, res) => {
         // if (req.auth.role != "Owner")
         //     res.status(401).send([])
@@ -698,43 +859,58 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        const { title, unit, cost } = req.body;
-    
+        const { title, store: storeId, unit, cost } = req.body;
+
         try {
-          // Try to find an existing entity by title
-          let existingEntity = await db.collection('pricings').findOne({ title, deleted: false });
-    
-          if (existingEntity) {
-            // If the entity already exists, update its fields
-            let updatedEntity = await db.collection('pricings').updateOne({ title }, { $set: { 
-                    unit, cost,
-                    updatedAtDateTime: dateTime,
-                    updatedAtTimestamp: timestamp,
-                    updatedAtFormatted: formatted
-                }
-            });
-            // Log Activity
-            logActivity(db, "Pricing", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
-            
-            res.status(200).json({ message: 'Pricing updated successfully' });
-          } else {
-            // If the entity doesn't exist, insert a new one
-            let newEntity = await db.collection('pricings').insertOne({ 
-                title, unit, cost, userId, userTitle,
-                user: decoded,
-                createdAtDateTime: dateTime,
-                createdAtTimestamp: timestamp,
-                createdAtFormatted: formatted,
-                deleted: false
-            });
-            // Log Activity
-            logActivity(db, "Pricing", "CREATE", {}, newEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
-            
-            res.status(201).json({ message: 'Pricing created successfully' });
-          }
+            // Try to find an existing entity by title
+            let existingEntity = await db.collection('pricings').findOne({ title, storeId: new ObjectId(storeId), deleted: false });
+
+            // Try to find store
+            let storeTitle;
+            let store;
+            console.log(storeId);
+            let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
+            console.log(storeEntity);
+            if(storeEntity) {
+                storeTitle = storeEntity.title;
+                store = storeEntity;
+            }
+
+            if (existingEntity) {
+                // If the entity already exists, update its fields
+                var response = await db.collection('pricings').updateOne({ title }, {
+                    $set: {
+                        unit, cost, storeId, storeTitle, store,
+                        updatedAtDateTime: dateTime,
+                        updatedAtTimestamp: timestamp,
+                        updatedAtFormatted: formatted
+                    }
+                });
+                let updatedEntity = await db.collection('pricings').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Pricing", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(200).json({ message: 'Pricing updated successfully' });
+            } else {
+                // If the entity doesn't exist, insert a new one
+                var response = await db.collection('pricings').insertOne({
+                    title, unit, cost, userId, userTitle,
+                    storeId, storeTitle, store,
+                    user: decoded,
+                    createdAtDateTime: dateTime,
+                    createdAtTimestamp: timestamp,
+                    createdAtFormatted: formatted,
+                    deleted: false
+                });
+                let newEntity = await db.collection('pricings').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Pricing", "CREATE", {}, newEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(201).json({ message: 'Pricing created successfully' });
+            }
         } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: 'Internal server error' });
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
         }
     });
 
@@ -753,23 +929,24 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        try{
-            let existingEntity = await db.collection('pricings').findOne({ _id: ObjectId(id), deleted: false });
+        try {
+            let existingEntity = await db.collection('pricings').findOne({ _id: new ObjectId(id), deleted: false });
 
             let response = await db.collection('pricings').updateOne(
                 { _id: ObjectId(id) },
-                { $set: {
+                {
+                    $set: {
                         title, unit, cost,
                         updatedAtDateTime: dateTime,
                         updatedAtTimestamp: timestamp,
                         updatedAtFormatted: formatted
-                    } 
+                    }
                 },
                 { upsert: true });
-            let updatedEntity = await db.collection('pricings').findOne({ _id: ObjectId(id), deleted: false });
+            let updatedEntity = await db.collection('pricings').findOne({ _id: new ObjectId(id), deleted: false });
             // Log Activity
             logActivity(db, "Pricing", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
-        
+
             res.status(200).json({ message: 'Pricing updated successfully' });
         } catch (error) {
             console.error(error);
@@ -791,21 +968,231 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        try{
-            let existingEntity = await db.collection('pricings').findOne({ _id: ObjectId(id), deleted: false });
+        try {
+            let existingEntity = await db.collection('pricings').findOne({ _id: new ObjectId(id), deleted: false });
 
-            let response = await db.collection('pricings').updateOne({ _id: ObjectId(id) }, { $set: { 
+            let response = await db.collection('pricings').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
                     deleted: true,
                     deletedAtDateTime: dateTime,
                     deletedAtTimestamp: timestamp,
                     deletedAtFormatted: formatted
-                } 
+                }
             });
-            let updatedEntity = await db.collection('pricings').findOne({ _id: ObjectId(id), deleted: true });
+            let updatedEntity = await db.collection('pricings').findOne({ _id: new ObjectId(id), deleted: true });
             // Log Activity
             logActivity(db, "Pricing", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
-        
+
             res.status(204).json({ message: 'Pricing deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.get('/orders', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('orders').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/orders', async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const { storeId, clientId, clientSource, total, tasks } = req.body;
+        let tasksCount = 0;
+        if(tasks) {
+            tasksCount = tasks.length;
+        }
+        console.log(req.body);
+
+        try {
+            // Try to find client
+            let clientTitle;
+            console.log(clientId);
+            let clientEntity = await db.collection('users').findOne({ _id: new ObjectId(clientId), deleted: false });
+            console.log(clientEntity);
+            if(clientEntity) {
+                clientTitle = clientEntity.name;
+                client = clientEntity;
+            }
+
+            // Try to find store
+            let storeTitle;
+            let store;
+            console.log(storeId);
+            let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
+            console.log(storeEntity);
+            if(storeEntity) {
+                storeTitle = storeEntity.title;
+                store = storeEntity;
+            }
+
+            var response = await db.collection('orders').insertOne({
+                clientSource, tasks,
+                clientId, clientTitle, client,
+                storeId, storeTitle, store,
+                userId, userTitle, tasksCount,
+                totalCost: total,
+                user: decoded, progress: 0,
+                createdAtDateTime: dateTime,
+                createdAtTimestamp: timestamp,
+                createdAtFormatted: formatted,
+                deleted: false
+            }, async (error, result) => {
+                if (error) throw error;
+
+                if (result) {
+                    const newOrderId = result.insertedId;
+                    let newEntity = await db.collection('orders').findOne({ _id: newOrderId, deleted: false });
+                    // Log Activity
+                    logActivity(db, "Order", "CREATE", {}, newEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                    tasks.forEach(async (task) => {
+                        let categoryId = task.categoryId;
+        
+                        // Try to find pricing
+                        let pricingId;
+                        let pricingTitle;
+                        let pricing;
+                        console.log(categoryId);
+                        let pricingEntity = await db.collection('pricings').findOne({ _id: new ObjectId(categoryId), deleted: false });
+                        console.log(pricingEntity);
+                        if(pricingEntity) {
+                            pricingId = pricingEntity._id;
+                            pricingTitle = pricingEntity.title;
+                            pricing = clientEntity;
+                        }
+
+                        var response = await db.collection('tasks').insertOne({
+                            storeId, storeTitle, store,
+                            pricingId, pricingTitle, pricing,
+                            userId, userTitle, user: decoded,
+                            quantity: task.quantity, description: task.description, 
+                            cost: task.cost, total: task.total, 
+                            orderId: newEntity._id, user: decoded,
+                            createdAtDateTime: dateTime,
+                            createdAtTimestamp: timestamp,
+                            createdAtFormatted: formatted,
+                            deleted: false
+                        }, async (error, result) => {
+                            if (error) throw error;
+            
+                            if (result) {
+                                const newTaskId = result.insertedId;
+                                let newTaskEntity = await db.collection('orders').findOne({ _id: newTaskId, deleted: false });
+                                // Log Activity
+                                logActivity(db, "Task", "CREATE", {}, newTaskEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+                            }
+                        });
+                    });
+                }
+            });
+        
+            res.status(201).json({ message: 'Order created successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/orders/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('orders').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('orders').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('orders').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Order", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Order deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.get('/tasks', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('tasks').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.delete('/tasks/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('tasks').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('tasks').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('tasks').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Task", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Task deleted successfully' });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });

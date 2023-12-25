@@ -9,10 +9,33 @@ import m from "mithril"
 
 
 const AddPricingForm = {
+    oninit(vnode) {
+        vnode.state.stores = []
+    },
+    oncreate(vnode) {
+        const options = {
+            method: 'GET', url: url + "/stores-list",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(options).then(function (response) {
+            vnode.state.stores = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
+    },
     showModal: false,
     unitType: '',
     formData: {
         title: '',
+        store: '',
         unit: '',
         cost: '',
     },
@@ -54,7 +77,7 @@ const AddPricingForm = {
         // this.closeModal();
     },
 
-    view: function () {
+    view: function (vnode) {
         return m('div', [
             // Open Modal Button
             m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
@@ -73,23 +96,33 @@ const AddPricingForm = {
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
                         ]),
                         m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-12 my-2" }, [
-                            m('label', 'Title:'),
+                        m("div", { "class": "col-6 my-2" }, [
+                            m('label', 'Category:'),
                             m('input[type=text]', {
                                 "class": "py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter title",
+                                "placeholder": "Enter category",
                                 value: this.formData.title,
                                 oninput: (e) => this.handleInputChange('title', e.target.value),
                             }),
                         ]),
                         m("div", { "class": "col-6 my-2" }, [
+                            m('label', 'Select store:'),
+                            m('select', {
+                                "class": "py-2 w-100 rounded",
+                                value: this.formData.store,
+                                onchange: (e) => this.handleInputChange('store', e.target.value),
+                            }, [
+                                vnode.state.stores.map((store) => { return m('option', { value: store._id }, store.title) }),
+                            ]),
+                        ]),
+                        m("div", { "class": "col-6 my-2" }, [
                             m('label', 'Select unit:'),
                             m('select', {
                                 "class": "py-2 w-100 rounded",
-                                value: this.selectedOption,
+                                value: this.formData.unit,
                                 onchange: (e) => this.handleInputChange('unit', e.target.value),
                             }, [
-                                unitTypes.map(unit => { return m('option', { value: unit }, unit) }),
+                                unitTypes.map((unit) => { return m('option', { value: unit }, unit) }),
                             ]),
                         ]),
                         m("div", { "class": "col-6 my-2" }, [

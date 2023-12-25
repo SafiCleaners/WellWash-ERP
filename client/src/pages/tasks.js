@@ -7,8 +7,6 @@ import {
 
 import m from "mithril"
 import loader from "../components/loader"
-import addPricing from "../components/add_pricing"
-import editPricing from "../components/edit_pricing"
 
 const formatCurrency = (number) => {
     try {
@@ -19,15 +17,14 @@ const formatCurrency = (number) => {
     }
 }
 
-const pricing = {
+const tasks = {
     oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.pricings = []
+        vnode.state.tasks = []
         vnode.state.loading = true
     },
     oncreate(vnode) {
         const options = {
-            method: 'GET', url: url + "/pricings",
+            method: 'GET', url: url + "/tasks",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -35,7 +32,7 @@ const pricing = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.pricings = response.data
+            vnode.state.tasks = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -52,11 +49,10 @@ const pricing = {
                         m("h3", { "class": "card-title align-items-start flex-column" },
                             [
                                 m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Pricings"
+                                    "Available Tasks"
                                 ),
                             ]
                         ),
-                        m(addPricing)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -93,9 +89,11 @@ const pricing = {
                                                 m("tr",
                                                     [
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
+                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Description"),
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Store"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Unit"),
+                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Quantity"),
+                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Total"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
@@ -104,7 +102,7 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.pricings.map((item) => {
+                                                    vnode.state.tasks.map((item) => {
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
@@ -112,7 +110,14 @@ const pricing = {
                                                                 m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.title
+                                                                            item.pricingTitle
+                                                                        )
+                                                                    ]
+                                                                ),
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    [
+                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                            item.description
                                                                         )
                                                                     ]
                                                                 ),
@@ -130,10 +135,17 @@ const pricing = {
                                                                         )
                                                                     ]
                                                                 ),
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    [
+                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                            item.quantity
+                                                                        )
+                                                                    ]
+                                                                ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.unit
+                                                                            formatCurrency(item.total)
                                                                         )
                                                                     ]
                                                                 ),
@@ -154,13 +166,12 @@ const pricing = {
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
-                                                                            m(editPricing, { "pricing": item }),
                                                                             m('a', {
                                                                                 href: "javascript:void(0);",
                                                                                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
                                                                                     const options = {
                                                                                         method: 'DELETE',
-                                                                                        url: `${url}/pricings/${item._id}`,
+                                                                                        url: `${url}/tasks/${item._id}`,
                                                                                         headers: {
                                                                                             'Content-Type': 'application/json',
                                                                                             'authorization': localStorage.getItem('token')
@@ -196,4 +207,4 @@ const pricing = {
     }
 }
 
-export default pricing
+export default tasks

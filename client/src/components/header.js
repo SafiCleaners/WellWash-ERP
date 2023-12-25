@@ -128,7 +128,17 @@ const header = {
                                         m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                             [
                                                 m("span", { "class": "menu-text" },
-                                                    "User Management"
+                                                    "Users"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("stores") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/stores" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Stores"
                                                 ),
                                                 m("span", { "class": "menu-desc" })
                                             ]
@@ -139,6 +149,26 @@ const header = {
                                             [
                                                 m("span", { "class": "menu-text" },
                                                     "Pricing"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/orders" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Orders"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("tasks") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/tasks" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Tasks"
                                                 ),
                                                 m("span", { "class": "menu-desc" })
                                             ]
