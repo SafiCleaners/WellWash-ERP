@@ -5,8 +5,11 @@ import {
     url
 } from "../constants"
 
+import { getStatusTitle } from "../../utils/helpers";
+
 import m from "mithril"
 import loader from "../components/loader"
+import StatusUpdateForm from "../components/status_update";
 
 const formatCurrency = (number) => {
     try {
@@ -65,8 +68,12 @@ const tasks = {
                                             m("thead",
                                                 m("tr",
                                                     [
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-50px" }),
                                                         m("th", { "class": "p-0 min-w-50px" }),
                                                         m("th", { "class": "p-0 min-w-50px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
@@ -88,15 +95,17 @@ const tasks = {
                                             m("thead",
                                                 m("tr",
                                                     [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Status"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Client"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Category"),
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Description"),
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Store"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Quantity"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Total"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Store"),
+                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Cost"),
+                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Quantity"),
+                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Total"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Added By"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Date Added"),
+                                                        m("th", { "class": "p-0 min-w-50px text-center" }, "Status")
                                                     ]
                                                 )
                                             ),
@@ -107,6 +116,20 @@ const tasks = {
                                                             style: { "cursor": "pointer" }
                                                         },
                                                             [
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    [
+                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                            getStatusTitle(item.status)
+                                                                        )
+                                                                    ]
+                                                                ),
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    [
+                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                            item.clientTitle
+                                                                        )
+                                                                    ]
+                                                                ),
                                                                 m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -128,7 +151,7 @@ const tasks = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             formatCurrency(item.cost)
@@ -142,52 +165,53 @@ const tasks = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             formatCurrency(item.total)
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.userTitle
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.createdAtFormatted
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-center pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
-                                                                            m('a', {
-                                                                                href: "javascript:void(0);",
-                                                                                "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                    const options = {
-                                                                                        method: 'DELETE',
-                                                                                        url: `${url}/tasks/${item._id}`,
-                                                                                        headers: {
-                                                                                            'Content-Type': 'application/json',
-                                                                                            'authorization': localStorage.getItem('token')
-                                                                                        },
-                                                                                    };
+                                                                            m(StatusUpdateForm, { "task": item }),
+                                                                            // m('a', {
+                                                                            //     href: "javascript:void(0);",
+                                                                            //     "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
+                                                                            //         const options = {
+                                                                            //             method: 'DELETE',
+                                                                            //             url: `${url}/tasks/${item._id}`,
+                                                                            //             headers: {
+                                                                            //                 'Content-Type': 'application/json',
+                                                                            //                 'authorization': localStorage.getItem('token')
+                                                                            //             },
+                                                                            //         };
 
-                                                                                    axios.request(options).then(function (response) {
-                                                                                        console.log(response.data);
-                                                                                        window.location.reload()
-                                                                                    }).catch(function (error) {
-                                                                                        console.error(error);
-                                                                                    });
-                                                                                }
-                                                                            },
-                                                                                m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                            )
+                                                                            //         axios.request(options).then(function (response) {
+                                                                            //             console.log(response.data);
+                                                                            //             window.location.reload()
+                                                                            //         }).catch(function (error) {
+                                                                            //             console.error(error);
+                                                                            //         });
+                                                                            //     }
+                                                                            // },
+                                                                            //     m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
+                                                                            // )
                                                                         ])
                                                                 )
                                                             ]
