@@ -27,4 +27,20 @@ const clientSources = [
   "Passers-by",
 ]
 
-export { client_id, url, operationTimes, unitTypes, clientSources };
+const statusTypes = [
+  { key: "In Progress Leads", value: "LEAD" },
+  { key: "Collected", value: "COLLECTED" },
+  { key: "Processing", value: "PROCESSING" },
+  { key: "Quality Check", value: "QUALITY_CHECK" },
+  { key: "Dispatched", value: "DISPATCHED" },
+  { key: "Delivered", value: "DELIVERED" },
+  { key: "Jobs Available For Pickup", value: "PICK_UP" },
+  { key: "Jobs Not Processed Yet (In Queue For Wash)", value: "WASH_QUEUE" },
+  { key: "Jobs Not Folded Yet (In Queue For Fold)", value: "FOLD_QUEUE" },
+  { key: "Jobs Not Delivered Yet (In Queue For Delivery)", value: "DELIVERY_QUEUE" },
+  { key: "Jobs Successfully Completed (SUCCESS!)", value: "COMPLETED" },
+  { key: "Jobs With Confirmed Payment", value: "PAID" },
+  { key: "Blocked Jobs", value: "BLOCKED" },
+]
+
+export { client_id, url, operationTimes, unitTypes, clientSources, statusTypes };

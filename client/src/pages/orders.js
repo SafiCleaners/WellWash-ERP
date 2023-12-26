@@ -66,15 +66,15 @@ const users = {
                                             m("thead",
                                                 m("tr",
                                                     [
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-30px" }),
                                                         m("th", { "class": "p-0 min-w-20px" }),
+                                                        m("th", { "class": "p-0 min-w-30px" }),
+                                                        m("th", { "class": "p-0 min-w-50px" }),
+                                                        m("th", { "class": "p-0 min-w-50px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-125px" }),
-                                                        m("th", { "class": "p-0 min-w-110px" }),
-                                                        m("th", { "class": "p-0 min-w-150px" })
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" })
                                                     ]
                                                 )
                                             ),
@@ -91,15 +91,15 @@ const users = {
                                             m("thead",
                                                 m("tr",
                                                     [
-                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "#"),
-                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Total"),
-                                                        m("th", { "class": "p-0 min-w-30px text-left" }, "Tasks"),
                                                         m("th", { "class": "p-0 min-w-20px text-left" }, "Progress"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Store"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Client"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Actions")
+                                                        m("th", { "class": "p-0 min-w-30px text-left" }, "Tasks"),
+                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Order ID"),
+                                                        m("th", { "class": "p-0 min-w-50px text-left" }, "Total"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Store"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Client"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Added By"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Date Added"),
+                                                        m("th", { "class": "p-0 min-w-100px text-center" }, "Actions")
                                                     ]
                                                 )
                                             ),
@@ -113,60 +113,60 @@ const users = {
                                                                 m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item._id
+                                                                            item.progress + "%"
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            formatCurrency(item.totalCost)
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.tasksCount
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.progress + "%"
+                                                                            item._id
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    [
+                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                            formatCurrency(item.totalCost)
+                                                                        )
+                                                                    ]
+                                                                ),
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.storeTitle
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.userTitle
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.clientTitle
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             item.createdAtFormatted
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-center pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
                                                                             m('a', {

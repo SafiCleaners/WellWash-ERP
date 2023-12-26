@@ -69,7 +69,7 @@ const EditPricingForm = {
             // Modal
             this.showModal && m('.modal', [
                 m('.modal-content', [
-                    m("div", { "class": "row" }, [
+                    m("div", { "class": "row text-left", style: "white-space: wrap;" }, [
                         m("div", { "class": "col-11" }, [
                             m('h4', 'Edit Pricing'),
                         ]),

@@ -1082,9 +1082,12 @@ const routes = async (client) => {
                         }
 
                         var response = await db.collection('tasks').insertOne({
+                            clientSource, tasks,
+                            clientId, clientTitle, client,
                             storeId, storeTitle, store,
                             pricingId, pricingTitle, pricing,
-                            userId, userTitle, user: decoded,
+                            userId, userTitle, 
+                            status: "Pending", user: decoded,
                             quantity: task.quantity, description: task.description, 
                             cost: task.cost, total: task.total, 
                             orderId: newEntity._id, user: decoded,
@@ -1097,7 +1100,7 @@ const routes = async (client) => {
             
                             if (result) {
                                 const newTaskId = result.insertedId;
-                                let newTaskEntity = await db.collection('orders').findOne({ _id: newTaskId, deleted: false });
+                                let newTaskEntity = await db.collection('tasks').findOne({ _id: newTaskId, deleted: false });
                                 // Log Activity
                                 logActivity(db, "Task", "CREATE", {}, newTaskEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
                             }
@@ -1193,6 +1196,62 @@ const routes = async (client) => {
             logActivity(db, "Task", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
 
             res.status(204).json({ message: 'Task deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.post('/status', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { taskId, status } = req.body;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('tasks').findOne({ _id: new ObjectId(taskId), deleted: false });
+
+            let response = await db.collection('tasks').updateOne({ _id: new ObjectId(taskId) }, {
+                $set: {
+                    status,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('tasks').findOne({ _id: new ObjectId(taskId), deleted: false });
+            // Log Activity
+            logActivity(db, "Task", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            db.collection('statuses').insertOne({
+                status,
+                taskId: updatedEntity._id,
+                orderId: updatedEntity.orderId,
+                user: decoded,
+                createdAtDateTime: dateTime,
+                createdAtTimestamp: timestamp,
+                createdAtFormatted: formatted,
+                deleted: false
+            }, async (error, result) => {
+                if (error) throw error;
+
+                if (result) {
+                    const newStatusId = result.insertedId;
+                    let newStatusEntity = await db.collection('statuses').findOne({ _id: newStatusId, deleted: false });
+                    // Log Activity
+                    logActivity(db, "Status", "CREATE", {}, newStatusEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+                }
+            });
+
+            res.status(204).json({ message: 'Task status updated successfully' });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
