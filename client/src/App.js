@@ -16,7 +16,10 @@ import refferal from "./components/refferal.js";
 
 import users from "./pages/users";
 
+import stores from "./pages/stores";
 import pricing from "./pages/pricing";
+import orders from "./pages/orders";
+import tasks from "./pages/tasks";
 
 var root = document.getElementById("order_reciever")
 
@@ -36,5 +39,8 @@ m.route(root, "/", {
     "/users": users,
     "/REFFER/:REFEERED_BY": refferal,
     "/refferal": refferal,
+    "/stores": stores,
     "/pricing": pricing,
+    "/orders": orders,
+    "/tasks": tasks,
 })

@@ -22,4 +22,9 @@ const unitTypes = [
   "Kilogram(s)",
 ]
 
-export { client_id, url, operationTimes, unitTypes };
+const clientSources = [
+  "Marketting posters",
+  "Passers-by",
+]
+
+export { client_id, url, operationTimes, unitTypes, clientSources };

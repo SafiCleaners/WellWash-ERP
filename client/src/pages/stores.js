@@ -7,8 +7,7 @@ import {
 
 import m from "mithril"
 import loader from "../components/loader"
-import addPricing from "../components/add_pricing"
-import editPricing from "../components/edit_pricing"
+import addStore from "../components/add_store"
 
 const formatCurrency = (number) => {
     try {
@@ -19,15 +18,14 @@ const formatCurrency = (number) => {
     }
 }
 
-const pricing = {
+const stores = {
     oninit(vnode) {
         vnode.state.stores = []
-        vnode.state.pricings = []
         vnode.state.loading = true
     },
     oncreate(vnode) {
         const options = {
-            method: 'GET', url: url + "/pricings",
+            method: 'GET', url: url + "/stores",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -35,7 +33,7 @@ const pricing = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.pricings = response.data
+            vnode.state.stores = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -52,11 +50,11 @@ const pricing = {
                         m("h3", { "class": "card-title align-items-start flex-column" },
                             [
                                 m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Pricings"
+                                    "Available Stores"
                                 ),
                             ]
                         ),
-                        m(addPricing)
+                        m(addStore)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -70,9 +68,9 @@ const pricing = {
                                                 m("tr",
                                                     [
                                                         m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
+                                                        m("th", { "class": "p-0 min-w-150px" }),
                                                         m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-50px" })
@@ -84,7 +82,6 @@ const pricing = {
                                     )
                                 )
                             ),
-
                             m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                 m("div", { "class": "table-responsive" },
                                     !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -92,10 +89,10 @@ const pricing = {
                                             m("thead",
                                                 m("tr",
                                                     [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Store"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Unit"),
+                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Title"),
+                                                        m("th", { "class": "p-0 min-w-150px text-right" }, "Address"),
+                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Phone"),
+                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Email"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
@@ -104,7 +101,7 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.pricings.map((item) => {
+                                                    vnode.state.stores.map((item) => {
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
@@ -116,24 +113,24 @@ const pricing = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.storeTitle
+                                                                            item.address
                                                                         )
                                                                     ]
                                                                 ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            formatCurrency(item.cost)
+                                                                            item.phone
                                                                         )
                                                                     ]
                                                                 ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.unit
+                                                                            item.email
                                                                         )
                                                                     ]
                                                                 ),
@@ -154,13 +151,12 @@ const pricing = {
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
-                                                                            m(editPricing, { "pricing": item }),
                                                                             m('a', {
                                                                                 href: "javascript:void(0);",
                                                                                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
                                                                                     const options = {
                                                                                         method: 'DELETE',
-                                                                                        url: `${url}/pricings/${item._id}`,
+                                                                                        url: `${url}/stores/${item._id}`,
                                                                                         headers: {
                                                                                             'Content-Type': 'application/json',
                                                                                             'authorization': localStorage.getItem('token')
@@ -196,4 +192,4 @@ const pricing = {
     }
 }
 
-export default pricing
+export default stores
