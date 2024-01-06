@@ -683,9 +683,9 @@ const order_item = {
 
                     m(incrementableInput, {
                         name: 'Curtains',
-                        charge: curtainsCharge, // use this to set a default
-                        amount: curtainsAmount,
-                        value: curtains,
+                        charge: curtainsCharge || 0, // use this to set a default
+                        amount: curtainsAmount || 0,
+                        value: curtains || 0,
                         pricing: [{
                             amount: 200,
                             label: '200'
@@ -707,9 +707,9 @@ const order_item = {
                     }),
                     m(incrementableInput, {
                         name: 'Blankets',
-                        charge: blanketsCharge,
-                        amount: blanketsAmount,
-                        value: blankets,
+                        charge: blanketsCharge || 0,
+                        amount: blanketsAmount || 0,
+                        value: blankets || 0,
                         pricing: [{
                             amount: 300,
                             label: '300'
@@ -731,9 +731,9 @@ const order_item = {
                     }),
                     m(incrementableInput, {
                         name: 'Duvets',
-                        charge: duvetsCharge,
-                        amount: duvetsAmount,
-                        value: duvets,
+                        charge: duvetsCharge || 0,
+                        amount: duvetsAmount || 0,
+                        value: duvets || 0,
                         pricing: [{
                             amount: 500,
                             label: '500'
@@ -754,9 +754,9 @@ const order_item = {
                     }),
                     m(incrementableInput, {
                         name: 'General Clothes in Kgs',
-                        charge: generalKgsCharge,
-                        amount: generalKgsAmount,
-                        value: generalKgs,
+                        charge: generalKgsCharge || 0,
+                        amount: generalKgsAmount || 0,
+                        value: generalKgs || 0,
                         pricing: [{
                             amount: 100,
                             label: '100'
@@ -781,9 +781,9 @@ const order_item = {
                     }),
                     m(incrementableInput, {
                         name: 'Shoes in Pairs',
-                        charge: shoesCharge,
-                        amount: shoesAmount,
-                        value: shoes,
+                        charge: shoesCharge || 0,
+                        amount: shoesAmount || 0,
+                        value: shoes || 0,
                         pricing: [{
                             amount: 100,
                             label: '100'
