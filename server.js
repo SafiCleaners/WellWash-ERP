@@ -833,6 +833,204 @@ const routes = async (client) => {
         }
     });
 
+    app.get('/categories', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('categories').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/categories', async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const { title, store: storeId, unit, cost } = req.body;
+
+        try {
+            // Try to find an existing entity by title
+            let existingEntity = await db.collection('categories').findOne({ title, storeId: new ObjectId(storeId), deleted: false });
+
+            // Try to find store
+            let storeTitle;
+            let store;
+            console.log(storeId);
+            let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
+            console.log(storeEntity);
+            if (storeEntity) {
+                storeTitle = storeEntity.title;
+                store = storeEntity;
+            }
+
+            if (existingEntity) {
+                // If the entity already exists, update its fields
+                var response = await db.collection('categories').updateOne({ title }, {
+                    $set: {
+                        unit, cost, storeId, storeTitle, store,
+                        updatedAtDateTime: dateTime,
+                        updatedAtTimestamp: timestamp,
+                        updatedAtFormatted: formatted
+                    }
+                });
+                let updatedEntity = await db.collection('categories').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Categories", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(200).json({ message: 'Pricing Categories updated successfully' });
+            } else {
+                // If the entity doesn't exist, insert a new one
+                var response = await db.collection('categories').insertOne({
+                    title, unit, cost, userId, userTitle,
+                    storeId, storeTitle, store,
+                    user: decoded,
+                    createdAtDateTime: dateTime,
+                    createdAtTimestamp: timestamp,
+                    createdAtFormatted: formatted,
+                    deleted: false
+                });
+                let newEntity = await db.collection('categories').findOne({ title, deleted: false });
+                // Log Activity
+                logActivity(db, "Pricing", "CREATE", {}, newEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(201).json({ message: 'Pricing Categories created successfully' });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.patch('/categories/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+        const { title, unit, cost } = req.body;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('categories').updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: {
+                        title, unit, cost,
+                        updatedAtDateTime: dateTime,
+                        updatedAtTimestamp: timestamp,
+                        updatedAtFormatted: formatted
+                    }
+                },
+                { upsert: true });
+            let updatedEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
+            // Log Activity
+            logActivity(db, "Categories", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(200).json({ message: 'Price Categories updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.patch('/categories/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+        const { title, unit, cost } = req.body;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('categories').updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: {
+                        title, unit, cost,
+                        updatedAtDateTime: dateTime,
+                        updatedAtTimestamp: timestamp,
+                        updatedAtFormatted: formatted
+                    }
+                },
+                { upsert: true });
+            let updatedEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
+            // Log Activity
+            logActivity(db, "Categories", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(200).json({ message: 'Category updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+
+    app.delete('/categories/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('categories').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Pricing", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Category deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     app.get('/pricings', importantMiddleWares, (req, res) => {
         // if (req.auth.role != "Owner")
         //     res.status(401).send([])
@@ -859,7 +1057,7 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        const { title, store: storeId, unit, cost } = req.body;
+        const { title, category, store: storeId, unit, cost } = req.body;
 
         try {
             // Try to find an existing entity by title
@@ -880,7 +1078,7 @@ const routes = async (client) => {
                 // If the entity already exists, update its fields
                 var response = await db.collection('pricings').updateOne({ title }, {
                     $set: {
-                        unit, cost, storeId, storeTitle, store,
+                        unit, cost, storeId, storeTitle, store, category,
                         updatedAtDateTime: dateTime,
                         updatedAtTimestamp: timestamp,
                         updatedAtFormatted: formatted
@@ -895,7 +1093,7 @@ const routes = async (client) => {
                 // If the entity doesn't exist, insert a new one
                 var response = await db.collection('pricings').insertOne({
                     title, unit, cost, userId, userTitle,
-                    storeId, storeTitle, store,
+                    storeId, storeTitle, store, category,
                     user: decoded,
                     createdAtDateTime: dateTime,
                     createdAtTimestamp: timestamp,

@@ -91,7 +91,7 @@ const users = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.users.map(({
+                                                    vnode.state.users && vnode.state.users.map(({
                                                         email,
                                                         googleId,
                                                         _id,

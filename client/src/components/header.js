@@ -134,26 +134,26 @@ const header = {
                                             ]
                                         )
                                     ),
-                                    // m("li", { "class": "menu-item" + (window.location.pathname.includes("stores") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                    //     m(m.route.Link, { "class": "menu-link", "href": "/stores" },
-                                    //         [
-                                    //             m("span", { "class": "menu-text" },
-                                    //                 "Stores"
-                                    //             ),
-                                    //             m("span", { "class": "menu-desc" })
-                                    //         ]
-                                    //     )
-                                    // ),
-                                    // m("li", { "class": "menu-item" + (window.location.pathname.includes("pricing") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                    //     m(m.route.Link, { "class": "menu-link", "href": "/pricing" },
-                                    //         [
-                                    //             m("span", { "class": "menu-text" },
-                                    //                 "Pricing"
-                                    //             ),
-                                    //             m("span", { "class": "menu-desc" })
-                                    //         ]
-                                    //     )
-                                    // ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("stores") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/stores" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Stores"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("pricing") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/pricing" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Pricing"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
                                     // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                     //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },
                                     //         [

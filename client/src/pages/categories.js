@@ -7,9 +7,8 @@ import {
 
 import m from "mithril"
 import loader from "../components/loader"
-import addPricing from "../components/add_pricing"
+import addCategories from "../components/add_categories"
 import editPricing from "../components/edit_pricing"
-import categories from "../pages/categories"
 
 const formatCurrency = (number) => {
     try {
@@ -23,30 +22,11 @@ const formatCurrency = (number) => {
 const pricing = {
     oninit(vnode) {
         vnode.state.stores = []
-        vnode.state.categories = []
         vnode.state.pricings = []
         vnode.state.loading = true
     },
     oncreate(vnode) {
         const options = {
-            method: 'GET', url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(options).then(function (response) {
-            vnode.state.pricings = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
             method: 'GET', url: url + "/categories",
             headers: {
                 'Content-Type': 'application/json',
@@ -54,9 +34,9 @@ const pricing = {
             },
         };
 
-        axios.request(optionsCategories).then(function (response) {
+        axios.request(options).then(function (response) {
+            console.log(response)
             vnode.state.categories = response.data
-            console.log(vnode.state.categories)
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -73,11 +53,11 @@ const pricing = {
                         m("h3", { "class": "card-title align-items-start flex-column" },
                             [
                                 m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Pricings"
+                                    "Available Price Categories"
                                 ),
                             ]
                         ),
-                        m(addPricing)
+                        m(addCategories)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -114,7 +94,7 @@ const pricing = {
                                                 m("tr",
                                                     [
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
+                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Unit"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
@@ -123,19 +103,11 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.pricings.map((item) => {
-                                                        console.log(item)
+                                                    vnode.state.categories.map((item) => {
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
                                                             [
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
-                                                                            "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                        }, vnode.state.categories && vnode.state.categories.find(c => c._id == item.category)?.title)
-                                                                    ]
-                                                                ),
                                                                 m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -143,13 +115,7 @@ const pricing = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            formatCurrency(item.cost)
-                                                                        )
-                                                                    ]
-                                                                ),
+                                                                
                                                                
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
@@ -181,7 +147,7 @@ const pricing = {
                                                                                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
                                                                                     const options = {
                                                                                         method: 'DELETE',
-                                                                                        url: `${url}/pricings/${item._id}`,
+                                                                                        url: `${url}/categories/${item._id}`,
                                                                                         headers: {
                                                                                             'Content-Type': 'application/json',
                                                                                             'authorization': localStorage.getItem('token')
@@ -217,18 +183,4 @@ const pricing = {
     }
 }
 
-const pricingWrapper = {
-    oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.pricings = []
-        vnode.state.loading = true
-    },
-    view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" },[
-            m(categories),
-            m(pricing)
-        ])
-    }
-}
-
-export default pricingWrapper
+export default pricing
