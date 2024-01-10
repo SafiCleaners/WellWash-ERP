@@ -30,30 +30,12 @@ const AddPricingForm = {
             m.redraw()
             console.error(error);
         });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
     },
     showModal: false,
     unitType: '',
     formData: {
-        category: '',
-        cost: ''
+        title: '',
+        unit: ''
     },
 
     openModal: function () {
@@ -74,7 +56,7 @@ const AddPricingForm = {
 
         const options = {
             method: 'POST',
-            url: `${url}/pricings/`,
+            url: `${url}/categories/`,
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -98,7 +80,7 @@ const AddPricingForm = {
             // Open Modal Button
             m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
                 m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Pricing"
+                "Add Category"
             ]),
 
             // Modal
@@ -106,30 +88,30 @@ const AddPricingForm = {
                 m('.modal-content', [
                     m("div", { "class": "row" }, [
                         m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Pricing'),
+                            m('h4', 'Add Category'),
                         ]),
                         m("div", { "class": "col-1" }, [
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
                         ]),
                         m("span", { "class": "border-bottom mb-4" }),
                         m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Select Category:'),
-                            m('select', {
-                                "class": "form-control form-control-solid",
-                                value: this.formData.store,
-                                onchange: (e) => this.handleInputChange('category', e.target.value),
-                            }, [
-                                vnode.state.categories.map((c) => { return m('option', { value: c._id }, c.title) }),
-                            ]),
-                        ]),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Price Point:'),
+                            m('label', 'Category:'),
                             m('input[type=text]', {
                                 "class": "form-control form-control-solid",
-                                "placeholder": "Enter Price in KSH",
+                                "placeholder": "Enter category",
                                 value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('cost', e.target.value),
+                                oninput: (e) => this.handleInputChange('title', e.target.value),
                             }),
+                        ]),
+                        m("div", { "class": "col-6 my-2" }, [
+                            m('label', 'Select unit:'),
+                            m('select', {
+                                "class": "form-control form-control-solid",
+                                value: this.formData.unit,
+                                onchange: (e) => this.handleInputChange('unit', e.target.value),
+                            }, [
+                                unitTypes.map((unit) => { return m('option', { value: unit }, unit) }),
+                            ]),
                         ]),
                         m("span", { "class": "border-top mt-4" }),
                         m("div", { "class": "pt-2 align-right" }, [

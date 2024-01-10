@@ -79,6 +79,43 @@ const order_item = {
             m.redraw()
             console.error(error);
         });
+
+        const optionsPricings = {
+            method: 'GET', url: url + "/pricings",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsPricings).then(function (response) {
+            vnode.state.pricings = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
+
+        const optionsCategories = {
+            method: 'GET', url: url + "/categories",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsCategories).then(function (response) {
+            vnode.state.categories = response.data
+            console.log(vnode.state.categories)
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
     },
     oninit: function (vnode) {
         var cost = 0
@@ -681,128 +718,27 @@ const order_item = {
             m("div", { "class": "form-group row" },
                 [
 
-                    m(incrementableInput, {
-                        name: 'Curtains',
-                        charge: curtainsCharge || 0, // use this to set a default
-                        amount: curtainsAmount || 0,
-                        value: curtains || 0,
-                        pricing: [{
-                            amount: 200,
-                            label: '200'
-                        }, {
-                            amount: 250,
-                            label: '250'
-                        }, {
-                            amount: 300,
-                            label: '300'
-                        }],
-                        onChange({ amountValue, chargeValue }) {
-                            console.log(amountValue, chargeValue)
-                            vnode.state.curtainsCharge = chargeValue
-                            vnode.state.curtainsAmount = amountValue
-                        },
-                        pickerSize: 12,
-                        pickerSizeMD: 6,
-                        pickerSizeLG: 6
-                    }),
-                    m(incrementableInput, {
-                        name: 'Blankets',
-                        charge: blanketsCharge || 0,
-                        amount: blanketsAmount || 0,
-                        value: blankets || 0,
-                        pricing: [{
-                            amount: 300,
-                            label: '300'
-                        }, {
-                            amount: 350,
-                            label: '350'
-                        }, {
-                            amount: 400,
-                            label: '400'
-                        }],
-
-                        onChange({ amountValue, chargeValue }) {
-                            vnode.state.blanketsCharge = chargeValue
-                            vnode.state.blanketsAmount = amountValue
-                        },
-                        pickerSize: 12,
-                        pickerSizeMD: 6,
-                        pickerSizeLG: 6
-                    }),
-                    m(incrementableInput, {
-                        name: 'Duvets',
-                        charge: duvetsCharge || 0,
-                        amount: duvetsAmount || 0,
-                        value: duvets || 0,
-                        pricing: [{
-                            amount: 500,
-                            label: '500'
-                        }, {
-                            amount: 600,
-                            label: '600'
-                        }, {
-                            amount: 700,
-                            label: '700'
-                        }],
-                        onChange({ amountValue, chargeValue }) {
-                            vnode.state.duvetsCharge = chargeValue
-                            vnode.state.duvetsAmount = amountValue
-                        },
-                        pickerSize: 12,
-                        pickerSizeMD: 6,
-                        pickerSizeLG: 6
-                    }),
-                    m(incrementableInput, {
-                        name: 'General Clothes in Kgs',
-                        charge: generalKgsCharge || 0,
-                        amount: generalKgsAmount || 0,
-                        value: generalKgs || 0,
-                        pricing: [{
-                            amount: 100,
-                            label: '100'
-                        }, {
-                            amount: 130,
-                            label: '130'
-                        }, {
-                            amount: 150,
-                            label: '150'
-                        }, {
-                            amount: 200,
-                            label: '200'
-                        }],
-
-                        onChange({ amountValue, chargeValue }) {
-                            vnode.state.generalKgsCharge = chargeValue
-                            vnode.state.generalKgsAmount = amountValue
-                        },
-                        pickerSize: 12,
-                        pickerSizeMD: 6,
-                        pickerSizeLG: 6
-                    }),
-                    m(incrementableInput, {
-                        name: 'Shoes in Pairs',
-                        charge: shoesCharge || 0,
-                        amount: shoesAmount || 0,
-                        value: shoes || 0,
-                        pricing: [{
-                            amount: 100,
-                            label: '100'
-                        }, {
-                            amount: 150,
-                            label: '150',
-                            selectedCharge: true
-                        }, {
-                            amount: 200,
-                            label: '200'
-                        }],
-
-                        onChange({ amountValue, chargeValue }) {
-                            vnode.state.shoesCharge = chargeValue
-                            vnode.state.shoesAmount = amountValue
-                        },
-                        pickerSize: 12,
-                        pickerSizeMD: 6,
-                        pickerSizeLG: 6
+                    vnode.state.categories.map(category => {
+                        return m(incrementableInput, {
+                            name: category.title,
+                            charge: curtainsCharge || 0, // use this to set a default
+                            amount: curtainsAmount || 0,
+                            value: curtains || 0,
+                            pricing: vnode.state.pricings.map(price => {
+                                return {
+                                    amount: price.cost,
+                                    label: price.cost,
+                                }
+                            }),
+                            onChange({ amountValue, chargeValue }) {
+                                console.log(amountValue, chargeValue)
+                                vnode.state.curtainsCharge = chargeValue
+                                vnode.state.curtainsAmount = amountValue
+                            },
+                            pickerSize: 12,
+                            pickerSizeMD: 6,
+                            pickerSizeLG: 6
+                        })
                     }),
 
                     m("h3", { "class": "display-4" },
