@@ -725,8 +725,8 @@ const order_item = {
                     vnode.state.categories.map(category => {
                         return m(incrementableInput, {
                             name: category.title,
-                            charge: vnode.state.charges[category._id]?.chargeValue || 0, // use this to set a default
-                            amount: vnode.state.charges[category._id]?.amountValue || 0,
+                            charge: curtainsCharge || 0, // use this to set a default
+                            amount: curtainsAmount || 0,
                             value: curtains || 0,
                             pricing: vnode.state.pricings.map(price => {
                                 return {
@@ -736,10 +736,8 @@ const order_item = {
                             }),
                             onChange({ amountValue, chargeValue }) {
                                 console.log(amountValue, chargeValue)
-                                vnode.state.charges[category._id] = {
-                                    chargeValue,
-                                    amountValue
-                                }
+                                vnode.state.curtainsCharge = chargeValue
+                                vnode.state.curtainsAmount = amountValue
                             },
                             pickerSize: 12,
                             pickerSizeMD: 6,
