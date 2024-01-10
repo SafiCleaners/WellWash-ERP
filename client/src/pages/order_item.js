@@ -52,6 +52,7 @@ const input = {
 
 const order_item = {
     oncreate(vnode) {
+        vnode.state.charges = {}
         const options = {
             method: 'GET', url: url + "/jobs/" + m.route.param("job"),
             headers: {
@@ -326,7 +327,10 @@ const order_item = {
         }
 
         const calculatePrice = () => {
-            return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+            return Object.values(vnode.state.charges).reduce((total, category) => {
+                const { chargeValue, amountValue } = category;
+                return total + (amountValue || 0) * (chargeValue || 0);
+            }, 0);
         }
 
         return [
@@ -721,8 +725,8 @@ const order_item = {
                     vnode.state.categories.map(category => {
                         return m(incrementableInput, {
                             name: category.title,
-                            charge: curtainsCharge || 0, // use this to set a default
-                            amount: curtainsAmount || 0,
+                            charge: vnode.state.charges[category._id]?.chargeValue || 0, // use this to set a default
+                            amount: vnode.state.charges[category._id]?.amountValue || 0,
                             value: curtains || 0,
                             pricing: vnode.state.pricings.map(price => {
                                 return {
@@ -732,8 +736,10 @@ const order_item = {
                             }),
                             onChange({ amountValue, chargeValue }) {
                                 console.log(amountValue, chargeValue)
-                                vnode.state.curtainsCharge = chargeValue
-                                vnode.state.curtainsAmount = amountValue
+                                vnode.state.charges[category._id] = {
+                                    chargeValue,
+                                    amountValue
+                                }
                             },
                             pickerSize: 12,
                             pickerSizeMD: 6,
