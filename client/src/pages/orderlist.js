@@ -8,6 +8,8 @@ import {
 import m from "mithril"
 import moment from "moment"
 
+import { DateRangePicker } from '../components/daterangepicker';
+
 import loader from "../components/loader"
 const detailsString = (job) => {
     const orderItems = ["duvets", "blankets", "curtains", "generalKgs",]; 
@@ -23,8 +25,7 @@ const orders = {
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.loading = true
-
-        
+        vnode.state.selectedDate = new Date()
     },
     oncreate(vnode) {
         const options = {
@@ -82,7 +83,16 @@ const orders = {
                                     m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
                                         "Select Business Day To filter"
                                     ),
-                                    m("input", { "class": "form-control form-control-solid", "placeholder": "Pick date rage", "id": "kt_daterangepicker_3" })
+                                    m(DateRangePicker, {
+                                        "class": "form-control form-control-solid",
+                                        "placeholder": "Select Business Day",
+                                        "id": "kt_daterangepicker_order_item",
+                                        value: new Date(vnode.state.selectedDate).toISOString().split('T')[0],
+                                        onChange(selectedDate) {
+                                            vnode.state.selectedDate = new Date(selectedDate).toISOString().split('T')[0];
+                                            m.redraw()
+                                        }
+                                    })
                                 ]
                             ),
                             m("div",
@@ -140,9 +150,17 @@ const orders = {
                                                     )
                                                 ),
                                                 m("tbody",
-                                                    [
+                                                    [   
+                                                        console.log(vnode.state.selectedDate),
                                                         vnode.state.jobs
-                                                            // .filter(job => job.createdAt < vnode.state.selectedDate)
+                                                            .filter(job => {
+                                                                const selectedDate = new Date(vnode.state.selectedDate);
+
+                                                                // Assuming job.businessDate is a valid date string
+                                                                const businessDate = new Date(job.businessDate);
+                                                                console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+                                                                return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
+                                                            })
                                                             .map(({
                                                                 _id,
                                                                 paid = "",

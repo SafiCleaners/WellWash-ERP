@@ -17,6 +17,7 @@ import {
 import loader from "../components/loader"
 import { DateRangePicker } from '../components/daterangepicker';
 
+const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
 const input = {
     oninit(vnode) {
         // console.log(vnode.attrs)
@@ -71,6 +72,7 @@ const order_item = {
             })
 
             vnode.state.originalJob = Object.assign({}, response.data)
+            vnode.state.selectedDate = vnode.state.originalJob.businessDate
             localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id)
             localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob))
             vnode.state = Object.assign(vnode.state, response.data)
@@ -143,6 +145,9 @@ const order_item = {
         //     localStorage.setItem("activeOrderBeingEditedId", activeOrderBeingEditedId)
         // }
         vnode.state.id = activeOrderBeingEditedId
+       
+
+        console.log("vnode.state.selectedDate", vnode.state.selectedDate)
 
         // function to update order on the server
         const updateOrderOnServer = (cb) => {
@@ -205,7 +210,8 @@ const order_item = {
                 generalKgsAmount: vnode.state.generalKgsAmount,
                 shoesCharge: vnode.state.shoesCharge,
                 shoesAmount: vnode.state.shoesAmount,
-                clientName: vnode.state.clientName
+                clientName: vnode.state.clientName,
+                businessDate: vnode.state.selectedDate
             });
 
             console.log({
@@ -284,8 +290,6 @@ const order_item = {
     },
     view(vnode) {
 
-        console.log({ state: vnode.state })
-
         const {
             _id,
             paid = "",
@@ -330,7 +334,8 @@ const order_item = {
             generalKgsAmount,
             generalKgsCharge,
             shoesAmount,
-            shoesCharge
+            shoesCharge,
+            businessDate
 
         } = vnode.state
 
@@ -529,14 +534,16 @@ const order_item = {
                                     ]
                                 ),
 
-                               
+                                console.log(vnode.state.selectedDate),
                                 // m("input", { "class": "form-control form-control-solid", "placeholder": "Pick date rage", "id": "kt_daterangepicker_3" }),
                                 m(DateRangePicker, {
                                     "class": "form-control form-control-solid",
                                     "placeholder": "Select Business Day",
                                     "id": "kt_daterangepicker_order_item",
+                                   
+                                    value: new Date(vnode.state.selectedDate).toLocaleDateString('en-US', dateOptions),
                                     onChange(selectedDate) {
-                                        vnode.state.selectedDate = selectedDate;
+                                        vnode.state.selectedDate = new Date(selectedDate).toLocaleDateString('en-US', dateOptions);
                                     }
                                 })
                             )]
