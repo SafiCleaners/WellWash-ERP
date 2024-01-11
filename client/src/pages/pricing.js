@@ -136,14 +136,7 @@ const pricing = {
                                                                         }, vnode.state.categories && vnode.state.categories.find(c => c._id == item.category)?.title)
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.title
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                             formatCurrency(item.cost)
@@ -151,13 +144,7 @@ const pricing = {
                                                                     ]
                                                                 ),
                                                                
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.unit
-                                                                        )
-                                                                    ]
-                                                                ),
+                                                              
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },

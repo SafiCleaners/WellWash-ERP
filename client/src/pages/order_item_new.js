@@ -13,9 +13,11 @@ import incrementableInput from "../components/input";
 import {
     oninit,
     oncreate
-} from "../pages/order_step_1"
-import loader from "../components/loader"
+} from "./order_step_1"
 import { DateRangePicker } from '../components/daterangepicker';
+
+import loader from "../components/loader"
+
 
 const input = {
     oninit(vnode) {
@@ -53,35 +55,35 @@ const input = {
 
 const order_item = {
     oncreate(vnode) {
-        vnode.state.charges = {}
-        vnode.state.pricings = []
-        const options = {
-            method: 'GET', url: url + "/jobs/" + m.route.param("job"),
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
+        
+        vnode.state.loading = false
+        // const options = {
+        //     method: 'GET', url: url + "/jobs/" + m.route.param("job"),
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'authorization': localStorage.getItem('token')
+        //     },
+        // };
 
-        axios.request(options).then(function (response) {
-            Object.assign(response.data, {
-                createdAtAgo: moment(response.data.createdAt).fromNow(true),
-                timeDroppedOffFromNow: moment(response.data.dropOffDay).fromNow(true),
-                timePickedUpFromNow: moment(response.data.pickupDay).fromNow(true),
-            })
+        // axios.request(options).then(function (response) {
+        //     Object.assign(response.data, {
+        //         createdAtAgo: moment(response.data.createdAt).fromNow(true),
+        //         timeDroppedOffFromNow: moment(response.data.dropOffDay).fromNow(true),
+        //         timePickedUpFromNow: moment(response.data.pickupDay).fromNow(true),
+        //     })
 
-            vnode.state.originalJob = Object.assign({}, response.data)
-            localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id)
-            localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob))
-            vnode.state = Object.assign(vnode.state, response.data)
-            vnode.state.loading = false
-            m.redraw()
-            console.log("Retrieved order data:", vnode.state.originalJob);
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
+        //     vnode.state.originalJob = Object.assign({}, response.data)
+        //     localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id)
+        //     localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob))
+        //     vnode.state = Object.assign(vnode.state, response.data)
+        //     vnode.state.loading = false
+        //     m.redraw()
+        //     console.log("Retrieved order data:", vnode.state.originalJob);
+        // }).catch(function (error) {
+        //     vnode.state.loading = false
+        //     m.redraw()
+        //     console.error(error);
+        // });
 
         const optionsPricings = {
             method: 'GET', url: url + "/pricings",
@@ -120,19 +122,31 @@ const order_item = {
             console.error(error);
         });
 
-
-        $("#kt_daterangepicker_3").daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            minYear: 2022,
-            maxYear: moment().add(1, 'year').year()
-        }, function (start, end, label) {
-            vnode.state.selectedDate = start
-        });
+        // $("#kt_daterangepicker_4").daterangepicker({
+        //     singleDatePicker: true,
+        //     showDropdowns: true,
+        //     minYear: 2022,
+        //     maxYear: moment().add(1, 'year').year()
+        // }, function (start, end, label) {
+        //     vnode.state.selectedDate = start
+        // });
+        
     },
+    // onremove: () => {
+    //     vnode.state.picker.data('daterangepicker').remove(); // Undo initialization
+    // },
     oninit: function (vnode) {
+
+
+       
         var cost = 0
         var price = 0
+
+        vnode.state.charges = {}
+        vnode.state.pricings = []
+        vnode.state.categories = []
+        vnode.state.saved = true
+        vnode.state.paid = false
 
         // create an order if there was not one already running
         // cache order in local storage even accross refreshes
@@ -146,10 +160,6 @@ const order_item = {
 
         // function to update order on the server
         const updateOrderOnServer = (cb) => {
-            if (!vnode.state.originalJob) {
-                return;
-            }
-
             var {
                 pickupDay,
                 dropOffDay,
@@ -169,10 +179,11 @@ const order_item = {
                 statusInfo,
                 saved,
                 skipSms,
-                paid
+                paid,
+                charges
             } = vnode.state
 
-            let order = Object.assign({}, vnode.state.originalJob, {
+            let order = Object.assign({}, {
                 pickupDay,
                 dropOffDay,
                 pickupTime,
@@ -191,9 +202,10 @@ const order_item = {
                 statusInfo,
                 saved,
                 skipSms,
-                paid
+                paid,
+                charges
             }, {
-                // googleId: localStorage.getItem('googleId'),
+                googleId: localStorage.getItem('googleId'),
                 _id: undefined,
                 curtainsCharge: vnode.state.curtainsCharge,
                 curtainsAmount: vnode.state.curtainsAmount,
@@ -210,7 +222,8 @@ const order_item = {
 
             console.log({
                 currentOrder: order,
-                originalJob: vnode.state.originalJob
+                originalJob: vnode.state.originalJob,
+                charges
             })
 
             const orderString = JSON.parse(localStorage.getItem("activeOrderBeingEdited"))
@@ -233,7 +246,7 @@ const order_item = {
             // send request to server
             const options = {
                 method: 'PATCH',
-                url: url + "/jobs/" + m.route.param("job"),
+                url: url + "/jobs/null",
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': localStorage.getItem('token')
@@ -333,9 +346,9 @@ const order_item = {
             shoesCharge
 
         } = vnode.state
-
-        if (!_id) {
-            return m(loader)
+        console.log(vnode.state.pricings)
+        if (!vnode.state.pricings[0]) {
+            return m(loader);
         }
 
         const calculatePrice = () => {
@@ -372,7 +385,7 @@ const order_item = {
                             )
                         ),
 
-                        m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
+                        clientName && m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                             m("div", { "class": "table-responsive" },
                                 m("table", { "class": "table table-borderless table-vertical-center" },
                                     [
@@ -432,17 +445,17 @@ const order_item = {
                                                             ]
                                                         ),
 
-                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                            [
-                                                                m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
+                                                        // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                        //     [
+                                                        //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                    "Was Requested ", createdAtAgo + " ago"
-                                                                ),
-                                                                m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
-                                                                    "To be Dropped Off in ", timeDroppedOffFromNow,
-                                                                )
-                                                            ]
-                                                        ),
+                                                        //             "Was Requested ", createdAtAgo + " ago"
+                                                        //         ),
+                                                        //         m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
+                                                        //             "To be Dropped Off in ", timeDroppedOffFromNow,
+                                                        //         )
+                                                        //     ]
+                                                        // ),
                                                         m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                             [
                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
@@ -463,43 +476,55 @@ const order_item = {
 
 
 
-                                                        m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                            [
+                                                        // m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
+                                                        //     [
 
-                                                        
-                                                        m(m.route.Link, {
-                                                            "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
-                                                                const options = { 
-                                                                    method: 'DELETE', 
-                                                                    url: `${url}/jobs/${_id}`,
-                                                                    headers: { 
-                                                                        'Content-Type': 'application/json',
-                                                                        'authorization': localStorage.getItem('token')
-                                                                    },
-                                                                };
+                                                        // m(m.route.Link, { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mx-3" },
+                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                        //                 [
+                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                        //                     m("path", { "d": "M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z", "fill": "#000000", "fill-rule": "nonzero", "transform": "translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953)" }),
+                                                        //                     m("path", { "d": "M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z", "fill": "#000000", "fill-rule": "nonzero", "opacity": "0.3" })
+                                                        //                 ]
+                                                        //             )
+                                                        //         )
+                                                        //     )
+                                                        // ),
+                                                        // m(m.route.Link, {
+                                                        //     "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
+                                                        //         const options = { 
+                                                        //             method: 'DELETE', 
+                                                        //             url: `${url}/jobs/${_id}`,
+                                                        //             headers: { 
+                                                        //                 'Content-Type': 'application/json',
+                                                        //                 'authorization': localStorage.getItem('token')
+                                                        //             },
+                                                        //         };
 
-                                                                axios.request(options).then(function (response) {
-                                                                    console.log(response.data);
-                                                                    location.reload()
-                                                                }).catch(function (error) {
-                                                                    console.error(error);
-                                                                });
-                                                            }
-                                                        },
-                                                            m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
-                                                                m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                                                    m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                                        [
-                                                                            m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                                            m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
-                                                                            m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
-                                                                        ]
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                            ]
-                                                        )
+                                                        //         axios.request(options).then(function (response) {
+                                                        //             console.log(response.data);
+                                                        //             location.reload()
+                                                        //         }).catch(function (error) {
+                                                        //             console.error(error);
+                                                        //         });
+                                                        //     }
+                                                        // },
+                                                        //     m("span", { "class": "svg-icon svg-icon-md svg-icon-primary" },
+                                                        //         m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
+                                                        //             m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
+                                                        //                 [
+                                                        //                     m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
+                                                        //                     m("path", { "d": "M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z", "fill": "#000000", "fill-rule": "nonzero" }),
+                                                        //                     m("path", { "d": "M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z", "fill": "#000000", "opacity": "0.3" })
+                                                        //                 ]
+                                                        //             )
+                                                        //         )
+                                                        //     )
+                                                        // )
+                                                        //     ]
+                                                        // )
                                                     ]
                                                 )
                                             ]
@@ -524,27 +549,25 @@ const order_item = {
                                         ),
                                         m("span", { "class": "bs-stepper-label" },
                                             "Order Details"
-                                        ),
-                                        
+                                        )
                                     ]
                                 ),
-
-                               
-                                // m("input", { "class": "form-control form-control-solid", "placeholder": "Pick date rage", "id": "kt_daterangepicker_3" }),
+                              
+                                // m("input", { "class": "form-control form-control-solid", "placeholder": "Select Business Day", "id": "kt_daterangepicker_4" }),
                                 m(DateRangePicker, {
                                     "class": "form-control form-control-solid",
                                     "placeholder": "Select Business Day",
-                                    "id": "kt_daterangepicker_order_item",
+                                    "id": "kt_daterangepicker_new",
                                     onChange(selectedDate) {
                                         vnode.state.selectedDate = selectedDate;
                                     }
                                 })
+
                             )]
                     )]
             ),
-
-               
-
+            
+            
 
             m("div", { "class": "form-group row" },
                 [
@@ -576,6 +599,7 @@ const order_item = {
                             vnode.state.houseNumber = value
                         }
                     }),
+
                 ]),
 
             m(".form-group.row", [
@@ -1361,8 +1385,6 @@ const order_item = {
                             type: "button",
                             "class": "btn btn-lg btn-info",
                             onclick() {
-                                // alert("saving order")
-                                console.log("Button clicked!");
                                 vnode.state.updateOrderOnServer(() => location.reload())
                             }
                         }, [
