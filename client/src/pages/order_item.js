@@ -17,7 +17,6 @@ import {
 import loader from "../components/loader"
 import { DateRangePicker } from '../components/daterangepicker';
 
-
 const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
 const input = {
     oninit(vnode) {
@@ -121,6 +120,16 @@ const order_item = {
             vnode.state.loading = false
             m.redraw()
             console.error(error);
+        });
+
+
+        $("#kt_daterangepicker_3").daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: 2022,
+            maxYear: moment().add(1, 'year').year()
+        }, function (start, end, label) {
+            vnode.state.selectedDate = start
         });
     },
     oninit: function (vnode) {

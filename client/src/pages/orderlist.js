@@ -59,6 +59,15 @@ const orders = {
             vnode.state.loading = false
             console.error(error);
         });
+
+        $("#kt_daterangepicker_3").daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: 2022,
+            maxYear: moment().add(1, 'year').year()
+        }, function (start, end, label) {
+            vnode.state.selectedDate = start
+        });
     },
     view(vnode) {
         return m("div", { "class": "card card-custom gutter-b" },
