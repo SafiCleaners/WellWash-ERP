@@ -147,6 +147,7 @@ const order_item = {
         vnode.state.categories = []
         vnode.state.saved = true
         vnode.state.paid = false
+        vnode.state.selectedDate = new Date()
 
         // create an order if there was not one already running
         // cache order in local storage even accross refreshes
@@ -217,7 +218,8 @@ const order_item = {
                 generalKgsAmount: vnode.state.generalKgsAmount,
                 shoesCharge: vnode.state.shoesCharge,
                 shoesAmount: vnode.state.shoesAmount,
-                clientName: vnode.state.clientName
+                clientName: vnode.state.clientName,
+                businessDate: vnode.state.selectedDate
             });
 
             console.log({

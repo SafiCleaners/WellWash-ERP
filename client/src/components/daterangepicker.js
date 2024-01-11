@@ -13,9 +13,11 @@ export const DateRangePicker = {
                     showDropdowns: true,
                     minYear: 2022,
                     maxYear: moment().add(1, 'year').year(),
-                    picker: (start, end, label) => {
-                        attrs.onChange(start)
+                    locale: {
+                        format: 'YYYY-MM-DD'
                     },
+                }, (start, end, label) => {
+                    attrs.onChange(start)
                 });
             },
             onremove: (el) => {
