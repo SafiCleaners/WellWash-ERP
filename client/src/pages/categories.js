@@ -53,7 +53,7 @@ const pricing = {
                         m("h3", { "class": "card-title align-items-start flex-column" },
                             [
                                 m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Price Categories"
+                                    "Available Products"
                                 ),
                             ]
                         ),

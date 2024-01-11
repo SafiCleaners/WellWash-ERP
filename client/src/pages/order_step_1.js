@@ -120,7 +120,7 @@ const step = (vnode) => {
                                                     m("tbody",
                                                         [
                                                             vnode.state.jobs
-                                                                .filter(job => job.statusInfo[0].status !== 'CONFIRMED_PAYMENT')
+                                                                .filter(job => job.statusInfo && job.statusInfo[0].status !== 'CONFIRMED_PAYMENT')
                                                                 .map(({
                                                                     appartmentName,
                                                                     name,
@@ -368,7 +368,7 @@ const step = (vnode) => {
                                                     m("tbody",
                                                         [
                                                             vnode.state.jobs
-                                                                .filter(job => job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
+                                                                .filter(job => job.statusInfo && job.statusInfo[0].status === 'CONFIRMED_PAYMENT')
                                                                 .map(({
                                                                     appartmentName,
                                                                     name,

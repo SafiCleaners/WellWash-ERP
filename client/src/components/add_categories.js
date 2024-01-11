@@ -80,7 +80,7 @@ const AddPricingForm = {
             // Open Modal Button
             m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
                 m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Category"
+                "Add Product Category"
             ]),
 
             // Modal
