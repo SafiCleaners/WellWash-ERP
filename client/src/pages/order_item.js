@@ -52,6 +52,7 @@ const input = {
 
 const order_item = {
     oncreate(vnode) {
+        vnode.state.charges = {}
         const options = {
             method: 'GET', url: url + "/jobs/" + m.route.param("job"),
             headers: {
@@ -326,7 +327,10 @@ const order_item = {
         }
 
         const calculatePrice = () => {
-            return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+            return Object.values(vnode.state.charges).reduce((total, category) => {
+                const { chargeValue, amountValue } = category;
+                return total + (amountValue || 0) * (chargeValue || 0);
+            }, 0);
         }
 
         return [
