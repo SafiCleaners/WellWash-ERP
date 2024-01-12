@@ -370,8 +370,9 @@ var calculator = () => {
                                                         operationTimes.map(time => {
                                                             return m(m.route.Link, {
                                                                 style: { "z-index": 10000 },
-                                                                onclick() {
+                                                                onclick(e) {
                                                                     vnode.state.pickupTime = time
+                                                                    e.preventDefault()
                                                                 },
                                                                 "class": "dropdown-item",
                                                             },
@@ -433,8 +434,9 @@ var calculator = () => {
                                                         operationTimes.map(time => {
                                                             return m(m.route.Link, {
                                                                 style: { "z-index": 10000 },
-                                                                onclick() {
+                                                                onclick(e) {
                                                                     vnode.state.dropOffTime = time
+                                                                    e.preventDefault()
                                                                 },
                                                                 "class": "dropdown-item",
                                                             },
