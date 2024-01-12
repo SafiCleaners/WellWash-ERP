@@ -8,7 +8,8 @@ import google_login from "./google_login"
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    // 
+    localStorage.setItem("businessDate", new Date(datePicked).toISOString().split('T')[0])
+    m.redraw()
 }
 
 const header = {
@@ -63,7 +64,7 @@ const header = {
                                     },
                                         m(m.route.Link, { "class": "menu-link", "href": "/" },
                                             m("span", { "class": "menu-text" },
-                                                "Create Order"
+                                                "Create"
                                             )
                                         )
                                     ),
@@ -124,7 +125,7 @@ const header = {
                                         m(m.route.Link, { "class": "menu-link", "href": "/j" },
                                             [
                                                 m("span", { "class": "menu-text" },
-                                                    "Job Queue"
+                                                    "Queue"
                                                 ),
                                                 m("span", { "class": "menu-desc" })
                                             ]
@@ -134,7 +135,7 @@ const header = {
                                         m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                             [
                                                 m("span", { "class": "menu-text" },
-                                                    "User Management"
+                                                    "Management"
                                                 ),
                                                 m("span", { "class": "menu-desc" })
                                             ]
@@ -160,46 +161,57 @@ const header = {
                                             ]
                                         )
                                     ),
-                                    m("li", { "id": "daterangepicker", "class": "menu-item", "aria-haspopup": "true" }, m(DateRangePicker, { "id": "daterangepicker", onChange: onDatePickerChange })),
-                                    // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                    //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },
-                                    //         [
-                                    //             m("span", { "class": "menu-text" },
-                                    //                 "Orders"
-                                    //             ),
-                                    //             m("span", { "class": "menu-desc" })
-                                    //         ]
-                                    //     )
-                                    // ),
-                                    // m("li", { "class": "menu-item" + (window.location.pathname.includes("tasks") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                    //     m(m.route.Link, { "class": "menu-link", "href": "/tasks" },
-                                    //         [
-                                    //             m("span", { "class": "menu-text" },
-                                    //                 "Tasks"
-                                    //             ),
-                                    //             m("span", { "class": "menu-desc" })
-                                    //         ]
-                                    //     )
-                                    // ),
+                                    
+                                        // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },
+                                        //         [
+                                        //             m("span", { "class": "menu-text" },
+                                        //                 "Orders"
+                                        //             ),
+                                        //             m("span", { "class": "menu-desc" })
+                                        //         ]
+                                        //     )
+                                        // ),
+                                        // m("li", { "class": "menu-item" + (window.location.pathname.includes("tasks") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        //     m(m.route.Link, { "class": "menu-link", "href": "/tasks" },
+                                        //         [
+                                        //             m("span", { "class": "menu-text" },
+                                        //                 "Tasks"
+                                        //             ),
+                                        //             m("span", { "class": "menu-desc" })
+                                        //         ]
+                                        //     )
+                                        // ),
                                     ],
                                 ]
                             )
                         )
                     ),
                     m("div", { "class": "topbar" }, [
+                        m("li", {
+                            "class": "menu-item", "aria-haspopup": "true"
+                        },
+                            m(DateRangePicker, {
+                                "class": "form-control form-control-solid",
+                                "placeholder": "Select Business Day",
+                                "id": "kt_daterangepicker_new",
+                                value: new Date(localStorage.getItem("businessDate")),
+                                onChange: onDatePickerChange
+                            })
+                        ),
                         localStorage.getItem('authToken') ? [
                             m("div", { "class": "topbar-item mr-3" },
-                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                    m(m.route.Link, { "class": "menu-link", "href": "#", style: { color: "white" } },
-                                        [
-                                            m("span", { "class": "menu-text font-size-sm" },
-                                                localStorage.getItem('name')
-                                            ),
-                                            m("br"),
-                                            m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
-                                        ]
-                                    )
-                                )
+                                // m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                //     m(m.route.Link, { "class": "menu-link", "href": "#", style: { color: "white" } },
+                                //         [
+                                //             m("span", { "class": "menu-text font-size-sm" },
+                                //                 localStorage.getItem('name')
+                                //             ),
+                                //             m("br"),
+                                //             m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
+                                //         ]
+                                //     )
+                                // )
                             ), m("div", { "class": "topbar-item mr-3" },
                                 m("span", { "class": "svg-icon svg-icon-xl" }, [
                                     m("img", {

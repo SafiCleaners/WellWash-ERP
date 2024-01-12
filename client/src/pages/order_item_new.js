@@ -556,14 +556,14 @@ const order_item = {
                                 ),
                               
                                 // m("input", { "class": "form-control form-control-solid", "placeholder": "Select Business Day", "id": "kt_daterangepicker_4" }),
-                                m(DateRangePicker, {
-                                    "class": "form-control form-control-solid",
-                                    "placeholder": "Select Business Day",
-                                    "id": "kt_daterangepicker_new",
-                                    onChange(selectedDate) {
-                                        vnode.state.selectedDate = selectedDate;
-                                    }
-                                })
+                                // m(DateRangePicker, {
+                                //     "class": "form-control form-control-solid",
+                                //     "placeholder": "Select Business Day",
+                                //     "id": "kt_daterangepicker_new",
+                                //     onChange(selectedDate) {
+                                //         vnode.state.selectedDate = selectedDate;
+                                //     }
+                                // })
 
                             )]
                     )]

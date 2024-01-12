@@ -59,15 +59,6 @@ const orders = {
             vnode.state.loading = false
             console.error(error);
         });
-
-        $("#kt_daterangepicker_3").daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            minYear: 2022,
-            maxYear: moment().add(1, 'year').year()
-        }, function (start, end, label) {
-            vnode.state.selectedDate = start
-        });
     },
     view(vnode) {
         return m("div", { "class": "card card-custom gutter-b" },
@@ -79,20 +70,7 @@ const orders = {
                                 [
                                     m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
                                         "Job Queue"
-                                    ),
-                                    m("span", { "class": "text-muted mt-3 font-weight-bold font-size-sm" },
-                                        "Select Business Day To filter"
-                                    ),
-                                    m(DateRangePicker, {
-                                        "class": "form-control form-control-solid",
-                                        "placeholder": "Select Business Day",
-                                        "id": "kt_daterangepicker_order_item",
-                                        value: new Date(vnode.state.selectedDate).toISOString().split('T')[0],
-                                        onChange(selectedDate) {
-                                            vnode.state.selectedDate = new Date(selectedDate).toISOString().split('T')[0];
-                                            m.redraw()
-                                        }
-                                    })
+                                    )
                                 ]
                             ),
                             m("div",
@@ -102,7 +80,7 @@ const orders = {
                                 } },
                                     [
                                         m("i", { "class": "flaticon-add-circular-button" }),
-                                        "Add Job To Queue"
+                                        "Add Job"
                                     ]
                                 )
                             )
@@ -154,7 +132,7 @@ const orders = {
                                                         console.log(vnode.state.selectedDate),
                                                         vnode.state.jobs
                                                             .filter(job => {
-                                                                const selectedDate = new Date(vnode.state.selectedDate);
+                                                                const selectedDate = new Date(localStorage.getItem("businessDate"));
 
                                                                 // Assuming job.businessDate is a valid date string
                                                                 const businessDate = new Date(job.businessDate);
