@@ -2,22 +2,35 @@ import m from "mithril"
 
 const dynamicPicker = {
     oninit(vnode) {
-        console.log(vnode)
+        if (!vnode.attrs.options[0])
+            return;
 
-        if (!vnode.state.selectedCharge)
+        const sortedOptions = vnode.attrs.options.slice(); // Make a shallow copy to avoid modifying the original array
+
+        sortedOptions.sort((a, b) => Number(b.amount) - Number(a.amount));
+
+        vnode.state.sortedOptions = sortedOptions
+
+        console.log(vnode.state.sortedOptions)
+        if (!vnode.state.selectedCharge){
             vnode.state = Object.assign(vnode.state, {
-                selectedCharge: vnode.attrs.options.find(option => option.selectedCharge == true)?.amount || vnode.attrs.charge
+                selectedCharge: vnode.state.sortedOptions[0].amount || vnode.attrs.charge
             })
+            vnode.attrs.onChange(vnode.state.selectedCharge)
+        }
+        // if (!vnode.state.selectedCharge)
+        //     vnode.state.sortedOptions[0]?.amount)
+        
     },
     view(vnode) {
-        console.log(vnode.state, vnode.attrs)
+        
+
         return [
-            m("label", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount))),
+            m("label", m("b", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount)))),
             m("br"),
             m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
-                vnode.attrs.options.map((statusInfo) => {
+                vnode.state.sortedOptions?.map((statusInfo) => {
                     const { amount: charge, label, selectedCharge } = statusInfo
-                    // console.log(charge, vnode.state.selectedCharge, selectedCharge, charge == vnode.state.selectedCharge)
                     return m("label", { "class": `btn btn-info ${selectedCharge ? "active" : (charge == vnode.state.selectedCharge ? "active" : "")}` },
                         [
                             m("input", {
@@ -54,7 +67,7 @@ const input = {
 
             m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}` },
                 [
-                    m("label", vnode.attrs.name),
+                    m("label", m("b", vnode.attrs.name)),
                     m("div", { "class": "form-group" }, [
                         m("div", { "class": "input-group mb-3" },
                             [

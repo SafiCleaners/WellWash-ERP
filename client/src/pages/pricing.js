@@ -177,7 +177,9 @@ const pricing = {
 
                                                                                     axios.request(options).then(function (response) {
                                                                                         console.log(response.data);
-                                                                                        window.location.reload()
+                                                                                        // window.location.reload()
+                                                                                        vnode.state.pricings = vnode.state.pricings.filter(p => p._id != item._id)
+                                                                                        m.redraw()
                                                                                     }).catch(function (error) {
                                                                                         console.error(error);
                                                                                     });
