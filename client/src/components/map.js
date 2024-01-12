@@ -8,9 +8,11 @@ const map = {
     console.log("initialize component");
 
     const shopLocations = [
-      { lat: -1.1542309, lng: 36.9225647 },
-      { lat: -1.11794, lng: 37.00889 },
-      { lat: -1.13678, lng: 36.9702 },
+      { lat: -1.1542309, lng: 36.9225647 }, //oj shell
+      { lat: -1.1335268722243155, lng: 36.97447830118061 }, //kimbo
+      { lat: -1.2268112564234666, lng: 36.875856805005775 }, //gardencity
+      { lat: -1.205350, lng: 36.832859 }, //thindigua
+      { lat: -1.1325602771488292, lng: 37.06112601127807 }, //juja
     ];
 
     const google = window.google;
@@ -38,18 +40,18 @@ const map = {
       // Draw markers and circles for multiple shop locations
       shopLocations.forEach((location) => {
         console.log("Adding marker for location", location);
-  
+
         const marker = new google.maps.Marker({
           position: location,
           map: map,
           title: "WellWash...",
         });
-  
+
         marker.setIcon({
           url: image,
-          scaledSize: new google.maps.Size(50, 50),
+          scaledSize: new google.maps.Size(20, 20),
         });
-  
+
         const circle = new google.maps.Circle({
           map: map,
           center: new google.maps.LatLng(location.lat, location.lng),
@@ -57,7 +59,7 @@ const map = {
           fillColor: "#66B4ED",
         });
       });
-  
+
 
       map.setCenter(shopLocations[0]);
     }
@@ -83,8 +85,8 @@ const map = {
               position: position,
               map: map,
               title: "You are here...",
-            
-            
+
+
             });
           });
 
@@ -101,7 +103,7 @@ const map = {
             const circle = new google.maps.Circle({
               map: map,
               center: new google.maps.LatLng(location.lat, location.lng),
-              radius: (16093 / 5) * 2, // 10 miles in meters
+              radius: (16093 / 5) * 1, // 10 miles in meters
               fillColor: "#66B4ED",
             });
           });
