@@ -164,8 +164,8 @@ const stores = {
                                                                                     };
 
                                                                                     axios.request(options).then(function (response) {
-                                                                                        console.log(response.data);
-                                                                                        window.location.reload()
+                                                                                        vnode.state.stores = vnode.state.stores.filter(s => s._id != item._id)
+                                                                                        m.redraw()
                                                                                     }).catch(function (error) {
                                                                                         console.error(error);
                                                                                     });

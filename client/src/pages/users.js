@@ -198,8 +198,8 @@ const users = {
                                                                                 };
 
                                                                                 axios.request(options).then(function (response) {
-                                                                                    console.log(response.data);
-                                                                                    window.location.reload()
+                                                                                    vnode.state.users = vnode.state.users.filter(p => p.email != email)
+                                                                                    m.redraw()
                                                                                 }).catch(function (error) {
                                                                                     console.error(error);
                                                                                 });

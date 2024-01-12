@@ -11,13 +11,16 @@ const dynamicPicker = {
     },
     view(vnode) {
         console.log(vnode.state, vnode.attrs)
+        const sortedOptions = vnode.attrs.options.slice(); // Make a shallow copy to avoid modifying the original array
+
+        sortedOptions.sort((a, b) => b.amount - a.amount);
+
         return [
             m("label", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount))),
             m("br"),
             m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
-                vnode.attrs.options.map((statusInfo) => {
+                sortedOptions.map((statusInfo) => {
                     const { amount: charge, label, selectedCharge } = statusInfo
-                    // console.log(charge, vnode.state.selectedCharge, selectedCharge, charge == vnode.state.selectedCharge)
                     return m("label", { "class": `btn btn-info ${selectedCharge ? "active" : (charge == vnode.state.selectedCharge ? "active" : "")}` },
                         [
                             m("input", {

@@ -155,8 +155,9 @@ const pricing = {
                                                                                     };
 
                                                                                     axios.request(options).then(function (response) {
-                                                                                        console.log(response.data);
-                                                                                        window.location.reload()
+                                                                                       
+                                                                                        vnode.state.categories = vnode.state.categories.filter(p => p._id != item._id)
+                                                                                        m.redraw()
                                                                                     }).catch(function (error) {
                                                                                         console.error(error);
                                                                                     });
