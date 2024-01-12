@@ -5,6 +5,12 @@ import m from "mithril"
 import axios from "axios"
 import google_login from "./google_login"
 
+import { DateRangePicker } from "./daterangepicker";
+
+const onDatePickerChange = (datePicked) => {
+    // 
+}
+
 const header = {
     async x_oncreate() {
         const params = {
@@ -154,6 +160,7 @@ const header = {
                                             ]
                                         )
                                     ),
+                                    m("li", { "id": "daterangepicker", "class": "menu-item", "aria-haspopup": "true" }, m(DateRangePicker, { "id": "daterangepicker", onChange: onDatePickerChange })),
                                     // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                     //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },
                                     //         [
