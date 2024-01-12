@@ -56,6 +56,9 @@ const order_item = {
     oncreate(vnode) {
         vnode.state.charges = {}
         vnode.state.pricings = []
+
+        vnode.state.categoryCharges = {}
+        vnode.state.categoryAmounts = {}
         const options = {
             method: 'GET', url: url + "/jobs/" + m.route.param("job"),
             headers: {
@@ -156,8 +159,8 @@ const order_item = {
             }
 
             var {
-                pickupDay,
-                dropOffDay,
+                pickupTime ='10am-11am',
+                dropOffTime = '10am-11am',
                 pickupTime,
                 dropOffTime,
                 appartmentName,
@@ -642,8 +645,9 @@ const order_item = {
                                         operationTimes.map(time => {
                                             return m(m.route.Link, {
                                                 style: { "z-index": 10000 },
-                                                onclick() {
+                                                onclick(e) {
                                                     vnode.state.pickupTime = time
+                                                    e.preventDefault()
                                                 },
                                                 "class": "dropdown-item",
                                             },
@@ -746,10 +750,12 @@ const order_item = {
                     vnode.state.categories && vnode.state.categories.map(category => {
                         return m(incrementableInput, {
                             name: category.title,
-                            charge: curtainsCharge || 0, // use this to set a default
-                            amount: curtainsAmount || 0,
+                            charge: vnode.state.categoryCharges[category._id] || 0, // use this to set a default
+                            amount: vnode.state.categoryAmounts[category._id] || 0,
                             value: curtains || 0,
-                            pricing: vnode.state.pricings.map(price => {
+                            pricing: vnode.state.pricings
+                                .filter(pricing => pricing.category == category._id)
+                                .map(price => {
                                 return {
                                     amount: price.cost,
                                     label: price.cost,
@@ -757,8 +763,8 @@ const order_item = {
                             }),
                             onChange({ amountValue, chargeValue }) {
                                 console.log(amountValue, chargeValue)
-                                vnode.state.curtainsCharge = chargeValue
-                                vnode.state.curtainsAmount = amountValue
+                                vnode.state.categoryPrice = chargeValue
+                                vnode.state.categoryAmount = amountValue
                             },
                             pickerSize: 12,
                             pickerSizeMD: 6,

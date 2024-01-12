@@ -293,8 +293,9 @@ const orders = {
                                                                                             };
 
                                                                                             axios.request(options).then(function (response) {
-                                                                                                console.log(response.data);
-                                                                                                window.location.reload()
+                                                                                           
+                                                                                                vnode.state.jobs = vnode.state.jobs.filter(p => p._id != _id)
+                                                                                                m.redraw()
                                                                                             }).catch(function (error) {
                                                                                                 console.error(error);
                                                                                             });
