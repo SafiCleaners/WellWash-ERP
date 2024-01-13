@@ -1,7 +1,6 @@
 import m from "mithril";
 
-const image =
-  "https://wellwash.netlify.app/assets/media/washer-logo-map-size.png";
+const image = "/assets/media/washer-logo-map-size.png";
 
 const map = {
   oncreate: function (vnode) {
@@ -10,9 +9,9 @@ const map = {
     const shopLocations = [
       { lat: -1.1542309, lng: 36.9225647 }, //oj shell
       { lat: -1.1335268722243155, lng: 36.97447830118061 }, //kimbo
-      { lat: -1.2268112564234666, lng: 36.875856805005775 }, //gardencity
+      { lat: -1.229400, lng: 36.878455 }, //gardencity
       { lat: -1.205350, lng: 36.832859 }, //thindigua
-      { lat: -1.1325602771488292, lng: 37.06112601127807 }, //juja
+      { lat: -1.096069, lng: 37.028145 }, //juja
     ];
 
     const google = window.google;
