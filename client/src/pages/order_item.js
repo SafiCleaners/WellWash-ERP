@@ -126,14 +126,14 @@ const order_item = {
         });
 
 
-        $("#kt_daterangepicker_3").daterangepicker({
-            singleDatePicker: true,
-            showDropdowns: true,
-            minYear: 2022,
-            maxYear: moment().add(1, 'year').year()
-        }, function (start, end, label) {
-            vnode.state.selectedDate = start
-        });
+        // $("#kt_daterangepicker_3").daterangepicker({
+        //     singleDatePicker: true,
+        //     showDropdowns: true,
+        //     minYear: 2022,
+        //     maxYear: moment().add(1, 'year').year()
+        // }, function (start, end, label) {
+        //     vnode.state.selectedDate = start
+        // });
     },
     oninit: function (vnode) {
         var cost = 0
@@ -347,9 +347,14 @@ const order_item = {
         }
 
         const calculatePrice = () => {
-            return Object.values(vnode.state.charges).reduce((total, category) => {
-                const { chargeValue, amountValue } = category;
-                return total + (amountValue || 0) * (chargeValue || 0);
+            const { categoryAmounts, categoryCharges } = vnode.state;
+
+            return Object.keys(categoryAmounts).reduce((total, categoryId) => {
+                const amountValue = categoryAmounts[categoryId];
+                const chargeValue = categoryCharges[categoryId];
+
+                const subtotal = (amountValue || 0) * (chargeValue || 0);
+                return total + subtotal;
             }, 0);
         }
 
@@ -537,18 +542,18 @@ const order_item = {
                                     ]
                                 ),
 
-                                console.log(vnode.state.selectedDate),
-                                // m("input", { "class": "form-control form-control-solid", "placeholder": "Pick date rage", "id": "kt_daterangepicker_3" }),
-                                m(DateRangePicker, {
-                                    "class": "form-control form-control-solid",
-                                    "placeholder": "Select Business Day",
-                                    "id": "kt_daterangepicker_order_item",
+                                // console.log(vnode.state.selectedDate),
+                                // // m("input", { "class": "form-control form-control-solid", "placeholder": "Pick date rage", "id": "kt_daterangepicker_3" }),
+                                // m(DateRangePicker, {
+                                //     "class": "form-control form-control-solid",
+                                //     "placeholder": "Select Business Day",
+                                //     "id": "kt_daterangepicker_order_item",
                                    
-                                    value: new Date(vnode.state.selectedDate).toLocaleDateString('en-US', dateOptions),
-                                    onChange(selectedDate) {
-                                        vnode.state.selectedDate = new Date(selectedDate).toLocaleDateString('en-US', dateOptions);
-                                    }
-                                })
+                                //     value: new Date(vnode.state.selectedDate).toLocaleDateString('en-US', dateOptions),
+                                //     onChange(selectedDate) {
+                                //         vnode.state.selectedDate = new Date(selectedDate).toLocaleDateString('en-US', dateOptions);
+                                //     }
+                                // })
                             )]
                     )]
             ),
@@ -763,8 +768,8 @@ const order_item = {
                             }),
                             onChange({ amountValue, chargeValue }) {
                                 console.log(amountValue, chargeValue)
-                                vnode.state.categoryPrice = chargeValue
-                                vnode.state.categoryAmount = amountValue
+                                vnode.state.categoryCharges[category._id] = chargeValue
+                                vnode.state.categoryAmounts[category._id] = amountValue
                             },
                             pickerSize: 12,
                             pickerSizeMD: 6,

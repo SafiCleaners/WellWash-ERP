@@ -1,4 +1,8 @@
 import {
+    url,
+    operationTimes
+} from "../constants"
+import {
     client_id
 } from "../constants"
 import m from "mithril"
@@ -8,49 +12,36 @@ import google_login from "./google_login"
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    localStorage.setItem("businessDate", new Date(datePicked).toISOString().split('T')[0])
+    localStorage.setItem("businessDate", datePicked)
     m.redraw()
 }
 
 const header = {
-    async x_oncreate() {
-        const params = {
-            client_id,
-            // cookie_policy: cookiePolicy,
-            // login_hint: loginHint,
-            // hosted_domain: hostedDomain,
-            // fetch_basic_profile: fetchBasicProfile,
-            // discoveryDocs,
-            // ux_mode: uxMode,
-            // redirect_uri: redirectUri,
-            // scope,
-            // access_type: accessType
+    oncreate(vnode) {
+        vnode.state.stores = []
+        if (!localStorage.getItem("businessDate")) {
+            localStorage.setItem("businessDate", new Date().toISOString().split('T')[0])
         }
-        params.access_type = 'offline'
-        window.gapi.load('auth2', () => {
-            const GoogleAuth = window.gapi.auth2.getAuthInstance()
 
-            console.log(GoogleAuth)
-            // if (!GoogleAuth) {
-            //     window.gapi.auth2.init(params).then(
-            //         res => {
-            //             const signedIn = res.isSignedIn.get()
-            //             // onAutoLoadFinished(signedIn)
-            //             if (signedIn) {
-            //                 console.log(res.currentUser.get())
-            //             }
-            //         },
-            //         err => {
-            //             // setLoaded(true)
-            //             // onAutoLoadFinished(false)
-            //             // onLoadFailure(err)
-            //             console.log(err)
-            //         }
-            //     )
-            // }
-        })
+        const options = {
+            method: 'GET', url: url + "/stores",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(options).then(function (response) {
+            vnode.state.stores = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
     },
-    view() {
+    view(vnode) {
         return m("div", { "class": "header header-fixed", "id": "kt_header" },
             m("div", { "class": "container" },
                 [
@@ -161,7 +152,7 @@ const header = {
                                             ]
                                         )
                                     ),
-                                    
+
                                         // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },
                                         //         [
@@ -188,18 +179,41 @@ const header = {
                         )
                     ),
                     m("div", { "class": "topbar" }, [
-                        m("li", {
-                            "class": "menu-item", "aria-haspopup": "true"
-                        },
-                            m(DateRangePicker, {
-                                "class": "form-control form-control-solid",
-                                "placeholder": "Select Business Day",
-                                "id": "kt_daterangepicker_new",
-                                value: new Date(localStorage.getItem("businessDate")),
-                                onChange: onDatePickerChange
-                            })
-                        ),
+
                         localStorage.getItem('authToken') ? [
+                            m("li", {
+                                "class": "menu-item mr-3", "aria-haspopup": "true",
+                                style: {
+                                    "margin": 20
+                                }
+                            },
+                                m("div", { "class": "dropdown" },
+                                    [
+                                        m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                            " All Stores "
+                                        ),
+                                        m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                                            [
+                                                vnode.state.stores?.map(store => {
+                                                    return m("a", { "class": "dropdown-item", "href": "#" },
+                                                        store.title
+                                                    )
+                                                })
+                                            ]
+                                        )
+                                    ]
+                                )),
+                            m("li", {
+                                "class": "menu-item", "aria-haspopup": "true"
+                            },
+                                m(DateRangePicker, {
+                                    "class": "form-control form-control-solid",
+                                    "placeholder": "Select Business Day",
+                                    "id": "kt_daterangepicker_new",
+                                    value: new Date(localStorage.getItem("businessDate")),
+                                    onChange: onDatePickerChange
+                                })
+                            ),
                             m("div", { "class": "topbar-item mr-3" },
                                 // m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
                                 //     m(m.route.Link, { "class": "menu-link", "href": "#", style: { color: "white" } },
