@@ -167,8 +167,8 @@ const order_item = {
             var {
                 pickupTime = '10am-11am',
                 dropOffTime = '10am-11am',
-                pickupTime,
-                dropOffTime,
+                pickupDay,
+                dropOffDay,
                 appartmentName,
                 houseNumber,
                 moreDetails,
@@ -222,7 +222,7 @@ const order_item = {
                 shoesCharge: vnode.state.shoesCharge,
                 shoesAmount: vnode.state.shoesAmount,
                 clientName: vnode.state.clientName,
-                businessDate: vnode.state.selectedDate
+                businessDate: localStorage.getItem('businessDate')
             });
 
             console.log({
@@ -310,8 +310,8 @@ const order_item = {
             status = "",
             pickupDay = "",
             dropOffDay = "",
-            pickupTime = "",
-            dropOffTime = "",
+            pickupTime = '10am-11am',
+            dropOffTime = '10am-11am',
             appartmentName = "",
             houseNumber = "",
             moreDetails = "",
@@ -565,14 +565,14 @@ const order_item = {
                                     ),
 
                                     // m("input", { "class": "form-control form-control-solid", "placeholder": "Select Business Day", "id": "kt_daterangepicker_4" }),
-                                    m(DateRangePicker, {
-                                        "class": "form-control form-control-solid",
-                                        "placeholder": "Select Business Day",
-                                        "id": "kt_daterangepicker_new",
-                                        onChange(selectedDate) {
-                                            vnode.state.selectedDate = selectedDate;
-                                        }
-                                    })
+                                    // m(DateRangePicker, {
+                                    //     "class": "form-control form-control-solid",
+                                    //     "placeholder": "Select Business Day",
+                                    //     "id": "kt_daterangepicker_new",
+                                    //     onChange(selectedDate) {
+                                    //         vnode.state.selectedDate = selectedDate;
+                                    //     }
+                                    // })
 
                                 )]
                         )]
@@ -707,8 +707,9 @@ const order_item = {
                                                         "id": dropOffDay,
                                                         "checked": dropOffDay === date.format('L') ? true : false,
                                                         disabled: moment(vnode.state.pickupDay).day() == 0,
-                                                        onchange: () => {
+                                                        onchange: (e) => {
                                                             vnode.state.dropOffDay = date.format('L')
+                                                            e.preventDefault()
                                                         }
                                                     }),
                                                     dayName + " " + day + nth
@@ -734,8 +735,9 @@ const order_item = {
                                             operationTimes.map(time => {
                                                 return m(m.route.Link, {
                                                     style: { "z-index": 10000 },
-                                                    onclick() {
+                                                    onclick(e) {
                                                         vnode.state.dropOffTime = time
+                                                        e.preventDefault()
                                                     },
                                                     "class": "dropdown-item",
                                                 },
@@ -787,7 +789,7 @@ const order_item = {
                                         }
                                     }),
                                 onChange({ amountValue, chargeValue }) {
-                                    console.log(amountValue, chargeValue)
+                                    // console.log(amountValue, chargeValue)
                                     vnode.state.categoryCharges[category._id] = chargeValue
                                     vnode.state.categoryAmounts[category._id] = amountValue
                                 },

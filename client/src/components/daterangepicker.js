@@ -22,8 +22,9 @@ export const DateRangePicker = {
                         format: 'YYYY-MM-DD'
                     },
                 }, (start, end, label) => {
+                    // console.log({ start: start.format('YYYY-MM-DD'), end: start.format('YYYY-MM-DD') })
                     vnode.state.selectedDate = start;
-                    attrs.onChange(start)
+                    attrs.onChange(start.format('YYYY-MM-DD'))
                 });
             },
             onremove: (el) => {
