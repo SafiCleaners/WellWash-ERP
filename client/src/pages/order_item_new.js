@@ -615,143 +615,143 @@ const order_item = {
 
                     ]),
 
-                m(".form-group.row", [
-                    m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
-                        [
-                            m("label",
-                                "When would the customer like their Pickup? "
-                            ),
-                            m("br"),
+                // m(".form-group.row", [
+                //     m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                //         [
+                //             m("label",
+                //                 "When would the customer like their Pickup? "
+                //             ),
+                //             m("br"),
 
-                            m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
-                                [
-                                    dayRangeCalculator()
-                                        .map((time) => {
-                                            const { dayName, day, nth, date } = time
+                //             m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
+                //                 [
+                //                     dayRangeCalculator()
+                //                         .map((time) => {
+                //                             const { dayName, day, nth, date } = time
 
-                                            return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "focus active" : ""}` },
-                                                [
-                                                    m("input", {
-                                                        "type": "radio",
-                                                        "name": "pickupDay",
-                                                        "id": pickupDay,
-                                                        disabled: date.day() === 0,
-                                                        "checked": pickupDay === date.format('L') ? true : false,
-                                                        onchange: () => {
-                                                            vnode.state.pickupDay = date.format('L')
+                //                             return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "focus active" : ""}` },
+                //                                 [
+                //                                     m("input", {
+                //                                         "type": "radio",
+                //                                         "name": "pickupDay",
+                //                                         "id": pickupDay,
+                //                                         disabled: date.day() === 0,
+                //                                         "checked": pickupDay === date.format('L') ? true : false,
+                //                                         onchange: () => {
+                //                                             vnode.state.pickupDay = date.format('L')
 
-                                                            let daysToAdd = 1
-                                                            // increment time here to set drop off
-                                                            if (moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0) {
-                                                                daysToAdd = 2
-                                                            }
+                //                                             let daysToAdd = 1
+                //                                             // increment time here to set drop off
+                //                                             if (moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0) {
+                //                                                 daysToAdd = 2
+                //                                             }
 
-                                                            vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
-                                                        }
-                                                    }),
-                                                    dayName + " " + day + nth
-                                                ]
-                                            )
-                                        }),
-                                ]
-                            )
-                        ]
-                    ),
-                    m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
-                        [
-                            m("label",
-                                "Time of pickup:"
-                            ),
-                            m("div", { "class": "dropdown" },
-                                [
-                                    m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                        pickupTime
-                                    ),
-                                    m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                        [
-                                            operationTimes.map(time => {
-                                                return m(m.route.Link, {
-                                                    style: { "z-index": 10000 },
-                                                    onclick(e) {
-                                                        vnode.state.pickupTime = time
-                                                        e.preventDefault()
-                                                    },
-                                                    "class": "dropdown-item",
-                                                },
-                                                    time
-                                                )
-                                            })
-                                        ]
-                                    )
-                                ]
-                            )
-                        ]),
-                    m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
-                        [
-                            m("label",
-                                "When would the customer like their DropOff?"
-                            ),
-                            m("br"),
+                //                                             vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
+                //                                         }
+                //                                     }),
+                //                                     dayName + " " + day + nth
+                //                                 ]
+                //                             )
+                //                         }),
+                //                 ]
+                //             )
+                //         ]
+                //     ),
+                //     m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
+                //         [
+                //             m("label",
+                //                 "Time of pickup:"
+                //             ),
+                //             m("div", { "class": "dropdown" },
+                //                 [
+                //                     m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                //                         pickupTime
+                //                     ),
+                //                     m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                //                         [
+                //                             operationTimes.map(time => {
+                //                                 return m(m.route.Link, {
+                //                                     style: { "z-index": 10000 },
+                //                                     onclick(e) {
+                //                                         vnode.state.pickupTime = time
+                //                                         e.preventDefault()
+                //                                     },
+                //                                     "class": "dropdown-item",
+                //                                 },
+                //                                     time
+                //                                 )
+                //                             })
+                //                         ]
+                //                     )
+                //                 ]
+                //             )
+                //         ]),
+                //     m("div", { "class": "col-lg-4 col-md-8 col-sm-12" },
+                //         [
+                //             m("label",
+                //                 "When would the customer like their DropOff?"
+                //             ),
+                //             m("br"),
 
-                            m("div", {
-                                "class": "btn-group btn-group-toggle",
-                                "data-toggle": "buttons"
-                            },
-                                [
-                                    dayRangeCalculator(vnode.state.pickupDay)
-                                        .map((time) => {
-                                            const { dayName, day, nth, date } = time
-                                            return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "focus active" : ""}` },
-                                                [
-                                                    m("input", {
-                                                        "type": "radio",
-                                                        "name": "dropOffDay",
-                                                        "id": dropOffDay,
-                                                        "checked": dropOffDay === date.format('L') ? true : false,
-                                                        disabled: moment(vnode.state.pickupDay).day() == 0,
-                                                        onchange: (e) => {
-                                                            vnode.state.dropOffDay = date.format('L')
-                                                            e.preventDefault()
-                                                        }
-                                                    }),
-                                                    dayName + " " + day + nth
-                                                ]
-                                            )
-                                        }),
-                                ]
-                            )
-                        ]
-                    ),
-                    m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
-                        [
-                            m("label",
-                                "Time of DropOff:"
-                            ),
-                            m("div", { "class": "dropdown" },
-                                [
-                                    m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                        dropOffTime
-                                    ),
-                                    m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                        [
-                                            operationTimes.map(time => {
-                                                return m(m.route.Link, {
-                                                    style: { "z-index": 10000 },
-                                                    onclick(e) {
-                                                        vnode.state.dropOffTime = time
-                                                        e.preventDefault()
-                                                    },
-                                                    "class": "dropdown-item",
-                                                },
-                                                    time
-                                                )
-                                            })
-                                        ]
-                                    )
-                                ]
-                            )
-                        ]),
-                ]),
+                //             m("div", {
+                //                 "class": "btn-group btn-group-toggle",
+                //                 "data-toggle": "buttons"
+                //             },
+                //                 [
+                //                     dayRangeCalculator(vnode.state.pickupDay)
+                //                         .map((time) => {
+                //                             const { dayName, day, nth, date } = time
+                //                             return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "focus active" : ""}` },
+                //                                 [
+                //                                     m("input", {
+                //                                         "type": "radio",
+                //                                         "name": "dropOffDay",
+                //                                         "id": dropOffDay,
+                //                                         "checked": dropOffDay === date.format('L') ? true : false,
+                //                                         disabled: moment(vnode.state.pickupDay).day() == 0,
+                //                                         onchange: (e) => {
+                //                                             vnode.state.dropOffDay = date.format('L')
+                //                                             e.preventDefault()
+                //                                         }
+                //                                     }),
+                //                                     dayName + " " + day + nth
+                //                                 ]
+                //                             )
+                //                         }),
+                //                 ]
+                //             )
+                //         ]
+                //     ),
+                //     m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
+                //         [
+                //             m("label",
+                //                 "Time of DropOff:"
+                //             ),
+                //             m("div", { "class": "dropdown" },
+                //                 [
+                //                     m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                //                         dropOffTime
+                //                     ),
+                //                     m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                //                         [
+                //                             operationTimes.map(time => {
+                //                                 return m(m.route.Link, {
+                //                                     style: { "z-index": 10000 },
+                //                                     onclick(e) {
+                //                                         vnode.state.dropOffTime = time
+                //                                         e.preventDefault()
+                //                                     },
+                //                                     "class": "dropdown-item",
+                //                                 },
+                //                                     time
+                //                                 )
+                //                             })
+                //                         ]
+                //                     )
+                //                 ]
+                //             )
+                //         ]),
+                // ]),
 
                 m("div", { "class": "bs-stepper" },
                     [
@@ -1188,29 +1188,18 @@ const order_item = {
                 m("div", { class: "form-group row", style: { padding: "10px" } }, [
                     m("div", { "class": "d-flex flex-stack" },
                         [
-                            m("div", { "class": "d-flex", style: { "padding-right": 30 } },
-                                m("div", { "class": "d-flex flex-column" },
-                                    m("a", { "class": "fs-5 text-dark text-hover-primary fw-bold", "href": "#" },
-                                        "Send SMS to " + vnode.state.phone + " when i change order status"
+                            m("div", { "class": "form-check" },
+                                [
+                                    m("input", {
+                                        "class": "form-check-input", "type": "checkbox", "value": "", "id": "flexCheckChecked", "checked": "checked", checked: vnode.state.skipSms,
+                                        onchange: (event) => {
+                                            vnode.state.skipSms = event.target.checked;
+                                            console.log("checked", event.target.checked)
+                                        } }),
+                                    m("label", { "class": "form-check-label", "for": "flexCheckChecked" },
+                                        " Send SMS on status change "
                                     )
-                                )
-                            ),
-                            m("div", { "class": "d-flex justify-content-end" },
-                                m("div", { "class": "form-check form-check-solid form-check-custom form-switch" },
-                                    [
-                                        m("input", {
-                                            "class": "form-check-input w-45px h-30px",
-                                            "type": "checkbox",
-                                            "id": "smsswitch",
-                                            checked: vnode.state.skipSms,
-                                            onchange: (event) => {
-                                                vnode.state.skipSms = event.target.checked;
-                                                console.log("checked", event.target.checked)
-                                            }
-                                        }),
-
-                                    ]
-                                )
+                                ]
                             )
                         ]
                     )
@@ -1359,29 +1348,15 @@ const order_item = {
                 m("div", { class: "form-group row", style: { padding: "10px" } }, [
                     m("div", { "class": "d-flex flex-stack" },
                         [
-                            m("div", { "class": "d-flex", style: { "padding-right": 30 } },
-                                m("div", { "class": "d-flex flex-column" },
-                                    m("a", { "class": "fs-5 text-dark text-hover-primary fw-bold", "href": "#" },
-                                        "Paid"
-                                    )
-                                )
-                            ),
-                            m("div", { "class": "d-flex justify-content-end" },
-                                m("div", { "class": "form-check form-check-solid form-check-custom form-switch" },
-                                    [
-                                        m("input", {
-                                            "class": "form-check-input w-45px h-30px",
-                                            "type": "checkbox",
-                                            "id": "payswitch",
-                                            checked: vnode.state.paid,
-                                            onchange: (event) => {
-                                                vnode.state.paid = event.target.checked;
-                                                console.log("checked", event.target.checked)
-                                            }
-                                        }),
-
-                                    ]
-                                )
+                            m("input", {
+                                "class": "form-check-input", "type": "checkbox", "value": "", "id": "flexCheckChecked", "checked": "checked", checked: vnode.state.paid,
+                                onchange: (event) => {
+                                    vnode.state.paid = event.target.checked;
+                                    console.log("checked", event.target.checked)
+                                }
+                            }),
+                            m("label", { "class": "form-check-label", "for": "flexCheckChecked" },
+                                " Paid "
                             )
                         ]
                     )
