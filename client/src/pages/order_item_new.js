@@ -222,7 +222,9 @@ const order_item = {
                 shoesCharge: vnode.state.shoesCharge,
                 shoesAmount: vnode.state.shoesAmount,
                 clientName: vnode.state.clientName,
-                businessDate: localStorage.getItem('businessDate')
+                businessDate: localStorage.getItem('businessDate'),
+                categoryCharges: vnode.state.categoryCharges,
+                categoryAmounts: vnode.state.categoryAmounts,
             });
 
             console.log({

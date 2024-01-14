@@ -159,10 +159,18 @@ const step = (vnode) => {
                                                                     generalKgsAmount,
                                                                     generalKgsCharge,
                                                                     shoesAmount,
-                                                                    shoesCharge
+                                                                    shoesCharge,
+                                                                    categoryAmounts,
+                                                                    categoryCharges
                                                                 }) => {
                                                                     const calculatePrice = () => {
-                                                                        return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+                                                                        return Object.keys(categoryAmounts).reduce((total, categoryId) => {
+                                                                            const amountValue = categoryAmounts[categoryId];
+                                                                            const chargeValue = categoryCharges[categoryId];
+
+                                                                            const subtotal = (amountValue || 0) * (chargeValue || 0);
+                                                                            return total + subtotal;
+                                                                        }, 0);
                                                                     }
                                                                     return m("tr", {
                                                                         // key: id,

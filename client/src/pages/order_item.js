@@ -159,6 +159,8 @@ const order_item = {
             }
 
             var {
+                pickupDay,
+                dropOffDay,
                 pickupTime ='10am-11am',
                 dropOffTime = '10am-11am',
                 pickupTime,
@@ -203,16 +205,8 @@ const order_item = {
             }, {
                 // googleId: localStorage.getItem('googleId'),
                 _id: undefined,
-                curtainsCharge: vnode.state.curtainsCharge,
-                curtainsAmount: vnode.state.curtainsAmount,
-                blanketsCharge: vnode.state.blanketsCharge,
-                blanketsAmount: vnode.state.blanketsAmount,
-                duvetsCharge: vnode.state.duvetsCharge,
-                duvetsAmount: vnode.state.duvetsAmount,
-                generalKgsCharge: vnode.state.generalKgsCharge,
-                generalKgsAmount: vnode.state.generalKgsAmount,
-                shoesCharge: vnode.state.shoesCharge,
-                shoesAmount: vnode.state.shoesAmount,
+                categoryCharges: vnode.state.categoryCharges,
+                categoryAmounts: vnode.state.categoryAmounts,
                 clientName: vnode.state.clientName,
                 businessDate: vnode.state.selectedDate
             });
