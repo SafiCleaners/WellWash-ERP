@@ -160,8 +160,8 @@ const step = (vnode) => {
                                                                     generalKgsCharge,
                                                                     shoesAmount,
                                                                     shoesCharge,
-                                                                    categoryAmounts,
-                                                                    categoryCharges
+                                                                    categoryAmounts={},
+                                                                    categoryCharges={}
                                                                 }) => {
                                                                     const calculatePrice = () => {
                                                                         return Object.keys(categoryAmounts).reduce((total, categoryId) => {
@@ -172,6 +172,7 @@ const step = (vnode) => {
                                                                             return total + subtotal;
                                                                         }, 0);
                                                                     }
+                                                                    
                                                                     return m("tr", {
                                                                         // key: id,
                                                                         style: { "cursor": "pointer" }
