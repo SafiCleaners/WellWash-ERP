@@ -310,19 +310,17 @@ const order_item = {
         } = vnode.state
 
         const calculatePrice = () => {
-            return (duvets * 600) +
-                (coat_hoodie * 50) +
-                (blankets * 500) +
-                (furry_blankets * 600) +
-                (bed_sheets * 200) +
-                (curtains * 200) +
-                (towels * 70) +
-                (suits_type1 * 350) +
-                (suits_type2 * 400) +
-                (ironing * 50) +
-                (ironing_trousers * 70) +
-                (generalKgs * 91)
+            const { categoryAmounts, categoryCharges } = vnode.state;
+
+            return Object.keys(categoryAmounts).reduce((total, categoryId) => {
+                const amountValue = categoryAmounts[categoryId];
+                const chargeValue = categoryCharges[categoryId];
+
+                const subtotal = (amountValue || 0) * (chargeValue || 0);
+                return total + subtotal;
+            }, 0);
         }
+        
         const orderDetails = vnode.state;
         const items = [
             { name: "Curtains", amount: vnode.state.curtainsAmount, charge: vnode.state.curtainsCharge },

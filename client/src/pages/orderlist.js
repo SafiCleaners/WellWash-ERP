@@ -12,18 +12,20 @@ import { DateRangePicker } from '../components/daterangepicker';
 
 import loader from "../components/loader"
 const detailsString = (job) => {
-    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",]; 
+    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",];
     return Object.keys(job)
-      .filter((key) => orderItems.includes(key))
-      .map((key) => {
-        return `${job[key]} ${key}`;
-      })
-      .join(", ");
-  };
+        .filter((key) => orderItems.includes(key))
+        .map((key) => {
+            return `${job[key]} ${key}`;
+        })
+        .join(", ");
+};
 const orders = {
-    
+
     oninit(vnode) {
         vnode.state.jobs = []
+        vnode.state.pricings = []
+        vnode.state.categories = []
         vnode.state.loading = true
         vnode.state.selectedDate = new Date()
     },
@@ -41,7 +43,7 @@ const orders = {
             vnode.state.jobs = response.data.filter((job) => {
                 const googleId = localStorage.getItem('googleId')
                 const role = localStorage.getItem('role')
-                if(role && role === 'OWNER') return true
+                if (role && role === 'OWNER') return true
                 return job.googleId === googleId
             })
 
@@ -57,6 +59,43 @@ const orders = {
             m.redraw()
         }).catch(function (error) {
             vnode.state.loading = false
+            console.error(error);
+        });
+
+        const optionsPricing = {
+            method: 'GET', url: url + "/pricings",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsPricing).then(function (response) {
+            vnode.state.pricings = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
+
+        const optionsCategories = {
+            method: 'GET', url: url + "/categories",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsCategories).then(function (response) {
+            vnode.state.categories = response.data
+            console.log(vnode.state.categories)
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
             console.error(error);
         });
     },
@@ -77,7 +116,8 @@ const orders = {
                                 m("button", {
                                     "class": "btn btn-lg btn-info", onclick() {
                                         m.route.set("/q-new")
-                                } },
+                                    }
+                                },
                                     [
                                         m("i", { "class": "flaticon-add-circular-button" }),
                                         "Add Job"
@@ -128,7 +168,7 @@ const orders = {
                                                     )
                                                 ),
                                                 m("tbody",
-                                                    [   
+                                                    [
                                                         console.log(vnode.state.selectedDate),
                                                         vnode.state.jobs
                                                             .filter(job => {
@@ -143,57 +183,30 @@ const orders = {
                                                                 _id,
                                                                 paid = "",
                                                                 status = "",
-                                                                pickupDay = "",
-                                                                dropOffDay = "",
-                                                                pickupTime = "",
-                                                                dropOffTime = "",
                                                                 appartmentName = "",
                                                                 houseNumber = "",
                                                                 moreDetails = "",
                                                                 clientName,
-
-
                                                                 mpesaPhoneNumber,
                                                                 phone,
                                                                 mpesaConfirmationCode,
                                                                 timeDroppedOffFromNow,
                                                                 timePickedUpFromNow,
-
-                                                                duvets = 0,
-                                                                coat_hoodie = 0,
-                                                                blankets = 0,
-                                                                furry_blankets = 0,
-                                                                bed_sheets = 0,
-                                                                curtains = 0,
-                                                                shoes = 0,
-                                                                towels = 0,
-                                                                suits_type1 = 0,
-                                                                suits_type2 = 0,
-                                                                ironing = 0,
-                                                                ironing_trousers = 0,
                                                                 generalKgs = 0,
-                                                                createdAtAgo,
-
-                                                                curtainsAmount,
-                                                                curtainsCharge,
-                                                                blanketsAmount,
-                                                                blanketsCharge,
-                                                                duvetsAmount,
-                                                                duvetsCharge,
-                                                                generalKgsAmount,
-                                                                generalKgsCharge,
-                                                                shoesAmount,
-                                                                shoesCharge
+                                                                categoryAmounts = {},
+                                                                categoryCharges = {}
                                                             }) => {
                                                                 const calculatePrice = () => {
-                                                                    return (curtainsAmount * curtainsCharge || 0) + (blanketsAmount * blanketsCharge || 0) + (duvetsAmount * duvetsCharge || 0) + (generalKgsAmount * generalKgsCharge || 0) + (shoesAmount * shoesCharge || 0)
+
+                                                                    return Object.keys(categoryAmounts).reduce((total, categoryId) => {
+                                                                        const amountValue = categoryAmounts[categoryId];
+                                                                        const chargeValue = categoryCharges[categoryId];
+
+                                                                        const subtotal = (amountValue || 0) * (chargeValue || 0);
+                                                                        return total + subtotal;
+                                                                    }, 0);
                                                                 }
-                                                                const orderDetails = detailsString({
-                                                                    blankets,
-                                                                    curtains,
-                                                                    duvets,
-                                                                    generalKgs,
-                                                                });
+
                                                                 return m("tr", {
                                                                     // key: id,
                                                                     style: { "cursor": "pointer" }
@@ -238,10 +251,19 @@ const orders = {
 
                                                                         m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
-                                                                                // m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
+                                                                                m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                //     moreDetails
-                                                                                // ),
+                                                                                    // categoryAmounts,
+                                                                                    [Object.keys(categoryAmounts)
+                                                                                        .filter(charge => categoryAmounts[charge] !== 0)
+                                                                                        .map(charge => {
+                                                                                            const categoryName = vnode.state.categories.find(category => category._id === charge)?.title;
+                                                                                            const chargeAmount = categoryCharges[charge];
+                                                                                            const numberOfItems = categoryAmounts[charge];
+
+                                                                                            return `${numberOfItems} ${categoryName} @${chargeAmount} `;
+                                                                                        })]
+                                                                                ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     moreDetails
                                                                                 )
@@ -271,7 +293,7 @@ const orders = {
                                                                                             };
 
                                                                                             axios.request(options).then(function (response) {
-                                                                                           
+
                                                                                                 vnode.state.jobs = vnode.state.jobs.filter(p => p._id != _id)
                                                                                                 m.redraw()
                                                                                             }).catch(function (error) {
