@@ -475,7 +475,7 @@ const order_item = {
                                                             [
 
                                                         
-                                                        m(m.route.Link, {
+                                                        m("a", {
                                                             "class": "btn btn-icon btn-light btn-hover-primary btn-sm", onclick() {
                                                                 const options = { 
                                                                     method: 'DELETE', 
@@ -643,7 +643,7 @@ const order_item = {
                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                     [
                                         operationTimes.map(time => {
-                                            return m(m.route.Link, {
+                                            return m("a", {
                                                 style: { "z-index": 10000 },
                                                 onclick(e) {
                                                     vnode.state.pickupTime = time
@@ -707,7 +707,7 @@ const order_item = {
                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                     [
                                         operationTimes.map(time => {
-                                            return m(m.route.Link, {
+                                            return m("a", {
                                                 style: { "z-index": 10000 },
                                                 onclick() {
                                                     vnode.state.dropOffTime = time
@@ -746,7 +746,6 @@ const order_item = {
 
             m("div", { "class": "form-group row" },
                 [
-
                     vnode.state.categories && vnode.state.categories.map(category => {
                         return m(incrementableInput, {
                             name: category.title,
@@ -756,13 +755,13 @@ const order_item = {
                             pricing: vnode.state.pricings
                                 .filter(pricing => pricing.category == category._id)
                                 .map(price => {
-                                return {
-                                    amount: price.cost,
-                                    label: price.cost,
-                                }
-                            }),
+                                    return {
+                                        amount: price.cost,
+                                        label: price.cost,
+                                    }
+                                }),
                             onChange({ amountValue, chargeValue }) {
-                                console.log(amountValue, chargeValue)
+                                // console.log(amountValue, chargeValue)
                                 vnode.state.categoryCharges[category._id] = chargeValue
                                 vnode.state.categoryAmounts[category._id] = amountValue
                             },
@@ -1376,7 +1375,9 @@ const order_item = {
                             onclick() {
                                 // alert("saving order")
                                 console.log("Button clicked!");
-                                vnode.state.updateOrderOnServer(() => location.reload())
+                                vnode.state.updateOrderOnServer(() => {
+                                    m.route.set("/j")
+                                })
                             }
                         }, [
                             m("i", { "class": "flaticon2-mail-1" }),
