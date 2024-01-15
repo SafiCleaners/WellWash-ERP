@@ -190,14 +190,25 @@ const header = {
                                 m("div", { "class": "dropdown" },
                                     [
                                         m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                            " All Stores "
+                                            // " All Stores "
+                                            vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title || "All Stores"
                                         ),
                                         m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                             [
                                                 vnode.state.stores?.map(store => {
-                                                    return m("a", { "class": "dropdown-item", "href": "#" },
-                                                        store.title
-                                                    )
+                                                    return m("a", {
+                                                        class: "dropdown-item",
+                                                        // href: "#",
+                                                        onclick: (e) => {
+                                                            // Prevent default link behavior
+                                                            e.preventDefault();
+
+                                                            // Store store._id in local storage as storeId
+                                                            localStorage.setItem('storeId', store._id);
+
+                                                            m.redraw()
+                                                        }
+                                                    }, store.title);
                                                 })
                                             ]
                                         )

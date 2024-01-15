@@ -208,7 +208,8 @@ const order_item = {
                 categoryCharges: vnode.state.categoryCharges,
                 categoryAmounts: vnode.state.categoryAmounts,
                 clientName: vnode.state.clientName,
-                businessDate: vnode.state.selectedDate
+                businessDate: vnode.state.selectedDate,
+                storeId: localStorage.getItem("storeId")
             });
 
             console.log({

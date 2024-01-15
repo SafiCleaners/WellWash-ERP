@@ -179,6 +179,9 @@ const orders = {
                                                                 console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
                                                                 return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
                                                             })
+                                                            .filter(job => {
+                                                                return job.storeId == localStorage.getItem("storeId")
+                                                            })
                                                             .map(({
                                                                 _id,
                                                                 paid = "",
