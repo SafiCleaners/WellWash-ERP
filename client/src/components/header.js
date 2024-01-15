@@ -195,6 +195,19 @@ const header = {
                                         ),
                                         m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                             [
+                                                m("a", {
+                                                    class: "dropdown-item",
+                                                    // href: "#",
+                                                    onclick: (e) => {
+                                                        // Prevent default link behavior
+                                                        e.preventDefault();
+
+                                                        // Store store._id in local storage as storeId
+                                                        localStorage.removeItem('storeId');
+
+                                                        m.redraw()
+                                                    }
+                                                }, " All Stores "),
                                                 vnode.state.stores?.map(store => {
                                                     return m("a", {
                                                         class: "dropdown-item",

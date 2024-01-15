@@ -44,7 +44,9 @@ const orders = {
                 const googleId = localStorage.getItem('googleId')
                 const role = localStorage.getItem('role')
                 if (role && role === 'OWNER') return true
-                return job.googleId === googleId
+
+                if (job.googleId):
+                    return true
             })
 
             vnode.state.jobs.map(job => {
@@ -180,7 +182,10 @@ const orders = {
                                                                 return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
                                                             })
                                                             .filter(job => {
-                                                                return job.storeId == localStorage.getItem("storeId")
+                                                                if (localStorage.getItem("storeId"))
+                                                                    return job.storeId == localStorage.getItem("storeId")
+
+                                                                return true
                                                             })
                                                             .map(({
                                                                 _id,
