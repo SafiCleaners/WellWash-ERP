@@ -21,6 +21,7 @@ export const DateRangePicker = {
                     locale: {
                         format: 'YYYY-MM-DD'
                     },
+                    opens: 'left',
                 }, (start, end, label) => {
                     // console.log({ start: start.format('YYYY-MM-DD'), end: start.format('YYYY-MM-DD') })
                     vnode.state.selectedDate = start;
