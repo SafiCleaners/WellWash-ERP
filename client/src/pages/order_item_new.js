@@ -1379,7 +1379,10 @@ const order_item = {
                                 type: "button",
                                 "class": "btn btn-lg btn-info",
                                 onclick() {
-                                    vnode.state.updateOrderOnServer(() => location.reload())
+                                    vnode.state.updateOrderOnServer(() => {
+                                        // location.reload()
+                                        m.route.set("/j")
+                                    })
                                 }
                             }, [
                                 m("i", { "class": "flaticon2-mail-1" }),
