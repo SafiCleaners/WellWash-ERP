@@ -45,7 +45,7 @@ const orders = {
                 const role = localStorage.getItem('role')
                 if (role && role === 'OWNER') return true
 
-                if (job.googleId):
+                if (job.googleId)
                     return true
             })
 

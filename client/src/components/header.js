@@ -191,7 +191,7 @@ const header = {
                                     [
                                         m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                             // " All Stores "
-                                            vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title || "All Stores"
+                                            vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title || " All Stores "
                                         ),
                                         m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                             [
