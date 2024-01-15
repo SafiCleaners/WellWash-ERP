@@ -223,6 +223,7 @@ const order_item = {
                 shoesAmount: vnode.state.shoesAmount,
                 clientName: vnode.state.clientName,
                 businessDate: localStorage.getItem('businessDate'),
+                storeId: localStorage.getItem('storeId'),
                 categoryCharges: vnode.state.categoryCharges,
                 categoryAmounts: vnode.state.categoryAmounts,
             });

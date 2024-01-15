@@ -145,6 +145,7 @@ var calculator = () => {
                 }, {
                     googleId: localStorage.getItem('googleId'),
                     userId: localStorage.getItem('googleId'),
+                    storeId: localStorage.getItem('storeId'),
                 });
 
                 console.log(order)
