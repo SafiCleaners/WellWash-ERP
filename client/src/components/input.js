@@ -11,7 +11,7 @@ const dynamicPicker = {
 
         vnode.state.sortedOptions = sortedOptions
 
-        console.log(vnode.state.sortedOptions)
+        console.log(vnode.attrs)
         if (!vnode.state.selectedCharge){
             vnode.state = Object.assign(vnode.state, {
                 selectedCharge: vnode.state.sortedOptions[0].amount || vnode.attrs.charge
