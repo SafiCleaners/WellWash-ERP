@@ -14,10 +14,10 @@ const subheader = () => {
                         ),
                         m("div", { "class": "subheader-nav nav flex-grow-1" },
                             [
-                                m(m.route.Link, {
-                                    "class": "nav-item", href: "/",
-                                    onclick() {
-                                        m.route.set("/")
+                                m("a", {
+                                    "class": "nav-item",
+                                    onclick(e) {
+                                        e.preventDefault();
                                     }
                                 },
                                     !localStorage.getItem('authToken') ? m("span", { "class": "nav-label px-10" },

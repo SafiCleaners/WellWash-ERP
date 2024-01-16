@@ -12,16 +12,16 @@ import google_login from "./google_login"
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    localStorage.setItem("businessDate", datePicked)
+    // localStorage.setItem("businessDate", datePicked)
     m.redraw()
 }
 
 const header = {
     oncreate(vnode) {
         vnode.state.stores = []
-        if (!localStorage.getItem("businessDate")) {
-            localStorage.setItem("businessDate", new Date().toISOString().split('T')[0])
-        }
+        // if (!localStorage.getItem("businessDate")) {
+        //     localStorage.setItem("businessDate", new Date().toISOString().split('T')[0])
+        // }
 
         const options = {
             method: 'GET', url: url + "/stores",
@@ -42,6 +42,7 @@ const header = {
         });
     },
     view(vnode) {
+        return []
         return [
             m("a", { "href": "index.html" },
                 m("img", { "class": "max-h-30px", "alt": "Logo", "src": "assets/media/exported-wellwash-new.png" })

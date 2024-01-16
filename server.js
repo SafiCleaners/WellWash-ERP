@@ -187,18 +187,23 @@ const routes = async (client) => {
         db.collection('jobs').find({
             deleted: false
         }).toArray(function (err, result) {
-            if (err) throw err
+            if (err) throw err;
 
             res.send(result.map(job => {
-                // if (req.auth.role != "Owner") {
-                //     delete job.price
-                //     delete job.paid
-                // }
-                job.createdAt = job._id.getTimestamp()
-                return job
-            }))
-        })
+                // Masking the job.phone field
+                if (job.phone) {
+                    const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
+                    job.phone = maskedPhoneNumber;
+                }
+
+                // Additional privacy considerations can be added here
+
+                job.createdAt = job._id.getTimestamp();
+                return job;
+            }));
+        });
     });
+
 
     app.get('/jobs/:id', importantMiddleWares, (req, res) => {
         let objectId;

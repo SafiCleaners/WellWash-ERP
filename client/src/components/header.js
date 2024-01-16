@@ -12,16 +12,16 @@ import google_login from "./google_login"
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    localStorage.setItem("businessDate", datePicked)
+    // localStorage.setItem("businessDate", datePicked)
     m.redraw()
 }
 
 const header = {
     oncreate(vnode) {
         vnode.state.stores = []
-        if (!localStorage.getItem("businessDate")) {
-            localStorage.setItem("businessDate", new Date().toISOString().split('T')[0])
-        }
+        // if (!localStorage.getItem("businessDate")) {
+        //     localStorage.setItem("businessDate", new Date().toISOString().split('T')[0])
+        // }
 
         const options = {
             method: 'GET', url: url + "/stores",
@@ -181,21 +181,30 @@ const header = {
                     m("div", { "class": "topbar" }, [
 
                         localStorage.getItem('authToken') ? [
-                            m("li", {
-                                "class": "menu-item mr-3", "aria-haspopup": "true",
-                                style: {
-                                    "margin": 20
-                                }
-                            },
-                                m("div", { "class": "dropdown" },
-                                    [
-                                        m("button", { "class": "btn btn-lg btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                            // " All Stores "
-                                            vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title || " All Stores "
-                                        ),
-                                        m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                            [
-                                                m("a", {
+
+                            m("div", { "class": "topbar-item mr-3", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" }, [
+                                m("button", { "class": "btn btn-md btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                    // " All Stores "
+                                    !localStorage.getItem('storeId')  ? " All Stores " :  vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
+                                ),
+                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                    m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                                        [
+                                            m("a", {
+                                                class: "dropdown-item",
+                                                // href: "#",
+                                                onclick: (e) => {
+                                                    // Prevent default link behavior
+                                                    e.preventDefault();
+
+                                                    // Store store._id in local storage as storeId
+                                                    localStorage.removeItem('storeId');
+
+                                                    m.redraw()
+                                                }
+                                            }, " All Stores "),
+                                            vnode.state.stores?.map(store => {
+                                                return m("a", {
                                                     class: "dropdown-item",
                                                     // href: "#",
                                                     onclick: (e) => {
@@ -203,54 +212,25 @@ const header = {
                                                         e.preventDefault();
 
                                                         // Store store._id in local storage as storeId
-                                                        localStorage.removeItem('storeId');
+                                                        localStorage.setItem('storeId', store._id);
 
                                                         m.redraw()
                                                     }
-                                                }, " All Stores "),
-                                                vnode.state.stores?.map(store => {
-                                                    return m("a", {
-                                                        class: "dropdown-item",
-                                                        // href: "#",
-                                                        onclick: (e) => {
-                                                            // Prevent default link behavior
-                                                            e.preventDefault();
-
-                                                            // Store store._id in local storage as storeId
-                                                            localStorage.setItem('storeId', store._id);
-
-                                                            m.redraw()
-                                                        }
-                                                    }, store.title);
-                                                })
-                                            ]
-                                        )
-                                    ]
-                                )),
-                            m("li", {
-                                "class": "menu-item", "aria-haspopup": "true"
-                            },
+                                                },  store.title);
+                                            })
+                                        ]
+                                    )),
+                            ]),
+                            m("div", { "class": "topbar-item mr-3 w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
                                 m(DateRangePicker, {
-                                    "class": "form-control form-control-solid",
+                                    // "class": "form-control form-control-solid",
+                                    class:"btn btn-md btn-secondary dropdown-toggle",
                                     "placeholder": "Select Business Day",
                                     "id": "kt_daterangepicker_new",
-                                    value: new Date(localStorage.getItem("businessDate")),
                                     onChange: onDatePickerChange
                                 })
                             ),
-                            m("div", { "class": "topbar-item mr-3" },
-                                // m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
-                                //     m(m.route.Link, { "class": "menu-link", "href": "#", style: { color: "white" } },
-                                //         [
-                                //             m("span", { "class": "menu-text font-size-sm" },
-                                //                 localStorage.getItem('name')
-                                //             ),
-                                //             m("br"),
-                                //             m("span", { "class": "menu-desc font-size-xs" }, localStorage.getItem('email'))
-                                //         ]
-                                //     )
-                                // )
-                            ), m("div", { "class": "topbar-item mr-3" },
+                            m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m("span", { "class": "svg-icon svg-icon-xl" }, [
                                     m("img", {
                                         src: localStorage.getItem('imageUrl'),
@@ -262,7 +242,7 @@ const header = {
                                 ])
                             ), m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m(m.route.Link, {
-                                    "class": "btn btn-dropdown btn-fixed-height btn-danger font-weight-bolder font-size-sm px-6", onclick() {
+                                    "class": "btn btn-md btn-danger font-size-sm px-6", onclick() {
                                         localStorage.clear()
 
                                         if (window.gapi.auth2)

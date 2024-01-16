@@ -187,6 +187,14 @@ const orders = {
 
                                                                 return true
                                                             })
+                                                            .sort((a, b) => {
+                                                                // Assuming createdAtDateTime is a valid date string
+                                                                const dateA = new Date(a.createdAtDateTime);
+                                                                const dateB = new Date(b.createdAtDateTime);
+
+                                                                // Compare dates for sorting
+                                                                return dateA - dateB;
+                                                            })
                                                             .map(({
                                                                 _id,
                                                                 paid = "",
@@ -203,7 +211,8 @@ const orders = {
                                                                 generalKgs = 0,
                                                                 categoryAmounts = {},
                                                                 categoryCharges = {}
-                                                            }) => {
+                                                            }, index) => {
+                                                                console.log({index})
                                                                 const calculatePrice = () => {
 
                                                                     return Object.keys(categoryAmounts).reduce((total, categoryId) => {
@@ -232,8 +241,9 @@ const orders = {
                                                                         },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                    clientName + " (" + phone + ")"
+                                                                                    m("b", (Number(index) + 1) + ". " + clientName + " (" + phone + ")")
                                                                                 ),
+
                                                                                 m("div",
                                                                                     [
                                                                                         m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
