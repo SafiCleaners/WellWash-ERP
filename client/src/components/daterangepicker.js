@@ -28,6 +28,7 @@ export const DateRangePicker = {
                     locale: {
                         format: displayFormat
                     },
+                    opens: 'left',
                 }, (start, end, label) => {
                     // Format the date for display using the custom format
                     const formattedDate = start.format(displayFormat);
