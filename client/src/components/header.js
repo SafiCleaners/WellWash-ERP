@@ -193,11 +193,11 @@ const header = {
                         localStorage.getItem('authToken') ? [
 
                             m("div", { "class": "topbar-item mr-3", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" }, [
-                                m("button", { "class": "btn btn-md btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                m("button", { "class": "btn btn-sm btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                     // " All Stores "
                                     !localStorage.getItem('storeId')  ? " All Stores " :  vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
                                 ),
-                                m("div", { "class": "w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                                m("div", { "class": "w-auto d-flex align-items-center btn-sm px-2", "id": "kt_quick_user_toggle" },
                                     m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                         [
                                             m("a", {
@@ -231,28 +231,28 @@ const header = {
                                         ]
                                     )),
                             ]),
-                            m("div", { "class": "topbar-item mr-3 w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                            m("div", { "class": "topbar-item mr-3 w-auto d-flex align-items-center btn-sm px-2", "id": "kt_quick_user_toggle" },
                                 m(DateRangePicker, {
                                     // "class": "form-control form-control-solid",
-                                    class:"btn btn-md btn-secondary dropdown-toggle",
+                                    class:"btn btn-sm btn-secondary dropdown-toggle",
                                     "placeholder": "Select Business Day",
                                     "id": "kt_daterangepicker_new",
                                     onChange: onDatePickerChange
                                 })
                             ),
-                            m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
+                            m("div", { "class": "topbar-item mr-3", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m("span", { "class": "svg-icon svg-icon-xl" }, [
                                     m("img", {
                                         src: localStorage.getItem('imageUrl'),
                                         style: {
-                                            "max-width": "40%",
+                                            "max-width": "100%",
                                             height: "auto"
                                         }
                                     })
                                 ])
-                            ), m("div", { "class": "topbar-item", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
+                            ), m("div", { "class": "topbar-item", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m(m.route.Link, {
-                                    "class": "btn btn-md btn-danger font-size-sm px-6", onclick() {
+                                    "class": "btn btn-sm btn-danger", onclick() {
                                         localStorage.clear()
 
                                         if (window.gapi.auth2)
@@ -264,7 +264,7 @@ const header = {
                                         window.location.reload()
                                     }
                                 },
-                                    "SignOut"
+                                    m("i", { class: "fa fa-power-off", "aria-hidden":"true"})
                                 )
                             )
                         ] : m("div", { style: { margin: "auto" } }, [

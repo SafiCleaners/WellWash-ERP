@@ -56,74 +56,64 @@ const order_item = {
     oncreate(vnode) {
         vnode.state.charges = {}
         vnode.state.pricings = []
-
         vnode.state.categoryCharges = {}
         vnode.state.categoryAmounts = {}
-        const options = {
-            method: 'GET', url: url + "/jobs/" + m.route.param("job"),
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
 
-        axios.request(options).then(function (response) {
-            Object.assign(response.data, {
-                createdAtAgo: moment(response.data.createdAt).fromNow(true),
-                timeDroppedOffFromNow: moment(response.data.dropOffDay).fromNow(true),
-                timePickedUpFromNow: moment(response.data.pickupDay).fromNow(true),
+        // Create an array of Axios request promises
+        const requests = [
+            axios.get(url + "/jobs/" + m.route.param("job"), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
+            }),
+
+            axios.get(url + "/pricings", {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
+            }),
+
+            axios.get(url + "/categories", {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
             })
+        ];
 
-            vnode.state.originalJob = Object.assign({}, response.data)
-            vnode.state.selectedDate = vnode.state.originalJob.businessDate
-            localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id)
-            localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob))
-            vnode.state = Object.assign(vnode.state, response.data)
-            vnode.state.loading = false
-            m.redraw()
-            console.log("Retrieved order data:", vnode.state.originalJob);
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
+        // Use Promise.all() to execute all requests in parallel
+        Promise.all(requests)
+            .then(function (responses) {
+                // Handle the response of the first request
+                const jobResponse = responses[0];
+                Object.assign(jobResponse.data, {
+                    createdAtAgo: moment(jobResponse.data.createdAt).fromNow(true),
+                    timeDroppedOffFromNow: moment(jobResponse.data.dropOffDay).fromNow(true),
+                    timePickedUpFromNow: moment(jobResponse.data.pickupDay).fromNow(true),
+                });
+                vnode.state.originalJob = Object.assign({}, jobResponse.data);
+                vnode.state.selectedDate = vnode.state.originalJob.businessDate;
+                localStorage.setItem("activeOrderBeingEditedId", vnode.state.originalJob._id);
+                localStorage.setItem("activeOrderBeingEdited", JSON.stringify(vnode.state.originalJob));
+                vnode.state = Object.assign(vnode.state, jobResponse.data);
 
-        const optionsPricings = {
-            method: 'GET', url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
+                // Handle the response of the second request
+                vnode.state.pricings = responses[1].data;
 
-        axios.request(optionsPricings).then(function (response) {
-            vnode.state.pricings = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
+                // Handle the response of the third request
+                vnode.state.categories = responses[2].data;
 
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            console.log(vnode.state.categories)
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
+                vnode.state.loading = false;
+                m.redraw();
+                console.log("Retrieved order data:", vnode.state.originalJob);
+            })
+            .catch(function (errors) {
+                vnode.state.loading = false;
+                m.redraw();
+                errors.forEach(error => console.error(error));
+            });
 
 
         // $("#kt_daterangepicker_3").daterangepicker({
@@ -1187,7 +1177,7 @@ const order_item = {
 
             ]),
 
-            m("div", { "class": "col-lg-12 col-md-12 col-sm-12" },
+                m("div", { "class": "col-lg-12 col-md-12 col-sm-12", style: { "overflow-x": "auto" } },
                 [
                     m("label",
                         `Currently ${!vnode.state?.statusInfo ? '' : vnode.state?.statusInfo[0].status} What Status Would You Like To Change This Job To? `
