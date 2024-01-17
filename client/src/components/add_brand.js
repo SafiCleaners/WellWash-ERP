@@ -7,52 +7,12 @@ import {
 import m from "mithril"
 
 
-const AddPricingForm = {
-    oninit(vnode) {
-        vnode.state.stores = []
-    },
-    oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/stores-list",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(options).then(function (response) {
-            vnode.state.stores = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-    },
+const AddBrandForm = {
     showModal: false,
     unitType: '',
     formData: {
-        category: '',
-        cost: ''
+        title: '',
+        image: '',
     },
 
     openModal: function () {
@@ -70,10 +30,26 @@ const AddPricingForm = {
     handleSubmit: function () {
         // Handle form submission logic here
         console.log('Form Submitted:', this.formData);
+        const fileInput = document.getElementById('logoInput');
+        const file = fileInput.files[0];
+    
+        if (file) {
+            const reader = new FileReader();
+    
+            reader.onloadend = function () {
+                // Get the base64 string without the data:image/png;base64, prefix
+                const base64String = reader.result.split(',')[1]; 
+    
+                // Call the function to upload the base64 string to the server using Axios
+                this.formData.image = base64String;
+            };
+    
+            reader.readAsDataURL(file);
+        } 
 
         const options = {
             method: 'POST',
-            url: `${url}/pricings/`,
+            url: `${url}/brands/`,
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -92,12 +68,12 @@ const AddPricingForm = {
         // this.closeModal();
     },
 
-    view: function (vnode) {
+    view: function () {
         return m('div', [
             // Open Modal Button
             m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
                 m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Pricing"
+                "Add Brand"
             ]),
 
             // Modal
@@ -105,29 +81,27 @@ const AddPricingForm = {
                 m('.modal-content', [
                     m("div", { "class": "row" }, [
                         m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Pricing'),
+                            m('h4', 'Add Brand'),
                         ]),
                         m("div", { "class": "col-1" }, [
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
                         ]),
                         m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Select Category:'),
-                            m('select', {
-                                "class": "form-control form-control-solid",
-                                value: this.formData.store,
-                                onchange: (e) => this.handleInputChange('category', e.target.value),
-                            }, [
-                                vnode.state.categories.map((c) => { return m('option', { value: c._id }, c.title) }),
-                            ]),
-                        ]),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Price Point:'),
+                        m("div", { "class": "col-12 my-2" }, [
+                            m('label', 'Title:'),
                             m('input[type=text]', {
                                 "class": "form-control form-control-solid",
-                                "placeholder": "Enter Price in KSH",
+                                "placeholder": "Enter title",
                                 value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('cost', e.target.value),
+                                oninput: (e) => this.handleInputChange('title', e.target.value),
+                            }),
+                        ]),
+                        m("div", { "class": "col-12 my-2" }, [
+                            m('label', 'Logo:'),
+                            m('input[type=file]', {
+                                "class": "form-control form-control-solid",
+                                "id": "logoInput",
+                                "placeholder": "Upload logo",
                             }),
                         ]),
                         m("span", { "class": "border-top mt-4" }),
@@ -142,4 +116,4 @@ const AddPricingForm = {
     },
 };
 
-export default AddPricingForm;
+export default AddBrandForm;
