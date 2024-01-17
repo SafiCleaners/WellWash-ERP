@@ -7,39 +7,16 @@ import {
 import m from "mithril"
 
 
-const EditPricingForm = {
+const EditBrandForm = {
     oninit(vnode) {
         // Access props from vnode.attrs
         this.props = vnode.attrs;
         this.formData = {
-            id: this.props.pricing._id,
-            title: this.props.pricing.title,
-            cost: this.props.pricing.cost,
+            id: this.props.brand._id,
+            title: this.props.brand.title,
         }
     },
-    oncreate(vnode) {
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-    },
-
     showModal: false,
-    formData: {},
-
     openModal: function () {
         this.showModal = true;
     },
@@ -55,10 +32,26 @@ const EditPricingForm = {
     handleSubmit: function () {
         // Handle form submission logic here
         console.log('Form Submitted:', this.formData);
+        const fileInput = document.getElementById('logoInput');
+        const file = fileInput.files[0];
+    
+        if (file) {
+            const reader = new FileReader();
+    
+            reader.onloadend = function () {
+                // Get the base64 string without the data:image/png;base64, prefix
+                const base64String = reader.result.split(',')[1]; 
+    
+                // Call the function to upload the base64 string to the server using Axios
+                this.formData.image = base64String;
+            };
+    
+            reader.readAsDataURL(file);
+        } 
 
         const options = {
             method: 'PATCH',
-            url: `${url}/pricings/${this.formData.id}`,
+            url: `${url}/brands/${this.formData.id}`,
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -68,7 +61,7 @@ const EditPricingForm = {
 
         axios.request(options).then(function (response) {
             console.log(response.data);
-            location.reload();
+            location.reload()
         }).catch(function (error) {
             console.error(error);
         });
@@ -77,7 +70,7 @@ const EditPricingForm = {
         // this.closeModal();
     },
 
-    view: function (vnode) {
+    view: function () {
         return m('span', [
             // Open Modal Button
             m('button', { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mr-2", onclick: () => this.openModal() }, m('icon', { "class": "flaticon-edit" })),
@@ -87,35 +80,33 @@ const EditPricingForm = {
                 m('.modal-content', [
                     m("div", { "class": "row text-left", style: "white-space: wrap;" }, [
                         m("div", { "class": "col-11" }, [
-                            m('h4', 'Edit Pricing'),
+                            m('h4', 'Edit Brand'),
                         ]),
                         m("div", { "class": "col-1" }, [
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
                         ]),
                         m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Select Category:'),
-                            m('select', {
-                                "class": "form-control form-control-solid",
-                                value: this.formData.title,
-                                onchange: (e) => this.handleInputChange('category', e.target.value),
-                            }, [
-                                vnode.state.categories.map((c) => { return m('option', { value: c._id }, c.title) }),
-                            ]),
-                        ]),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Price Point:'),
+                        m("div", { "class": "col-12 my-2" }, [
+                            m('label', 'Title:'),
                             m('input[type=text]', {
                                 "class": "form-control form-control-solid",
-                                "placeholder": "Enter Price in KSH",
-                                value: this.formData.cost,
-                                oninput: (e) => this.handleInputChange('cost', e.target.value),
+                                "placeholder": "Enter title",
+                                value: this.formData.title,
+                                oninput: (e) => this.handleInputChange('title', e.target.value),
+                            }),
+                        ]),
+                        m("div", { "class": "col-12 my-2" }, [
+                            m('label', 'Logo:'),
+                            m('input[type=file]', {
+                                "class": "form-control form-control-solid",
+                                "id": "logoInput",
+                                "placeholder": "Upload logo",
                             }),
                         ]),
                         m("span", { "class": "border-top mt-4" }),
                         m("div", { "class": "pt-2 align-right" }, [
                             m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save Changes'),
+                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
                         ])
                     ]),
                 ]),
@@ -124,4 +115,4 @@ const EditPricingForm = {
     },
 };
 
-export default EditPricingForm;
+export default EditBrandForm;

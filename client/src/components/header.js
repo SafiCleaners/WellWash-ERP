@@ -132,6 +132,16 @@ const header = {
                                             ]
                                         )
                                     ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("brands") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/brands" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Brands"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
                                     m("li", { "class": "menu-item" + (window.location.pathname.includes("stores") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         m(m.route.Link, { "class": "menu-link", "href": "/stores" },
                                             [
