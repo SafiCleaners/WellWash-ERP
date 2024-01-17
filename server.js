@@ -1461,6 +1461,130 @@ const routes = async (client) => {
         }
     });
 
+    app.get('/brands', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('brands').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/brands', async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        console.log(req.body)
+
+        const newBrandData = Object.assign(req.body, {
+            _id: new ObjectId(),
+            deleted: false,
+            userId,
+            userTitle,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        db.collection('brands').insertOne(newBrandData);
+
+        return res.status(201).send(newBrandData);
+    });
+
+    app.patch('/brands/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const updatedBrandData = Object.assign(req.body, {
+            deleted: false,
+            userId,
+            userTitle,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        try {
+            let existingEntity = await db.collection('brands').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('brands').updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: updatedBrandData,
+                },
+                { upsert: true });
+            let updatedEntity = await db.collection('brands').findOne({ _id: new ObjectId(id), deleted: false });
+            // Log Activity
+            logActivity(db, "Brand", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(200).json({ message: 'Brand updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/brands/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('brands').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('brands').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('brands').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Brand", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Brand deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
     // Set S3 endpoint to DigitalOcean Spaces
     const spacesEndpoint = new aws.Endpoint('fra1.digitaloceanspaces.com');
     const s3 = new aws.S3({

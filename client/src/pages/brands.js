@@ -7,8 +7,8 @@ import {
 
 import m from "mithril"
 import loader from "../components/loader"
-import addCategory from "../components/add_category"
-import editCategory from "../components/edit_category"
+import addBrand from "../components/add_brand"
+import editBrand from "../components/edit_brand"
 
 const formatCurrency = (number) => {
     try {
@@ -19,15 +19,14 @@ const formatCurrency = (number) => {
     }
 }
 
-const pricing = {
+const brands = {
     oninit(vnode) {
         vnode.state.stores = []
-        vnode.state.pricings = []
         vnode.state.loading = true
     },
     oncreate(vnode) {
         const options = {
-            method: 'GET', url: url + "/categories",
+            method: 'GET', url: url + "/brands",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
@@ -35,8 +34,7 @@ const pricing = {
         };
 
         axios.request(options).then(function (response) {
-            console.log(response)
-            vnode.state.categories = response.data
+            vnode.state.stores = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -53,11 +51,11 @@ const pricing = {
                         m("h3", { "class": "card-title align-items-start flex-column" },
                             [
                                 m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Products"
+                                    "Available Brands"
                                 ),
                             ]
                         ),
-                        m(addCategory)
+                        m(addBrand)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -71,9 +69,7 @@ const pricing = {
                                                 m("tr",
                                                     [
                                                         m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
+                                                        m("th", { "class": "p-0 min-w-150px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-50px" })
@@ -85,7 +81,6 @@ const pricing = {
                                     )
                                 )
                             ),
-
                             m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                 m("div", { "class": "table-responsive" },
                                     !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -93,8 +88,8 @@ const pricing = {
                                             m("thead",
                                                 m("tr",
                                                     [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Unit"),
+                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Title"),
+                                                        m("th", { "class": "p-0 min-w-150px text-right" }, "Logo"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
@@ -103,7 +98,7 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.categories.map((item) => {
+                                                    vnode.state.stores.map((item) => {
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
@@ -115,12 +110,10 @@ const pricing = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                
-                                                               
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.unit
+                                                                            item.logo
                                                                         )
                                                                     ]
                                                                 ),
@@ -141,13 +134,13 @@ const pricing = {
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
-                                                                            m(editCategory, { "pricing": item }),
+                                                                            m(editBrand, { "brand": item }),
                                                                             m('a', {
                                                                                 href: "javascript:void(0);",
                                                                                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
                                                                                     const options = {
                                                                                         method: 'DELETE',
-                                                                                        url: `${url}/categories/${item._id}`,
+                                                                                        url: `${url}/brands/${item._id}`,
                                                                                         headers: {
                                                                                             'Content-Type': 'application/json',
                                                                                             'authorization': localStorage.getItem('token')
@@ -155,8 +148,7 @@ const pricing = {
                                                                                     };
 
                                                                                     axios.request(options).then(function (response) {
-                                                                                       
-                                                                                        vnode.state.categories = vnode.state.categories.filter(p => p._id != item._id)
+                                                                                        vnode.state.stores = vnode.state.stores.filter(s => s._id != item._id)
                                                                                         m.redraw()
                                                                                     }).catch(function (error) {
                                                                                         console.error(error);
@@ -184,4 +176,4 @@ const pricing = {
     }
 }
 
-export default pricing
+export default brands
