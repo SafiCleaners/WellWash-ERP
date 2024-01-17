@@ -12,19 +12,19 @@ const dynamicPicker = {
         vnode.state.sortedOptions = sortedOptions
 
         console.log(vnode.attrs)
-        if (!vnode.state.selectedCharge){
+        if (!vnode.state.selectedCharge && vnode.attrs.charge) {
             vnode.state = Object.assign(vnode.state, {
-                selectedCharge: vnode.state.sortedOptions[0].amount || vnode.attrs.charge
+                selectedCharge: vnode.attrs.charge
             })
             vnode.attrs.onChange(vnode.state.selectedCharge)
         }
         // if (!vnode.state.selectedCharge)
         //     vnode.state.sortedOptions[0]?.amount)
-        
+
     },
     view(vnode) {
-        
 
+        console.log({ state: vnode.attrs.amount })
         return [
             m("label", m("b", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount)))),
             m("br"),
@@ -54,7 +54,7 @@ const dynamicPicker = {
 
 const input = {
     oninit(vnode) {
-        // console.log(vnode.state, vnode.attrs)
+        console.log(vnode.state, vnode.attrs)
         vnode.state = Object.assign(vnode.state, {
             amount: vnode.attrs.amount,
             value: vnode.attrs.amount
@@ -120,7 +120,7 @@ const input = {
                     ])
                 ]
             ),
-            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}`, style: { "overflow-x": "auto" } },  [
+            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}`, style: { "overflow-x": "auto" } }, [
                 m(dynamicPicker, {
                     options: vnode.attrs.pricing,
                     charge: vnode.state.chargeValue || vnode.attrs.charge,

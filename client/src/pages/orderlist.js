@@ -246,6 +246,16 @@ const orders = {
 
                                                                                 m("div",
                                                                                     [
+                                                                                        // categoryAmounts,
+                                                                                        [Object.keys(categoryAmounts)
+                                                                                            .filter(charge => categoryAmounts[charge] !== 0)
+                                                                                            .map(charge => {
+                                                                                                const categoryName = vnode.state.categories.find(category => category._id === charge)?.title;
+                                                                                                const chargeAmount = categoryCharges[charge];
+                                                                                                const numberOfItems = categoryAmounts[charge];
+
+                                                                                                return `${numberOfItems} ${categoryName} @${chargeAmount} `;
+                                                                                            })],
                                                                                         m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
                                                                                             `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
                                                                                                 " House:" + houseNumber
@@ -256,7 +266,7 @@ const orders = {
                                                                             ]
                                                                         ),
 
-                                                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                        m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                     `KSH ${calculatePrice()}`
@@ -271,16 +281,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    // categoryAmounts,
-                                                                                    [Object.keys(categoryAmounts)
-                                                                                        .filter(charge => categoryAmounts[charge] !== 0)
-                                                                                        .map(charge => {
-                                                                                            const categoryName = vnode.state.categories.find(category => category._id === charge)?.title;
-                                                                                            const chargeAmount = categoryCharges[charge];
-                                                                                            const numberOfItems = categoryAmounts[charge];
-
-                                                                                            return `${numberOfItems} ${categoryName} @${chargeAmount} `;
-                                                                                        })]
+                                                                                    
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     moreDetails
