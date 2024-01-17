@@ -120,7 +120,7 @@ const input = {
                     ])
                 ]
             ),
-            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}` }, [
+            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}`, style: { "overflow-x": "auto" } },  [
                 m(dynamicPicker, {
                     options: vnode.attrs.pricing,
                     charge: vnode.state.chargeValue || vnode.attrs.charge,

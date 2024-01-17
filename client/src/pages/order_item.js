@@ -1187,7 +1187,7 @@ const order_item = {
 
             ]),
 
-            m("div", { "class": "col-lg-12 col-md-12 col-sm-12" },
+                m("div", { "class": "col-lg-12 col-md-12 col-sm-12", style: { "overflow-x": "auto" } },
                 [
                     m("label",
                         `Currently ${!vnode.state?.statusInfo ? '' : vnode.state?.statusInfo[0].status} What Status Would You Like To Change This Job To? `

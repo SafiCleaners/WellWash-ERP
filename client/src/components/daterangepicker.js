@@ -50,6 +50,7 @@ export const DateRangePicker = {
                 // Remove the <div class="ranges"></div> element
                 setTimeout(() => {
                     jQuery(`.ranges`).remove();
+                    jQuery('.daterangepicker').css('z-index', 10000);
                 }, 1000);
             },
             onremove: (el) => {
