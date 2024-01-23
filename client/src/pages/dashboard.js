@@ -28,6 +28,7 @@ const orders = {
         vnode.state.categories = []
         vnode.state.loading = true
         vnode.state.selectedDate = new Date()
+        vnode.state.stats = {}
     },
     oncreate(vnode) {
         const options = {
