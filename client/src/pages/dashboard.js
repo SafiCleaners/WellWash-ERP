@@ -37,122 +37,106 @@ const orders = {
         }
     },
     oncreate(vnode) {
-        const options = {
+        const fetchData = async (options) => {
+            try {
+                const response = await axios.request(options);
+                return response.data;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        };
+
+        const fetchJobs = fetchData({
             method: 'GET',
             url: url + "/jobs",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
-        };
+        });
 
-        axios.request(options).then(function (response) {
-            vnode.state.jobs = response.data.filter((job) => {
-                const googleId = localStorage.getItem('googleId')
-                const role = localStorage.getItem('role')
-                if (role && role === 'OWNER') return true
+        const fetchPricings = fetchData({
+            method: 'GET',
+            url: url + "/pricings",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        });
 
-                if (job.googleId)
-                    return true
-            })
+        const fetchCategories = fetchData({
+            method: 'GET',
+            url: url + "/categories",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        });
 
-            vnode.state.jobs.map(job => {
-                Object.assign(job, {
-                    createdAtAgo: moment(job.createdAt).fromNow(true),
-                    timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
-                    timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
-                })
+        Promise.all([fetchJobs, fetchPricings, fetchCategories])
+            .then(([jobs, pricings, categories]) => {
+                // Process jobs
+                vnode.state.jobs = jobs.filter((job) => {
+                    const googleId = localStorage.getItem('googleId');
+                    const role = localStorage.getItem('role');
+                    if (role && role === 'OWNER') return true;
 
-                if (job.categoryAmounts) {
-                    const calculatePrice = () => {
-                        return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
-                            const amountValue = job.categoryAmounts[categoryId];
-                            const chargeValue = job.categoryCharges[categoryId];
+                    return job.googleId ? true : false;
+                });
 
-                            const subtotal = (amountValue || 0) * (chargeValue || 0);
-                            return total + subtotal;
-                        }, 0);
+                vnode.state.jobs.forEach(job => {
+                    Object.assign(job, {
+                        createdAtAgo: moment(job.createdAt).fromNow(true),
+                        timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
+                        timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
+                    });
+
+                    if (job.categoryAmounts) {
+                        const calculatePrice = () => {
+                            return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
+                                const amountValue = job.categoryAmounts[categoryId] || 0;
+                                const chargeValue = job.categoryCharges[categoryId] || 0;
+                                const subtotal = amountValue * chargeValue;
+                                return total + subtotal;
+                            }, 0);
+                        };
+
+                        job.price = calculatePrice();
                     }
+                });
 
-                    job.price = calculatePrice()
-                }
+                // Process stats
+                const totalSales = vnode.state.jobs.reduce((total, job) => total + (job.price || 0), 0);
+                const totalPaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
+                const totalUnpaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
+
+                const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
+
+                const totalExpenses = vnode.state.jobs.reduce((total, job) => {
+                    if (job.expenses && Array.isArray(job.expenses)) {
+                        return total + job.expenses.reduce((sum, expense) => sum + (expense || 0), 0);
+                    }
+                    return total;
+                }, 0);
+
+                vnode.state.stats = {
+                    totalSales,
+                    totalPaid,
+                    totalUnpaid,
+                    totalUniqueCustomers,
+                    totalExpenses
+                };
+
+                vnode.state.loading = false;
+                m.redraw();
             })
-
-            // if (!job.categoryAmounts) {
-            //     return;
-            // }
-
-            const totalSales = vnode.state.jobs.reduce((total, job) => total + job.price, 0);
-
-            const totalPaid = vnode.state.jobs.reduce((total, job) => {
-                // Assuming job.paid is a boolean indicating whether the job is paid
-                return total + (job.paid ? job.price : 0);
-            }, 0);
-
-            const totalUnpaid = vnode.state.jobs.reduce((total, job) => {
-                // Assuming job.paid is a boolean indicating whether the job is paid
-                return total + (job.paid ? 0 : job.price);
-            }, 0);
-
-            const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
-
-            const totalExpenses = vnode.state.jobs.reduce((total, job) => {
-                // Assuming job.expenses is an array of expense values for each job
-                return total + (job.expenses ? job.expenses.reduce((sum, expense) => sum + expense, 0) : 0);
-            }, 0);
-
-            vnode.state.stats = {
-                totalSales,
-                totalPaid,
-                totalUnpaid,
-                totalUniqueCustomers,
-                totalExpenses
-            }
-
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            console.error(error);
-        });
-
-        const optionsPricing = {
-            method: 'GET', url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsPricing).then(function (response) {
-            vnode.state.pricings = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            console.log(vnode.state.categories)
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
+            .catch((error) => {
+                vnode.state.loading = false;
+                console.error(error);
+            });
     },
+
     view(vnode) {
         const {
             totalSales,
