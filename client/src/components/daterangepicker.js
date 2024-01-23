@@ -14,13 +14,63 @@ export const DateRangePicker = {
     },
     view(vnode) {
         const attrs = vnode.attrs;
-        console.log(attrs);
+
+        const currentRoute = m.route.get();
+        console.log('Current Route:', currentRoute);
+
+        if (currentRoute == '/dash') {
+            return [m('input', {
+                ...attrs,
+                "placeholder": "Select Business Date:",
+                value: vnode.state.selectedDate,
+                oncreate: (el) => {
+                    const datepickerOptions = {
+                        singleDatePicker: false,
+                        showDropdowns: true,
+                        minYear: 2022,
+                        maxYear: moment().add(1, 'day').day(),
+                        locale: {
+                            format: displayFormat
+                        },
+                        opens: 'left',
+                    };
+
+                    jQuery(`#${attrs.id}`).daterangepicker(datepickerOptions, (start, end, label) => {
+                        // Format the date for display using the custom format
+                        const formattedDate = start.format(displayFormat);
+
+                        // Format the date for storage using the standard format
+                        const storageFormattedDate = start.format(storageFormat);
+
+                        console.log({ storageFormattedDate })
+                        // Set the formatted date in the state
+                        vnode.state.selectedDate = formattedDate;
+
+                        // Save the selectedDate to localStorage in the standard format
+                        localStorage.setItem("businessDate", storageFormattedDate);
+
+                        // Call onChange with the formatted date
+                        attrs.onChange(formattedDate);
+                    });
+
+                    // Remove the <div class="ranges"></div> element
+                    setTimeout(() => {
+                        jQuery(`.ranges`).remove();
+                        jQuery('.daterangepicker').css('z-index', 10000);
+                    }, 1000);
+                },
+                onremove: (el) => {
+                    jQuery(`#${attrs.id}`).daterangepicker('remove');
+                },
+            })]
+        }
+
         return m('input', {
             ...attrs,
             "placeholder": "Select Business Date:",
             value: vnode.state.selectedDate,
             oncreate: (el) => {
-                jQuery(`#${attrs.id}`).daterangepicker({
+                const datepickerOptions = {
                     singleDatePicker: true,
                     showDropdowns: true,
                     minYear: 2022,
@@ -29,14 +79,16 @@ export const DateRangePicker = {
                         format: displayFormat
                     },
                     opens: 'left',
-                }, (start, end, label) => {
+                };
+
+                jQuery(`#${attrs.id}`).daterangepicker(datepickerOptions, (start, end, label) => {
                     // Format the date for display using the custom format
                     const formattedDate = start.format(displayFormat);
 
                     // Format the date for storage using the standard format
                     const storageFormattedDate = start.format(storageFormat);
 
-                    console.log({storageFormattedDate})
+                    console.log({ storageFormattedDate })
                     // Set the formatted date in the state
                     vnode.state.selectedDate = formattedDate;
 
@@ -56,6 +108,6 @@ export const DateRangePicker = {
             onremove: (el) => {
                 jQuery(`#${attrs.id}`).daterangepicker('remove');
             },
-        });
-    },
+        })
+    }
 };

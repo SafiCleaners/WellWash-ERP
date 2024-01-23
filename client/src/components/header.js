@@ -112,16 +112,26 @@ const header = {
                                                 ]
                                             )
                                         )
-                                    ] : [m("li", { "class": "menu-item" + (window.location.pathname.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                        m(m.route.Link, { "class": "menu-link", "href": "/j" },
+                                    ] : [
+                                        m("li", { "class": "menu-item" + (window.location.pathname.includes("Dashboard") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/dash" },
                                             [
                                                 m("span", { "class": "menu-text" },
-                                                    "Queue"
+                                                    "Dashboard"
                                                 ),
                                                 m("span", { "class": "menu-desc" })
                                             ]
                                         )
-                                    ),
+                                            ), m("li", { "class": "menu-item" + (window.location.pathname.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                                m(m.route.Link, { "class": "menu-link", "href": "/j" },
+                                                    [
+                                                        m("span", { "class": "menu-text" },
+                                                            "Queue"
+                                                        ),
+                                                        m("span", { "class": "menu-desc" })
+                                                    ]
+                                                )
+                                            ),
                                     m("li", { "class": "menu-item" + (window.location.pathname.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                             [
