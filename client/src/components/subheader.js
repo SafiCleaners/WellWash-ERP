@@ -4,7 +4,7 @@ import google_login from "./google_login"
 const subheader = () => {
     return {
         view() {
-            return m.route.get() != "/" ? [] : m("div", { "class": "subheader bg-white h-100px", "id": "kt_subheader" },
+            return !["/", "q-new"].includes(m.route.get()) ? [] : m("div", { "class": "subheader bg-white h-100px", "id": "kt_subheader" },
                 m("div", { "class": "container flex-wrap flex-sm-nowrap" },
                     [
                         m("div", { "class": "d-none d-lg-flex align-items-center flex-wrap w-300px" },
