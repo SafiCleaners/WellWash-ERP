@@ -30,6 +30,24 @@ const users = {
             m.redraw()
             console.error(error);
         });
+
+        const optionBrands = {
+            method: 'GET', url: url + "/brands",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionBrands).then(function (response) {
+            vnode.state.brands = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
     },
     view(vnode) {
         return m("div", { "class": "card card-custom gutter-b" },
@@ -85,6 +103,7 @@ const users = {
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-125px" }),
                                                         m("th", { "class": "p-0 min-w-110px" }),
+                                                        m("th", { "class": "p-0 min-w-110px" }),
                                                         m("th", { "class": "p-0 min-w-150px" })
                                                     ]
                                                 )
@@ -98,6 +117,7 @@ const users = {
                                                         picture,
                                                         name,
                                                         role,
+                                                        brand,
                                                         deleted
                                                     }) => {
                                                         return m("tr", {
@@ -175,6 +195,51 @@ const users = {
                                                                                                 "class": "dropdown-item",
                                                                                             },
                                                                                                 e
+                                                                                            )
+                                                                                        })
+                                                                                    ]
+                                                                                )
+                                                                            ]
+                                                                        )
+                                                                    ]
+                                                                ),
+                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
+                                                                    [
+
+                                                                        m("div", { "class": "dropdown" },
+                                                                            [
+                                                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
+                                                                                    brand ? brand : "Select a Brand:"
+                                                                                ),
+                                                                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
+                                                                                    [
+                                                                                        vnode.state.brands.map(brand => {
+                                                                                            return m("a", {
+                                                                                                style: { "z-index": 10000 },
+                                                                                                href: "javascript:void(0);",
+                                                                                                onclick() {
+                                                                                                    // update db on role change
+                                                                                                    // vnode.state.user = e
+                                                                                                    const options = {
+                                                                                                        method: 'PATCH',
+                                                                                                        url: url + `/users/${_id}`,
+                                                                                                        headers: {
+                                                                                                            'Content-Type': 'application/json',
+                                                                                                            'authorization': localStorage.getItem('token')
+                                                                                                        },
+                                                                                                        data: { brand: brand._id }
+                                                                                                    };
+
+                                                                                                    axios.request(options).then(function (response) {
+                                                                                                        console.log(response.data);
+                                                                                                        window.location.reload()
+                                                                                                    }).catch(function (error) {
+                                                                                                        console.error(error);
+                                                                                                    });
+                                                                                                },
+                                                                                                "class": "dropdown-item",
+                                                                                            },
+                                                                                                brand.title
                                                                                             )
                                                                                         })
                                                                                     ]

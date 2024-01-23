@@ -635,6 +635,63 @@ const routes = async (client) => {
             })
     });
 
+    app.post(
+        "/otp/send",
+        async (req, res) => {
+            console.log(req.body)
+            const db = await req.app.locals.db
+            const { collections } = db
+            const { user } = req.body
+
+            const userSearchingObject = {
+                isDeleted: false
+            }
+
+            if (validateEmail(user)) {
+                Object.assign(userSearchingObject, { email: user })
+            } else {
+                Object.assign(userSearchingObject, { phone: user })
+            }
+
+            const [userInfo] = await collections["users"].find(userSearchingObject)
+
+            if (!userInfo) {
+                return res.status(401).send({
+                    success: false,
+                })
+            }
+
+            // generate OTP, send it and save it
+            const password = ['development', "test"].includes(NODE_ENV) ? '0000' : makeid()
+
+            const otpSaveInfo = await collections["otp"].create({
+                id: new ObjectId().toHexString(),
+                user: userInfo.id,
+                password
+            })
+
+            console.log({ otpSaveInfo })
+
+            // send sms to phone
+            if (!['development', "test"].includes(NODE_ENV)) {
+                return sms({
+                    // school: schoolId,
+                    data: { message: `Shule-Plus Code: ${password}.`, phone: user }
+                }, ({ code }) => {
+                    res.send({
+                        success: true,
+                        otp: code
+                    })
+                })
+            }
+
+            return res.send({
+                success: true,
+                otp: `0000 - for development`
+            })
+        })
+
+
     app.post('/payments', async (req, res) => {
         // find job, find what we billed the client
         // get an access token from paypal
