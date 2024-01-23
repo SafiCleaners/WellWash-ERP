@@ -28,7 +28,13 @@ const orders = {
         vnode.state.categories = []
         vnode.state.loading = true
         vnode.state.selectedDate = new Date()
-        vnode.state.stats = {}
+        vnode.state.stats = {
+            totalSales: 0,
+            totalPaid: 0,
+            totalUnpaid: 0,
+            totalUniqueCustomers: 0,
+            totalExpenses: 0
+        }
     },
     oncreate(vnode) {
         const options = {
@@ -196,7 +202,7 @@ const orders = {
                                             ),
                                             m("tbody",
                                                 [
-                                                 m("tr", {
+                                                    m("tr", {
                                                         // key: id,
                                                         style: { "cursor": "pointer" }
                                                     },
@@ -208,7 +214,7 @@ const orders = {
                                                             //         )
                                                             //     )
                                                             // ),
-                                                            
+
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
@@ -249,7 +255,7 @@ const orders = {
                                                             //         ),
                                                             //     ]
                                                             // ),
-                                                            
+
                                                         ]
                                                     )
                                                 ]
@@ -374,7 +380,7 @@ const orders = {
                                                                 categoryAmounts = {},
                                                                 categoryCharges = {}
                                                             }, index) => {
-                                                                console.log({index})
+                                                                console.log({ index })
                                                                 const calculatePrice = () => {
 
                                                                     return Object.keys(categoryAmounts).reduce((total, categoryId) => {
@@ -443,7 +449,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    
+
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     moreDetails
