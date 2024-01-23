@@ -241,10 +241,10 @@ const header = {
                                         ]
                                     )),
                             ]),
-                            m("div", { "class": "topbar-item mr-3 w-auto d-flex align-items-center btn-lg px-2", "id": "kt_quick_user_toggle" },
+                            m("div", { "class": "topbar-item mr-3 w-auto d-flex align-items-center btn-md px-2", "id": "kt_quick_user_toggle" },
                                 m(DateRangePicker, {
                                     // "class": "form-control form-control-solid",
-                                    class:"btn btn-lg btn-secondary dropdown-toggle",
+                                    class:"btn btn-md btn-secondary dropdown-toggle",
                                     "placeholder": "Select Business Day",
                                     // "id": "kt_daterangepicker_new",
                                     onChange: onDatePickerChange
