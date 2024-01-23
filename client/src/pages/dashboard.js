@@ -63,18 +63,24 @@ const orders = {
                     timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                 })
 
-                const calculatePrice = () => {
-                    return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
-                        const amountValue = job.categoryAmounts[categoryId];
-                        const chargeValue = job.categoryCharges[categoryId];
+                if (job.categoryAmounts) {
+                    const calculatePrice = () => {
+                        return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
+                            const amountValue = job.categoryAmounts[categoryId];
+                            const chargeValue = job.categoryCharges[categoryId];
 
-                        const subtotal = (amountValue || 0) * (chargeValue || 0);
-                        return total + subtotal;
-                    }, 0);
+                            const subtotal = (amountValue || 0) * (chargeValue || 0);
+                            return total + subtotal;
+                        }, 0);
+                    }
+
+                    job.price = calculatePrice()
                 }
-
-                job.price = calculatePrice()
             })
+
+            if (!job.categoryAmounts) {
+                return;
+            }
 
             const totalSales = vnode.state.jobs.reduce((total, job) => total + job.price, 0);
 
