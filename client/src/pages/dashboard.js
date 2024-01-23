@@ -20,6 +20,16 @@ const detailsString = (job) => {
         })
         .join(", ");
 };
+
+const formatCurrency = (number) => {
+    try {
+        return Intl.NumberFormat('en-US').format(number);
+    } catch (error) {
+        console.error('Error formatting number:', error);
+        return 'N/A';
+    }
+}
+
 const orders = {
 
     oninit(vnode) {
@@ -106,27 +116,7 @@ const orders = {
                     }
                 });
 
-                // Process stats
-                const totalSales = vnode.state.jobs.reduce((total, job) => total + (job.price || 0), 0);
-                const totalPaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
-                const totalUnpaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
 
-                const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
-
-                const totalExpenses = vnode.state.jobs.reduce((total, job) => {
-                    if (job.expenses && Array.isArray(job.expenses)) {
-                        return total + job.expenses.reduce((sum, expense) => sum + (expense || 0), 0);
-                    }
-                    return total;
-                }, 0);
-
-                vnode.state.stats = {
-                    totalSales,
-                    totalPaid,
-                    totalUnpaid,
-                    totalUniqueCustomers,
-                    totalExpenses
-                };
 
                 vnode.state.loading = false;
                 m.redraw();
@@ -138,13 +128,58 @@ const orders = {
     },
 
     view(vnode) {
-        const {
+
+        var jobs = vnode.state.jobs.filter(job => {
+            const storedStartDate = localStorage.getItem("businessRangeStartDate");
+            const storedEndDate = localStorage.getItem("businessRangeEndDate");
+
+            // Assuming storedStartDate and storedEndDate are valid date strings
+            const startDate = new Date(storedStartDate);
+            const endDate = new Date(storedEndDate);
+
+            const businessDate = new Date(job.businessDate);
+
+            console.log({ businessDate, startDate, businessDate, endDate })
+            // Check if the job's business date is within the stored date range
+            return businessDate >= startDate && businessDate <= endDate;
+        })
+            .filter(job => {
+                if (localStorage.getItem("storeId"))
+                    return job.storeId == localStorage.getItem("storeId")
+
+                return true
+            })
+            .sort((a, b) => {
+                // Assuming createdAtDateTime is a valid date string
+                const dateA = new Date(a.createdAtDateTime);
+                const dateB = new Date(b.createdAtDateTime);
+
+                // Compare dates for sorting
+                return dateA - dateB;
+            })
+
+        // Process stats
+        const totalSales = jobs.reduce((total, job) => total + (job.price || 0), 0);
+        const totalPaid = jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
+        const totalUnpaid = jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
+
+        const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
+
+        const totalExpenses = jobs.reduce((total, job) => {
+            if (job.expenses && Array.isArray(job.expenses)) {
+                return total + job.expenses.reduce((sum, expense) => sum + (expense || 0), 0);
+            }
+            return total;
+        }, 0);
+
+        vnode.state.stats = {
             totalSales,
             totalPaid,
             totalUnpaid,
             totalUniqueCustomers,
             totalExpenses
-        } = vnode.state.stats
+        };
+
         return m("div", { "class": "card card-custom gutter-b" },
             [
                 [
@@ -209,7 +244,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Sales: " + totalSales
+                                                                        " Total Sales: " + formatCurrency(totalSales)
                                                                     ),
                                                                 ]
                                                             ),
@@ -217,7 +252,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Paid: " + totalPaid
+                                                                        " Total Paid: " + formatCurrency(totalPaid)
                                                                     ),
                                                                 ]
                                                             ),
@@ -225,7 +260,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Unpaid: " + totalUnpaid
+                                                                        " Total Unpaid: " + formatCurrency(totalUnpaid)
                                                                     ),
                                                                 ]
                                                             ),
