@@ -107,11 +107,18 @@ const orders = {
                 });
 
                 // Process stats
-                const totalSales = vnode.state.jobs.reduce((total, job) => total + job.price, 0);
-                const totalPaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? job.price : 0), 0);
-                const totalUnpaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? 0 : job.price), 0);
+                const totalSales = vnode.state.jobs.reduce((total, job) => total + (job.price || 0), 0);
+                const totalPaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
+                const totalUnpaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
+
                 const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
-                const totalExpenses = vnode.state.jobs.reduce((total, job) => total + (job.expenses ? job.expenses.reduce((sum, expense) => sum + expense, 0) : 0), 0);
+
+                const totalExpenses = vnode.state.jobs.reduce((total, job) => {
+                    if (job.expenses && Array.isArray(job.expenses)) {
+                        return total + job.expenses.reduce((sum, expense) => sum + (expense || 0), 0);
+                    }
+                    return total;
+                }, 0);
 
                 vnode.state.stats = {
                     totalSales,
