@@ -30,6 +30,30 @@ const formatCurrency = (number) => {
     }
 }
 
+
+const StatNumber = {
+    view(vnode) {
+        return m("h3", { "class": "card-title align-items-start flex-column d-flex" },
+            [
+                m("span", { "class": "fs-6 fw-semibold text-gray-500", style: "align-self: flex-start;" },
+                    vnode.attrs.title
+                ),
+                m("div", { "class": "d-flex align-items-center mb-2" },
+                    [
+                        m("span", { "class": "fs-3 fw-semibold text-gray-500 align-self-start me-1" },
+                            vnode.attrs.symbol
+                        ),
+                        m("span", { "class": "fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" },
+                            vnode.attrs.amount
+                        ),
+                    ]
+                ),
+                
+            ]
+        )
+    }
+}
+
 const orders = {
 
     oninit(vnode) {
@@ -180,6 +204,14 @@ const orders = {
             totalExpenses
         };
 
+        const startDate = new Date(localStorage.getItem("businessRangeStartDate"));
+        const endDate = new Date(localStorage.getItem("businessRangeEndDate"));
+
+        const formattedStartDate = startDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+        const formattedEndDate = endDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+        const dateRange = `${formattedStartDate} - ${formattedEndDate}`;
+
         return m("div", { "class": "card card-custom gutter-b" },
             [
                 [
@@ -243,33 +275,41 @@ const orders = {
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
-                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Sales: " + formatCurrency(totalSales)
-                                                                    ),
+                                                                    m(StatNumber, {
+                                                                        title: "Total Sales",
+                                                                        amount: formatCurrency(totalSales),
+                                                                        symbol:'Ksh'
+                                                                    })
                                                                 ]
                                                             ),
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
-                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Paid: " + formatCurrency(totalPaid)
-                                                                    ),
+                                                                    m(StatNumber, {
+                                                                        title: "Total Paid",
+                                                                        amount: formatCurrency(totalPaid),
+                                                                        symbol: 'Ksh'
+                                                                    })
                                                                 ]
                                                             ),
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
-                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Unpaid: " + formatCurrency(totalUnpaid)
-                                                                    ),
+                                                                    m(StatNumber, {
+                                                                        title: "Total Unpaid",
+                                                                        amount: formatCurrency(totalUnpaid),
+                                                                        symbol: 'Ksh'
+                                                                    })
                                                                 ]
                                                             ),
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
-                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Unique Customers: " + totalUniqueCustomers
-                                                                    ),
+                                                                    m(StatNumber, {
+                                                                        title: "Total Unique Leads",
+                                                                        amount: totalUniqueCustomers,
+                                                                        symbol: 'Leads'
+                                                                    })
                                                                 ]
                                                             ),
 
@@ -297,15 +337,21 @@ const orders = {
                         [
                             m("h3", { "class": "card-title align-items-start flex-column" },
                                 [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+                                    m("span", { "class": "card-label fw-bold text-gray-800" },
                                         "Job Queue"
+                                    ),
+                                    m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
+                                        dateRange
                                     )
-                                ]
+                                ],
                             ),
                             m("div",
                                 m("button", {
                                     "class": "btn btn-lg btn-info", onclick() {
                                         m.route.set("/q-new")
+                                        setTimeout(() => {
+                                            location.reload()
+                                        }, 1000)
                                     }
                                 },
                                     [
