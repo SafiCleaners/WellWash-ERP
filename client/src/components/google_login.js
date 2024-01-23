@@ -71,8 +71,16 @@ const google_login = {
         client_id: client_id,
         callback: (response) => {
           token = response.credential;
-          decodedToken = jwtDecode(response.credential);
-          setStorage({ decodedToken, token },()=>window.location.reload());
+          decodedToken = response.credential ? jwtDecode(response.credential) : null;
+
+          if (!decodedToken) {
+            // Alert with a message for debugging
+            alert('Error: Unable to retrieve valid credentials. Check the response for details.', JSON.stringify(response));
+          } else {
+            // Call setStorage only if decodedToken is available
+            setStorage({ decodedToken, token }, () => window.location.reload());
+          }
+
         },
       });
 
