@@ -78,9 +78,9 @@ const orders = {
                 }
             })
 
-            if (!job.categoryAmounts) {
-                return;
-            }
+            // if (!job.categoryAmounts) {
+            //     return;
+            // }
 
             const totalSales = vnode.state.jobs.reduce((total, job) => total + job.price, 0);
 
