@@ -13,6 +13,11 @@ export const DateRangePicker = {
         // Set the selectedDate in state using the display format or null if not present
         vnode.state.selectedDate = storedDate ? moment(storedDate).format(displayFormat) : null;
     },
+    onremove: (el) => {
+        console.log("removing range")
+        jQuery(`#range`).daterangepicker('remove');
+        jQuery(`#single`).daterangepicker('remove');
+    },
     view(vnode) {
         const attrs = vnode.attrs;
 
@@ -22,6 +27,7 @@ export const DateRangePicker = {
         if (currentRoute.includes('dash')) {
             return m('input', {
                 ...attrs,
+                "id":"range",
                 "placeholder": "Select Business Date Range:",
                 // value: `${vnode.state.selectedStartDate} - ${vnode.state.selectedEndDate}`,
                 oncreate: (el) => {
@@ -36,7 +42,7 @@ export const DateRangePicker = {
                         opens: 'left',
                     };
 
-                    jQuery(`#${attrs.id}`).daterangepicker(datepickerOptions, (start, end, label) => {
+                    jQuery(`#range`).daterangepicker(datepickerOptions, (start, end, label) => {
                         const formattedStartDate = start.format(rangeDisplayFormat);
                         const formattedEndDate = end.format(rangeDisplayFormat);
 
@@ -58,14 +64,13 @@ export const DateRangePicker = {
                         jQuery('.daterangepicker').css('z-index', 10000);
                     }, 1000);
                 },
-                onremove: (el) => {
-                    jQuery(`#${attrs.id}`).daterangepicker('remove');
-                },
+               
             })
         }
 
         return m('input', {
             ...attrs,
+            id: "single",
             "placeholder": "Select Business Date:",
             value: vnode.state.selectedDate,
             oncreate: (el) => {
@@ -80,7 +85,7 @@ export const DateRangePicker = {
                     opens: 'left',
                 };
 
-                jQuery(`#${attrs.id}`).daterangepicker(datepickerOptions, (start, end, label) => {
+                jQuery(`#single`).daterangepicker(datepickerOptions, (start, end, label) => {
                     // Format the date for display using the custom format
                     const formattedDate = start.format(displayFormat);
 
@@ -104,9 +109,7 @@ export const DateRangePicker = {
                     jQuery('.daterangepicker').css('z-index', 10000);
                 }, 1000);
             },
-            onremove: (el) => {
-                jQuery(`#${attrs.id}`).daterangepicker('remove');
-            },
+            
         })
     }
 };

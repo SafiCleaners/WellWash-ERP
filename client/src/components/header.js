@@ -113,8 +113,8 @@ const header = {
                                             )
                                         )
                                     ] : [
-                                        m("li", { "class": "menu-item" + (window.location.pathname.includes("Dashboard") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                        m(m.route.Link, { "class": "menu-link", "href": "/dash" },
+                                        m("li", { "class": "menu-item" + (window.location.pathname.includes("dash") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m("a", { "class": "menu-link", "href": "/dash" },
                                             [
                                                 m("span", { "class": "menu-text" },
                                                     "Dashboard"
@@ -123,7 +123,7 @@ const header = {
                                             ]
                                         )
                                             ), m("li", { "class": "menu-item" + (window.location.pathname.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
-                                                m(m.route.Link, { "class": "menu-link", "href": "/j" },
+                                                m("a", { "class": "menu-link", "href": "/j" },
                                                     [
                                                         m("span", { "class": "menu-text" },
                                                             "Queue"
@@ -246,7 +246,7 @@ const header = {
                                     // "class": "form-control form-control-solid",
                                     class:"btn btn-lg btn-secondary dropdown-toggle",
                                     "placeholder": "Select Business Day",
-                                    "id": "kt_daterangepicker_new",
+                                    // "id": "kt_daterangepicker_new",
                                     onChange: onDatePickerChange
                                 })
                             ),
