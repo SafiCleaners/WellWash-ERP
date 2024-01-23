@@ -55,7 +55,46 @@ const orders = {
                     timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                     timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                 })
+
+                const calculatePrice = () => {
+                    return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
+                        const amountValue = job.categoryAmounts[categoryId];
+                        const chargeValue = job.categoryCharges[categoryId];
+
+                        const subtotal = (amountValue || 0) * (chargeValue || 0);
+                        return total + subtotal;
+                    }, 0);
+                }
+
+                job.price = calculatePrice()
             })
+
+            const totalSales = vnode.state.jobs.reduce((total, job) => total + job.price, 0);
+
+            const totalPaid = vnode.state.jobs.reduce((total, job) => {
+                // Assuming job.paid is a boolean indicating whether the job is paid
+                return total + (job.paid ? job.price : 0);
+            }, 0);
+
+            const totalUnpaid = vnode.state.jobs.reduce((total, job) => {
+                // Assuming job.paid is a boolean indicating whether the job is paid
+                return total + (job.paid ? 0 : job.price);
+            }, 0);
+
+            const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
+
+            const totalExpenses = vnode.state.jobs.reduce((total, job) => {
+                // Assuming job.expenses is an array of expense values for each job
+                return total + (job.expenses ? job.expenses.reduce((sum, expense) => sum + expense, 0) : 0);
+            }, 0);
+
+            vnode.state.stats = {
+                totalSales,
+                totalPaid,
+                totalUnpaid,
+                totalUniqueCustomers,
+                totalExpenses
+            }
 
             vnode.state.loading = false
             m.redraw()
@@ -102,8 +141,125 @@ const orders = {
         });
     },
     view(vnode) {
+        const {
+            totalSales,
+            totalPaid,
+            totalUnpaid,
+            totalUniqueCustomers,
+            totalExpenses
+        } = vnode.state.stats
         return m("div", { "class": "card card-custom gutter-b" },
             [
+                [
+                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
+                        [
+                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
+                                m("div", { "class": "table-responsive" },
+                                    m("table", { "class": "table table-borderless table-vertical-center" },
+                                        [
+                                            m("thead",
+                                                m("tr",
+                                                    [
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 min-w-200px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-125px" }),
+                                                        m("th", { "class": "p-0 min-w-110px" }),
+                                                        // m("th", { "class": "p-0 min-w-150px" })
+                                                    ]
+                                                )
+                                            ),
+
+                                        ]
+                                    )
+                                )
+                            ),
+
+                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
+                                m("div", { "class": "table-responsive" },
+                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
+                                        [
+                                            m("thead",
+                                                m("tr",
+                                                    [
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        // m("th", { "class": "p-0 min-w-200px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                        m("th", { "class": "p-0 w-50px" }),
+                                                    ]
+                                                )
+                                            ),
+                                            m("tbody",
+                                                [
+                                                 m("tr", {
+                                                        // key: id,
+                                                        style: { "cursor": "pointer" }
+                                                    },
+                                                        [
+                                                            // m("td", { "class": "pl-0 py-5" },
+                                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
+                                                            //         m("span", { "class": "symbol-label" },
+                                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
+                                                            //         )
+                                                            //     )
+                                                            // ),
+                                                            
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                        " Total Sales: " + totalSales
+                                                                    ),
+                                                                ]
+                                                            ),
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                        " Total Paid: " + totalPaid
+                                                                    ),
+                                                                ]
+                                                            ),
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                        " Total Unpaid: " + totalUnpaid
+                                                                    ),
+                                                                ]
+                                                            ),
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                        " Total Unique Customers: " + totalUniqueCustomers
+                                                                    ),
+                                                                ]
+                                                            ),
+
+                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                            //     [
+                                                            //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                            //             " Total Expenses: X"
+                                                            //         ),
+                                                            //     ]
+                                                            // ),
+                                                            
+                                                        ]
+                                                    )
+                                                ]
+                                            )
+                                        ]
+                                    ) : m(loader)
+                                )
+                            )
+                        ]
+                    )
+                ],
                 [
                     m("div", { "class": "card-header border-0 pt-7" },
                         [
