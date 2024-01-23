@@ -20,6 +20,16 @@ const detailsString = (job) => {
         })
         .join(", ");
 };
+
+const formatCurrency = (number) => {
+    try {
+        return Intl.NumberFormat('en-US').format(number);
+    } catch (error) {
+        console.error('Error formatting number:', error);
+        return 'N/A';
+    }
+}
+
 const orders = {
 
     oninit(vnode) {
@@ -111,7 +121,7 @@ const orders = {
                 const totalPaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
                 const totalUnpaid = vnode.state.jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
 
-                const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.customerId)).size;
+                const totalUniqueCustomers = new Set(vnode.state.jobs.map(job => job.phone)).size;
 
                 const totalExpenses = vnode.state.jobs.reduce((total, job) => {
                     if (job.expenses && Array.isArray(job.expenses)) {
@@ -209,7 +219,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Sales: " + totalSales
+                                                                        " Total Sales: " + formatCurrency(totalSales)
                                                                     ),
                                                                 ]
                                                             ),
@@ -217,7 +227,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Paid: " + totalPaid
+                                                                        " Total Paid: " + formatCurrency(totalPaid)
                                                                     ),
                                                                 ]
                                                             ),
@@ -225,7 +235,7 @@ const orders = {
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                        " Total Unpaid: " + totalUnpaid
+                                                                        " Total Unpaid: " + formatCurrency(totalUnpaid)
                                                                     ),
                                                                 ]
                                                             ),
