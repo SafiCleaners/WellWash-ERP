@@ -171,15 +171,20 @@ const orders = {
                                                 ),
                                                 m("tbody",
                                                     [
-                                                        console.log(vnode.state.selectedDate),
                                                         vnode.state.jobs
                                                             .filter(job => {
-                                                                const selectedDate = new Date(localStorage.getItem("businessDate"));
+                                                                const storedStartDate = localStorage.getItem("businessRangeStartDate");
+                                                                const storedEndDate = localStorage.getItem("businessRangeEndDate");
 
-                                                                // Assuming job.businessDate is a valid date string
+                                                                // Assuming storedStartDate and storedEndDate are valid date strings
+                                                                const startDate = new Date(storedStartDate);
+                                                                const endDate = new Date(storedEndDate);
+
                                                                 const businessDate = new Date(job.businessDate);
-                                                                console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
-                                                                return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
+
+                                                                console.log({ businessDate, startDate, businessDate, endDate })
+                                                                // Check if the job's business date is within the stored date range
+                                                                return businessDate >= startDate && businessDate <= endDate;
                                                             })
                                                             .filter(job => {
                                                                 if (localStorage.getItem("storeId"))

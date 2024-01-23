@@ -2,6 +2,7 @@ import m from 'mithril';
 import moment from 'moment';
 
 const displayFormat = 'ddd, Do MMM YYYY';
+const rangeDisplayFormat = 'Do MMM'
 const storageFormat = 'YYYY-MM-DD';
 
 export const DateRangePicker = {
@@ -15,14 +16,14 @@ export const DateRangePicker = {
     view(vnode) {
         const attrs = vnode.attrs;
 
-        const currentRoute = m.route.get();
+        const currentRoute = window.location.href;
         console.log('Current Route:', currentRoute);
 
-        if (currentRoute == '/dash') {
-            return [m('input', {
+        if (currentRoute.includes('dash')) {
+            return m('input', {
                 ...attrs,
-                "placeholder": "Select Business Date:",
-                value: vnode.state.selectedDate,
+                "placeholder": "Select Business Date Range:",
+                // value: `${vnode.state.selectedStartDate} - ${vnode.state.selectedEndDate}`,
                 oncreate: (el) => {
                     const datepickerOptions = {
                         singleDatePicker: false,
@@ -30,27 +31,25 @@ export const DateRangePicker = {
                         minYear: 2022,
                         maxYear: moment().add(1, 'day').day(),
                         locale: {
-                            format: displayFormat
+                            format: rangeDisplayFormat
                         },
                         opens: 'left',
                     };
 
                     jQuery(`#${attrs.id}`).daterangepicker(datepickerOptions, (start, end, label) => {
-                        // Format the date for display using the custom format
-                        const formattedDate = start.format(displayFormat);
+                        const formattedStartDate = start.format(rangeDisplayFormat);
+                        const formattedEndDate = end.format(rangeDisplayFormat);
 
-                        // Format the date for storage using the standard format
-                        const storageFormattedDate = start.format(storageFormat);
+                        const storageFormattedStartDate = start.format(storageFormat);
+                        const storageFormattedEndDate = end.format(storageFormat);
 
-                        console.log({ storageFormattedDate })
-                        // Set the formatted date in the state
-                        vnode.state.selectedDate = formattedDate;
+                        vnode.state.selectedStartDate = formattedStartDate;
+                        vnode.state.selectedEndDate = formattedEndDate;
 
-                        // Save the selectedDate to localStorage in the standard format
-                        localStorage.setItem("businessDate", storageFormattedDate);
+                        localStorage.setItem("businessRangeStartDate", storageFormattedStartDate);
+                        localStorage.setItem("businessRangeEndDate", storageFormattedEndDate);
 
-                        // Call onChange with the formatted date
-                        attrs.onChange(formattedDate);
+                        attrs.onChange(`${formattedStartDate} - ${formattedEndDate}`);
                     });
 
                     // Remove the <div class="ranges"></div> element
@@ -62,7 +61,7 @@ export const DateRangePicker = {
                 onremove: (el) => {
                     jQuery(`#${attrs.id}`).daterangepicker('remove');
                 },
-            })]
+            })
         }
 
         return m('input', {
