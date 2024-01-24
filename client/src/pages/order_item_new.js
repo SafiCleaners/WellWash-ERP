@@ -1189,22 +1189,40 @@ const order_item = {
                 m("div", { class: "form-group row", style: { padding: "10px" } }, [
                     m("div", { "class": "d-flex flex-stack" },
                         [
-                            m("div", { "class": "form-check" },
-                                [
-                                    m("input", {
-                                        "class": "form-check-input", "type": "checkbox", "value": "", "id": "flexCheckChecked", "checked": "checked", checked: vnode.state.skipSms,
-                                        onchange: (event) => {
-                                            vnode.state.skipSms = event.target.checked;
-                                            console.log("checked", event.target.checked)
-                                        } }),
-                                    m("label", { "class": "form-check-label", "for": "flexCheckChecked" },
-                                        " Send SMS on status change "
-                                    )
-                                ]
-                            )
+                            [
+                                m("label", { "class": "d-flex flex-stack mb-5 cursor-pointer" },
+                                    [
+                                        m("span", { "class": "form-check form-check-custom form-check-solid mr-15" },
+                                            m("input", {
+                                                "class": "form-check-input w-45px h-30px",
+                                                "type": "checkbox",
+                                                "id": "smsswitch",
+                                                checked: vnode.state.skipSms,
+                                                onchange: (event) => {
+                                                    vnode.state.skipSms = event.target.checked;
+                                                    console.log("checked", event.target.checked)
+                                                }
+                                            }),
+                                        ),
+                                        m("span", { "class": "d-flex align-items-center me-2" },
+                                            [
+                                                m("span", { "class": "d-flex flex-column" },
+                                                    [
+                                                        m("span", { "class": "fw-bold fs-6" },
+                                                            "Send Sms"
+                                                        ),
+                                                        m("span", { "class": "fs-7 text-muted" },
+                                                            "Send SMS to " + vnode.state.phone + " when i change order status"
+                                                        )
+                                                    ]
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                ),
+                            ]
                         ]
                     )
-
                 ]),
 
                 m("div", { "class": "col-lg-12 col-md-12 col-sm-12", style: { "overflow-x": "auto" } },
@@ -1349,20 +1367,42 @@ const order_item = {
                 m("div", { class: "form-group row", style: { padding: "10px" } }, [
                     m("div", { "class": "d-flex flex-stack" },
                         [
-                            m("input", {
-                                "class": "form-check-input", "type": "checkbox", "value": "", "id": "flexCheckChecked", "checked": "checked", checked: vnode.state.paid,
-                                onchange: (event) => {
-                                    vnode.state.paid = event.target.checked;
-                                    console.log("checked", event.target.checked)
-                                }
-                            }),
-                            m("label", { "class": "form-check-label", "for": "flexCheckChecked" },
-                                " Paid "
-                            )
+                            [
+                                m("label", { "class": "d-flex flex-stack mb-5 cursor-pointer" },
+                                    [
+                                        m("span", { "class": "form-check form-check-custom form-check-solid mr-15" },
+                                            m("input", {
+                                                "class": "form-check-input w-45px h-30px",
+                                                "type": "checkbox",
+                                                "id": "payswitch",
+                                                checked: vnode.state.paid,
+                                                onchange: (event) => {
+                                                    vnode.state.paid = event.target.checked;
+                                                    console.log("checked", event.target.checked)
+                                                }
+                                            }),
+                                        ),
+                                        m("span", { "class": "d-flex align-items-center me-2" },
+                                            [
+                                                m("span", { "class": "d-flex flex-column" },
+                                                    [
+                                                        m("span", { "class": "fw-bold fs-6" },
+                                                            "Paid"
+                                                        ),
+                                                        m("span", { "class": "fs-7 text-muted" },
+                                                            "I confirm that i have received and confirmed the payment"
+                                                        )
+                                                    ]
+                                                )
+                                            ]
+                                        )
+                                    ]
+                                ),
+                            ]
                         ]
                     )
-
                 ]),
+                
                 m("div", { "class": "form-group row", style: { "padding": "10px" } },
                     [
 
