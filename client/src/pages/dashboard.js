@@ -110,6 +110,8 @@ const orders = {
 
         Promise.all([fetchJobs, fetchPricings, fetchCategories])
             .then(([jobs, pricings, categories]) => {
+                vnode.state.pricings = pricings
+                vnode.state.categories = categories
                 // Process jobs
                 vnode.state.jobs = jobs.filter((job) => {
                     const googleId = localStorage.getItem('googleId');
