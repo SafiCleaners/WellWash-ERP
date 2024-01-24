@@ -10,6 +10,7 @@ import landing from "./components/landing"
 import order_step_1 from "./pages/order_step_1";
 import OrderList from "./pages/orderlist";
 import Dashboard from './pages/dashboard'
+import Expenses from './pages/expenses'
 import OrderItem from "./pages/order_item";
 import OrderItemCreate from "./pages/order_item_new";
 import OrderItemPrint from "./pages/order_item_print";
@@ -35,6 +36,7 @@ m.route(root, "/", {
     "/": order_step_1,
     "/j": OrderList,
     "/dash": Dashboard,
+    "/e": Expenses,
     "/j/:job": OrderItem,
     "/q": OrderList,
     "/q/:job": OrderItem,
