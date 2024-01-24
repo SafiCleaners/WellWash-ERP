@@ -1325,7 +1325,7 @@ const routes = async (client) => {
                 { upsert: true });
             let updatedEntity = await db.collection('expenses').findOne({ _id: new ObjectId(id), deleted: false });
             // Log Activity
-            logActivity(db, "Pricing", "UPDATE", existingEntity, updatedEntity, ...req.body, decoded, dateTime, timestamp, formatted);
+            logActivity(db, "Pricing", "UPDATE", existingEntity, updatedEntity, ...Object.values(req.body), decoded, dateTime, timestamp, formatted);
 
             res.status(200).json({ message: 'Expense updated successfully' });
         } catch (error) {
