@@ -637,7 +637,7 @@ const orders = {
                                                                         m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                    `KSH ${calculatePrice()} from ` 
+                                                                                    `KSH ${formatCurrency(calculatePrice())}` 
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold" },
                                                                                     paid ? "Paid " : `Not Paid from ${moment(businessDate).format('ddd Do, MMM')} - ${moment(businessDate).fromNow() } ago`
