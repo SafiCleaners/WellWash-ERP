@@ -1,4 +1,6 @@
 require('dotenv').config()
+
+const { NODE_ENV } = process.env
 const express = require('express');
 const cors = require('cors');
 const moment = require('moment');
