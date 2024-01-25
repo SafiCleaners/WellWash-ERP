@@ -41,7 +41,7 @@ var BugsnagPluginExpress = require('@bugsnag/plugin-express')
 
 const bugsnagApiKey = BUGSNUG_API_KEY
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV == 'production') {
     Bugsnag.start({
         apiKey: bugsnagApiKey,
         plugins: [BugsnagPluginExpress],
