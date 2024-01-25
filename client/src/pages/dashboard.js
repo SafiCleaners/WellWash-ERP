@@ -56,6 +56,8 @@ const StatNumber = {
 const orders = {
 
     oninit(vnode) {
+        vnode.state.stores = []
+        vnode.state.expenses = []
         vnode.state.jobs = []
         vnode.state.pricings = []
         vnode.state.categories = []
@@ -107,10 +109,30 @@ const orders = {
             },
         });
 
-        Promise.all([fetchJobs, fetchPricings, fetchCategories])
-            .then(([jobs, pricings, categories]) => {
+        const fetchExpenses = fetchData({
+            method: 'GET',
+            url: url + "/expenses",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        });
+
+        const fetchStores = fetchData({
+            method: 'GET',
+            url: url + "/stores",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        });
+
+        Promise.all([fetchJobs, fetchPricings, fetchCategories, fetchExpenses, fetchStores])
+            .then(([jobs, pricings, categories, expenses, stores]) => {
                 vnode.state.pricings = pricings
                 vnode.state.categories = categories
+                vnode.state.expenses = expenses
+                vnode.state.stores = stores
                 // Process jobs
                 vnode.state.jobs = jobs.filter((job) => {
                     const googleId = localStorage.getItem('googleId');
@@ -153,10 +175,10 @@ const orders = {
     },
 
     view(vnode) {
-
+        const storedStartDate = localStorage.getItem("businessRangeStartDate");
+        const storedEndDate = localStorage.getItem("businessRangeEndDate");
         var jobs = vnode.state.jobs.filter(job => {
-            const storedStartDate = localStorage.getItem("businessRangeStartDate");
-            const storedEndDate = localStorage.getItem("businessRangeEndDate");
+            
 
             // Assuming storedStartDate and storedEndDate are valid date strings
             const startDate = new Date(storedStartDate);
@@ -190,12 +212,71 @@ const orders = {
 
         const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
 
-        const totalExpenses = jobs.reduce((total, job) => {
-            if (job.expenses && Array.isArray(job.expenses)) {
-                return total + job.expenses.reduce((sum, expense) => sum + (expense || 0), 0);
+        // Function to calculate total expenses on a business day
+        function calculateTotalExpenses(expenses, businessDateStart, businessDateEnd, storeId) {
+            console.log(expenses);
+            let totalExpenses = 0;
+
+            // Convert string dates to Date objects
+            const startDate = new Date(businessDateStart);
+            const endDate = new Date(businessDateEnd);
+
+            // Iterate through each day between startDate and endDate
+            for (let currentDate = startDate; currentDate <= endDate; currentDate.setDate(currentDate.getDate() + 1)) {
+                console.log('Processing date:', currentDate.toISOString().split('T')[0]);
+
+                // Add recurrent expenses for every day
+                for (const expense of expenses) {
+                    console.log(
+                        expense.title,
+                        expense.businessDate,
+                        currentDate.toISOString().split('T')[0],
+                        'Recurrent:', expense.recurrent,
+                        'Store ID:', expense.storeId,
+                        'Target Store ID:', storeId
+                    );
+
+                    // Convert string dates to Date objects
+                    const expenseDate = new Date(expense.businessDate);
+
+                    // Check if the expense is recurrent or falls on the current date and matches the storeId
+                    if (
+                        (expense.recurrent || expenseDate.toISOString().split('T')[0] === currentDate.toISOString().split('T')[0]) &&
+                        expense.storeId === storeId
+                    ) {
+                        totalExpenses += parseInt(expense.cost); // Add the expense cost to the total
+                        console.log('Added expense:', expense.title, 'Cost:', expense.cost);
+                    }
+                }
             }
-            return total;
-        }, 0);
+
+            console.log('Total Expenses:', totalExpenses);
+            return totalExpenses;
+        }
+
+
+
+
+        const storeId = localStorage.getItem("storeId");
+
+        // Calculate total expenses based on whether storeId is available
+        const calculateTotal = (storeId) => {
+            return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, storeId);
+        };
+
+        const totalExpensesArray = storeId
+            ? [calculateTotal(storeId)]  // Calculate total expenses for the specific store
+            : vnode.state.stores.map(store => calculateTotal(store.id));  // Calculate total expenses for all stores
+
+        // Now totalExpensesArray contains the total expenses, either for a specific store or for all stores
+
+
+        // Calculate the sum total of all expenses
+        const totalExpenses = totalExpensesArray.reduce((sum, expenses) => sum + expenses, 0);
+
+        const totalProfit = Number(totalSales) - Number(totalExpenses)
+
+        const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
 
         vnode.state.stats = {
             totalSales,
@@ -289,7 +370,7 @@ const orders = {
                                                                     m(StatNumber, {
                                                                         title: "Total Paid",
                                                                         amount: formatCurrency(totalPaid),
-                                                                        symbol: 'Ksh'
+                                                                        // symbol: 'Ksh'
                                                                     })
                                                                 ]
                                                             ),
@@ -299,10 +380,32 @@ const orders = {
                                                                     m(StatNumber, {
                                                                         title: "Total Unpaid",
                                                                         amount: formatCurrency(totalUnpaid),
-                                                                        symbol: 'Ksh'
+                                                                        // symbol: 'Ksh'
                                                                     })
                                                                 ]
                                                             ),
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m(StatNumber, {
+                                                                        title: "Total Expenses",
+                                                                        amount: formatCurrency(totalExpenses),
+                                                                        // symbol: 'Leads'
+                                                                    })
+                                                                ]
+                                                            ),
+
+                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                                [
+                                                                    m(StatNumber, {
+                                                                        title: "Total Profit",
+                                                                        amount: formatCurrency(totalProfit),
+                                                                        // symbol: 'Leads'
+                                                                    })
+                                                                ]
+                                                            ),
+
+                                                            
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
@@ -313,6 +416,8 @@ const orders = {
                                                                     })
                                                                 ]
                                                             ),
+
+                                                            
 
                                                             // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                             //     [
@@ -417,7 +522,7 @@ const orders = {
 
                                                                 const businessDate = new Date(job.businessDate);
 
-                                                                console.log({ businessDate, startDate, businessDate, endDate })
+                                                                // console.log({ businessDate, startDate, businessDate, endDate })
                                                                 // Check if the job's business date is within the stored date range
                                                                 return businessDate >= startDate && businessDate <= endDate;
                                                             })
@@ -452,7 +557,7 @@ const orders = {
                                                                 categoryAmounts = {},
                                                                 categoryCharges = {}
                                                             }, index) => {
-                                                                console.log({ index })
+                                                                // console.log({ index })
                                                                 const calculatePrice = () => {
 
                                                                     return Object.keys(categoryAmounts).reduce((total, categoryId) => {
