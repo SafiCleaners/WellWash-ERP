@@ -258,7 +258,7 @@ const orders = {
                                                     ]
                                                 )
                                             ),
-                                            m("tbody",
+                                            m("tbody", { style: { "overflow-x": "auto" } },
                                                 [
                                                     m("tr", {
                                                         // key: id,

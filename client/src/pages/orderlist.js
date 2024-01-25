@@ -37,7 +37,7 @@ const formatCurrency = (number) => {
 
 const StatNumber = {
     view(vnode) {
-        return m("h3", { "class": "card-title align-items-start flex-column d-flex" },
+        return m("h3", { "class": "card-title align-items-start flex-column d-flex mr-3", style: { whiteSpace: "nowrap" } } ,
             [
                 m("span", { "class": "fs-6 fw-semibold text-gray-500", style: "align-self: flex-start;" },
                     vnode.attrs.title
@@ -164,7 +164,7 @@ const orders = {
 
         axios.request(optionsExpenses).then(function (response) {
             vnode.state.expenses = response.data
-            
+
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -197,7 +197,7 @@ const orders = {
                 // Compare dates for sorting
                 return dateA - dateB;
             })
-        
+
         const selectedDate = new Date(localStorage.getItem("businessDate"));
         const storeId = localStorage.getItem("storeId");
 
@@ -235,7 +235,7 @@ const orders = {
         }
 
         const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate);
-        const totalProfit = Number(totalSales) - Number(totalExpenses) 
+        const totalProfit = Number(totalSales) - Number(totalExpenses)
 
         vnode.state.stats = {
             totalSales,
@@ -250,10 +250,10 @@ const orders = {
         const date = `${formattedBusinessDate}`;
 
         return [m("div", { "class": "card card-custom gutter-b" },
+
             [
-                
-                [
-                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
+                m("div", { "class": "table-responsive" },
+                    !vnode.state.loading ? m("table", { style: { "overflow-x": "auto", "class": "table table-borderless table-vertical-center" } },
                         [
                             m("thead",
                                 m("tr",
@@ -269,121 +269,123 @@ const orders = {
                                     ]
                                 )
                             ),
-                            m("tbody",
-                                [
-                                    m("tr", {
-                                        // key: id,
-                                        style: { "cursor": "pointer" }
-                                    },
-                                        [
-                                            // m("td", { "class": "pl-0 py-5" },
-                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                            //         m("span", { "class": "symbol-label" },
-                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                            //         )
-                                            //     )
-                                            // ),
+                            m("tbody", [
+                                m("tr", {
+                                    // key: id,
+                                    style: { "cursor": "pointer" },
+                                    // class: { "white- space": " nowrap; ", }
+                                },
+                                    [
+                                        // m("td", { "class": "pl-0 py-5" },
+                                        //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
+                                        //         m("span", { "class": "symbol-label" },
+                                        //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
+                                        //         )
+                                        //     )
+                                        // ),
 
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Total Sales",
-                                                        amount: formatCurrency(totalSales),
-                                                        symbol: 'Ksh'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Total Sales",
+                                                    amount: formatCurrency(totalSales),
+                                                    symbol: 'Ksh'
+                                                })
+                                            ]
+                                        ),
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Total Paid",
-                                                        amount: formatCurrency(totalPaid),
-                                                        symbol: 'Ksh'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Total Paid",
+                                                    amount: formatCurrency(totalPaid),
+                                                    // symbol: 'Ksh'
+                                                })
+                                            ]
+                                        ),
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Total Unpaid",
-                                                        amount: formatCurrency(totalUnpaid),
-                                                        symbol: 'Ksh'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Total Unpaid",
+                                                    amount: formatCurrency(totalUnpaid),
+                                                    // symbol: 'Ksh'
+                                                })
+                                            ]
+                                        ),
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Total Expenses",
-                                                        amount: formatCurrency(totalExpenses),
-                                                        symbol: 'Ksh'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Total Expenses",
+                                                    amount: formatCurrency(totalExpenses),
+                                                    // symbol: 'Ksh'
+                                                })
+                                            ]
+                                        ),
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Profit",
-                                                        amount: formatCurrency(totalProfit),
-                                                        symbol: 'Ksh'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Profit",
+                                                    amount: formatCurrency(totalProfit),
+                                                    // symbol: 'Ksh'
+                                                })
+                                            ]
+                                        ),
 
-                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                [
-                                                    m(StatNumber, {
-                                                        title: "Total Unique Leads",
-                                                        amount: totalUniqueCustomers,
-                                                        symbol: 'Leads'
-                                                    })
-                                                ]
-                                            ),
+                                        m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            [
+                                                m(StatNumber, {
+                                                    title: "Total Unique Leads",
+                                                    amount: totalUniqueCustomers,
+                                                    symbol: 'Leads'
+                                                })
+                                            ]
+                                        ),
 
-                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                            //     [
-                                            //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                            //             " Total Expenses: X"
-                                            //         ),
-                                            //     ]
-                                            // ),
+                                        // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                        //     [
+                                        //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                        //             " Total Expenses: X"
+                                        //         ),
+                                        //     ]
+                                        // ),
 
-                                        ]
-                                    )
-                                ]
+                                    ]
+                                )
+                            ]
                             )
                         ]
                     ) : m(loader)
-                ],
-                [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Job Queue on " + date
-                                    )
-                                ]
-                            ),
-                            m("div",
-                                m("button", {
-                                    "class": "btn btn-lg btn-info", onclick() {
-                                        m.route.set("/q-new")
-                                    }
-                                },
-                                    [
-                                        m("i", { "class": "flaticon-add-circular-button" }),
-                                        "Add Job"
-                                    ]
+                ),
+
+                m("div", { "class": "card-header border-0 pt-7" },
+                    [
+                        m("h3", { "class": "card-title align-items-start flex-column" },
+                            [
+                                m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
+                                    "Job Queue on " + date
                                 )
+                            ]
+                        ),
+                        m("div",
+                            m("button", {
+                                "class": "btn btn-lg btn-info", onclick() {
+                                    m.route.set("/q-new")
+                                }
+                            },
+                                [
+                                    m("i", { "class": "flaticon-add-circular-button" }),
+                                    "Add Job"
+                                ]
                             )
-                        ]
-                    ),
+                        )
+                    ]
+                ),
+                m("div", { "class": "tab-content mt-2", "id": "myTabTable5" }, [
+                    
                     m("div", { "class": "card-body pt-0 pb-4" },
                         m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
                             [
@@ -411,7 +413,7 @@ const orders = {
 
                                 m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                     m("div", { "class": "table-responsive" },
-                                        !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
+                                        vnode.state.loading ? m(loader) : m("table", { "class": "table table-borderless table-vertical-center" },
                                             [
                                                 m("thead",
                                                     m("tr",
@@ -584,17 +586,15 @@ const orders = {
                                                             })
                                                     ]
                                                 )
-                                            ]
-                                        ) : m(loader)
+                                            ])
                                     )
                                 )
                             ]
                         )
-                    )
-                ],
-                
-            ]
-        ), m(expenses)]
+                    )],
+                ), m(expenses)
+            ])
+        ]
     }
 }
 
