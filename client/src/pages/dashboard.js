@@ -48,7 +48,6 @@ const StatNumber = {
                         ),
                     ]
                 ),
-                
             ]
         )
     }
@@ -280,7 +279,7 @@ const orders = {
                                                                     m(StatNumber, {
                                                                         title: "Total Sales",
                                                                         amount: formatCurrency(totalSales),
-                                                                        symbol:'Ksh'
+                                                                        symbol: 'Ksh'
                                                                     })
                                                                 ]
                                                             ),

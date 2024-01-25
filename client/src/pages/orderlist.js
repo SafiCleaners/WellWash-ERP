@@ -11,6 +11,8 @@ import moment from "moment"
 import { DateRangePicker } from '../components/daterangepicker';
 
 import loader from "../components/loader"
+import expenses from "../pages/expenses"
+
 const detailsString = (job) => {
     const orderItems = ["duvets", "blankets", "curtains", "generalKgs",];
     return Object.keys(job)
@@ -20,11 +22,49 @@ const detailsString = (job) => {
         })
         .join(", ");
 };
+
+const formatCurrency = (number) => {
+    try {
+        return Intl.NumberFormat('en-US').format(number);
+    } catch (error) {
+        console.error('Error formatting number:', error);
+        return 'N/A';
+    }
+}
+
+
+
+
+const StatNumber = {
+    view(vnode) {
+        return m("h3", { "class": "card-title align-items-start flex-column d-flex" },
+            [
+                m("span", { "class": "fs-6 fw-semibold text-gray-500", style: "align-self: flex-start;" },
+                    vnode.attrs.title
+                ),
+                m("div", { "class": "d-flex align-items-center mb-2" },
+                    [
+                        m("span", { "class": "fs-3 fw-semibold text-gray-500 align-self-start me-1" },
+                            vnode.attrs.symbol
+                        ),
+                        m("span", { "class": "fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" },
+                            vnode.attrs.amount
+                        ),
+                    ]
+                ),
+
+            ]
+        )
+    }
+}
+
+
 const orders = {
 
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.pricings = []
+        vnode.state.expenses = []
         vnode.state.categories = []
         vnode.state.loading = true
         vnode.state.selectedDate = new Date()
@@ -55,6 +95,19 @@ const orders = {
                     timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
                     timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
                 })
+
+                if (job.categoryAmounts) {
+                    const calculatePrice = () => {
+                        return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
+                            const amountValue = job.categoryAmounts[categoryId] || 0;
+                            const chargeValue = job.categoryCharges[categoryId] || 0;
+                            const subtotal = amountValue * chargeValue;
+                            return total + subtotal;
+                        }, 0);
+                    };
+
+                    job.price = calculatePrice();
+                }
             })
 
             vnode.state.loading = false
@@ -100,17 +153,220 @@ const orders = {
             m.redraw()
             console.error(error);
         });
+
+        const optionsExpenses = {
+            method: 'GET', url: url + "/expenses",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsExpenses).then(function (response) {
+            vnode.state.expenses = response.data
+            
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
     },
     view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" },
+        var jobs = vnode.state.jobs
+            .filter(job => {
+                const selectedDate = new Date(localStorage.getItem("businessDate"));
+
+                // Assuming job.businessDate is a valid date string
+                const businessDate = new Date(job.businessDate);
+                console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+                return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
+            })
+            .filter(job => {
+                if (localStorage.getItem("storeId"))
+                    return job.storeId == localStorage.getItem("storeId")
+
+                return true
+            })
+            .sort((a, b) => {
+                // Assuming createdAtDateTime is a valid date string
+                const dateA = new Date(a.createdAtDateTime);
+                const dateB = new Date(b.createdAtDateTime);
+
+                // Compare dates for sorting
+                return dateA - dateB;
+            })
+        
+        const selectedDate = new Date(localStorage.getItem("businessDate"));
+        const storeId = localStorage.getItem("storeId");
+
+        // Process stats
+        const totalSales = jobs.reduce((total, job) => total + (job.price || 0), 0);
+        const totalPaid = jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
+        const totalUnpaid = jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
+
+        const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
+
+        // Function to calculate total expenses on a business day
+        function calculateTotalExpenses(expenses, businessDate) {
+            console.log(expenses)
+            let totalExpenses = 0;
+
+            // Iterate through expenses
+            for (const expense of expenses) {
+                console.log(expense.businessDate, businessDate, expense.recurrent, expense.storeId, storeId);
+
+                // Convert string dates to Date objects
+                const expenseDate = new Date(expense.businessDate);
+                const targetDate = new Date(businessDate);
+
+                // Check if the expense is on the specified business date
+                if (
+                    expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0] ||
+                    (expense.recurrent && expense.storeId === storeId)
+                ) {
+                    totalExpenses += parseInt(expense.cost); // Add the expense cost to the total
+                }
+            }
+
+
+            return totalExpenses;
+        }
+
+        const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate);
+        const totalProfit = Number(totalSales) - Number(totalExpenses) 
+
+        vnode.state.stats = {
+            totalSales,
+            totalPaid,
+            totalUnpaid,
+            totalUniqueCustomers,
+            totalExpenses
+        };
+
+        const formattedBusinessDate = selectedDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+        const date = `${formattedBusinessDate}`;
+
+        return [m("div", { "class": "card card-custom gutter-b" },
             [
+                
+                [
+                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
+                        [
+                            m("thead",
+                                m("tr",
+                                    [
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        // m("th", { "class": "p-0 min-w-200px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                        m("th", { "class": "p-0 w-50px" }),
+                                    ]
+                                )
+                            ),
+                            m("tbody",
+                                [
+                                    m("tr", {
+                                        // key: id,
+                                        style: { "cursor": "pointer" }
+                                    },
+                                        [
+                                            // m("td", { "class": "pl-0 py-5" },
+                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
+                                            //         m("span", { "class": "symbol-label" },
+                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
+                                            //         )
+                                            //     )
+                                            // ),
+
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Total Sales",
+                                                        amount: formatCurrency(totalSales),
+                                                        symbol: 'Ksh'
+                                                    })
+                                                ]
+                                            ),
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Total Paid",
+                                                        amount: formatCurrency(totalPaid),
+                                                        symbol: 'Ksh'
+                                                    })
+                                                ]
+                                            ),
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Total Unpaid",
+                                                        amount: formatCurrency(totalUnpaid),
+                                                        symbol: 'Ksh'
+                                                    })
+                                                ]
+                                            ),
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Total Expenses",
+                                                        amount: formatCurrency(totalExpenses),
+                                                        symbol: 'Ksh'
+                                                    })
+                                                ]
+                                            ),
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Profit",
+                                                        amount: formatCurrency(totalProfit),
+                                                        symbol: 'Ksh'
+                                                    })
+                                                ]
+                                            ),
+
+                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                                [
+                                                    m(StatNumber, {
+                                                        title: "Total Unique Leads",
+                                                        amount: totalUniqueCustomers,
+                                                        symbol: 'Leads'
+                                                    })
+                                                ]
+                                            ),
+
+                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
+                                            //     [
+                                            //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                            //             " Total Expenses: X"
+                                            //         ),
+                                            //     ]
+                                            // ),
+
+                                        ]
+                                    )
+                                ]
+                            )
+                        ]
+                    ) : m(loader)
+                ],
                 [
                     m("div", { "class": "card-header border-0 pt-7" },
                         [
                             m("h3", { "class": "card-title align-items-start flex-column" },
                                 [
                                     m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Job Queue"
+                                        "Job Queue on " + date
                                     )
                                 ]
                             ),
@@ -212,7 +468,6 @@ const orders = {
                                                                 categoryAmounts = {},
                                                                 categoryCharges = {}
                                                             }, index) => {
-                                                                console.log({index})
                                                                 const calculatePrice = () => {
 
                                                                     return Object.keys(categoryAmounts).reduce((total, categoryId) => {
@@ -281,7 +536,7 @@ const orders = {
                                                                             [
                                                                                 m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
 
-                                                                                    
+
                                                                                 ),
                                                                                 m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
                                                                                     moreDetails
@@ -336,9 +591,10 @@ const orders = {
                             ]
                         )
                     )
-                ]
+                ],
+                
             ]
-        )
+        ), m(expenses)]
     }
 }
 
