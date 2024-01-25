@@ -212,7 +212,7 @@ const header = {
 
                         localStorage.getItem('authToken') ? [
 
-                            m("div", { "class": "topbar-item mr-2", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" }, [
+                            m("div", { "class": "topbar-item mr-1", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" }, [
                                 m("button", { "class": "btn btn-md btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
                                     // " All Stores "
                                     !localStorage.getItem('storeId')  ? " All Stores " :  vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
@@ -260,7 +260,7 @@ const header = {
                                     onChange: onDatePickerChange
                                 })
                             ),
-                            m("div", { "class": "topbar-item mr-3", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
+                            m("div", { "class": "topbar-item mr-1", "data-toggle": "dropdown", "data-offset": "10px,0px", "aria-expanded": "false" },
                                 m("span", { "class": "svg-icon svg-icon-xl" }, [
                                     m("img", {
                                         src: localStorage.getItem('imageUrl'),
