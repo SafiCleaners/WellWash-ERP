@@ -29,7 +29,7 @@ const crypto = require('crypto');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
-app.use(morgan('tiny'))
+app.use(morgan('combined'))
 
 const session = require('express-session');
 const MongoDBStore = require('express-mongodb-session')(session);
