@@ -39,10 +39,36 @@ const MongoDBStore = require('express-mongodb-session')(session);
 var Bugsnag = require('@bugsnag/js')
 var BugsnagPluginExpress = require('@bugsnag/plugin-express')
 
-Bugsnag.start({
-    apiKey: 'f088d748c99f920d8b2b9335d95ea7d6',
-    plugins: [BugsnagPluginExpress]
-})
+const bugsnagApiKey = 'f088d748c99f920d8b2b9335d95ea7d6'
+
+if (process.env.NODE_ENV === 'production') {
+    Bugsnag.start({
+        apiKey: bugsnagApiKey,
+        plugins: [BugsnagPluginExpress],
+        enabledReleaseStages: ['production'],
+        // Additional production-specific configuration
+        releaseStage: 'production', // Set the release stage explicitly
+        appType: 'node', // Set the application type
+        appVersion: '1.0.0', // Set the version of your application
+        notifyReleaseStages: ['production'], // Specify which release stages should send notifications
+        autoDetectErrors: true, // Enable automatic error detection
+        maxBreadcrumbs: 20, // Set the maximum number of breadcrumbs to store
+        metaData: {
+            // Add any additional metadata specific to your production environment
+            environment: 'production',
+            datacenter: 'us-east-1'
+        },
+        // ... other production-specific configuration
+    });
+} else {
+    // If not in production, configure Bugsnag for local development or other environments
+    Bugsnag.start({
+        apiKey: bugsnagApiKey,
+        plugins: [BugsnagPluginExpress],
+        enabledReleaseStages: ['development', 'staging'],
+        // ... other local/development-specific configuration
+    });
+}
 
 const {
     JWT_TOKEN = 'shhhhh',
