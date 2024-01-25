@@ -70,6 +70,7 @@ const orders = {
             totalUniqueCustomers: 0,
             totalExpenses: 0
         }
+        vnode.state.showUnpaid = false
     },
     oncreate(vnode) {
         const fetchData = async (options) => {
@@ -178,7 +179,7 @@ const orders = {
         const storedStartDate = localStorage.getItem("businessRangeStartDate");
         const storedEndDate = localStorage.getItem("businessRangeEndDate");
         var jobs = vnode.state.jobs.filter(job => {
-            
+
 
             // Assuming storedStartDate and storedEndDate are valid date strings
             const startDate = new Date(storedStartDate);
@@ -405,7 +406,7 @@ const orders = {
                                                                 ]
                                                             ),
 
-                                                            
+
 
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
@@ -417,7 +418,7 @@ const orders = {
                                                                 ]
                                                             ),
 
-                                                            
+
 
                                                             // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                             //     [
@@ -441,17 +442,35 @@ const orders = {
                 [
                     m("div", { "class": "card-header border-0 pt-7" },
                         [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label fw-bold text-gray-800" },
-                                        "Job Queue"
-                                    ),
-                                    m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
-                                        dateRange
-                                    )
-                                ],
-                            ),
-                            m("div",
+                            m("h3", { "class": "card-title align-items-start flex-row" },
+                                m("h3", { "class": "card-title align-items-start flex-column" }, [
+                                    [
+                                        m("span", { "class": "card-label fw-bold text-gray-800" },
+                                            "Job Queue"
+                                        ),
+                                        m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
+                                            dateRange
+                                            , [m("div", m("label", { "class": "form-check form-switch form-check-custom form-check-solid" },
+                                                [
+                                                    m("input", {
+                                                        "class": "form-check-input", "type": "checkbox", "value": "1", "checked": "checked",
+                                                        checked: vnode.state.showUnpaid,
+                                                        onchange: (event) => {
+                                                            vnode.state.showUnpaid = event.target.checked;
+                                                        }
+                                                    }),
+                                                    m("span", { "class": "form-check-label fw-semibold text-muted" },
+                                                        "Show Unpaid only"
+                                                    )
+                                                ]
+                                            ))])
+                                    ],
+
+                                    
+                                ])),
+
+                            m("div", [
+                                ,
                                 m("button", {
                                     "class": "btn btn-lg btn-info", onclick() {
                                         m.route.set("/q-new")
@@ -462,9 +481,9 @@ const orders = {
                                 },
                                     [
                                         m("i", { "class": "flaticon-add-circular-button" }),
-                                        "Add Job"
+                                        "Add"
                                     ]
-                                )
+                                )]
                             )
                         ]
                     ),
@@ -531,6 +550,12 @@ const orders = {
                                                                     return job.storeId == localStorage.getItem("storeId")
 
                                                                 return true
+                                                            })
+                                                            .filter(job => {
+                                                                if (!vnode.state.showUnpaid) {
+                                                                    return true
+                                                                }
+                                                                return job.paid != vnode.state.showUnpaid
                                                             })
                                                             .sort((a, b) => {
                                                                 // Assuming createdAtDateTime is a valid date string
