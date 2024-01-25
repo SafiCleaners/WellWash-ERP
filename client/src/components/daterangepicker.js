@@ -12,6 +12,16 @@ export const DateRangePicker = {
 
         // Set the selectedDate in state using the display format or null if not present
         vnode.state.selectedDate = storedDate ? moment(storedDate).format(displayFormat) : null;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            event.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = event;
+            // Update UI notify the user they can add to home screen
+            btnAdd.style.display = 'block';
+        });
+
     },
     onremove: (el) => {
         console.log("removing range")
