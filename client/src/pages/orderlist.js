@@ -64,6 +64,7 @@ const orders = {
     oninit(vnode) {
         vnode.state.jobs = []
         vnode.state.pricings = []
+        vnode.state.stores = []
         vnode.state.expenses = []
         vnode.state.categories = []
         vnode.state.loading = true
@@ -127,6 +128,24 @@ const orders = {
 
         axios.request(optionsPricing).then(function (response) {
             vnode.state.pricings = response.data
+            vnode.state.loading = false
+            m.redraw()
+        }).catch(function (error) {
+            vnode.state.loading = false
+            m.redraw()
+            console.error(error);
+        });
+
+        const optionsStores = {
+            method: 'GET', url: url + "/stores",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            },
+        };
+
+        axios.request(optionsStores).then(function (response) {
+            vnode.state.stores = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -236,6 +255,8 @@ const orders = {
 
         const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate);
         const totalProfit = Number(totalSales) - Number(totalExpenses)
+
+        const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
 
         vnode.state.stats = {
             totalSales,
@@ -365,7 +386,7 @@ const orders = {
                             m("h3", { "class": "card-title align-items-start flex-column" },
                                 [
                                     m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Job Queue on " + date
+                                        "Job Queue for " + date + " in Store " + (storeName ? storeName : "")
                                     )
                                 ]
                             ),
