@@ -180,7 +180,6 @@ const orders = {
         const storedEndDate = localStorage.getItem("businessRangeEndDate");
         var jobs = vnode.state.jobs.filter(job => {
 
-
             // Assuming storedStartDate and storedEndDate are valid date strings
             const startDate = new Date(storedStartDate);
             const endDate = new Date(storedEndDate);
@@ -407,7 +406,6 @@ const orders = {
                                                             ),
 
 
-
                                                             m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
                                                                 [
                                                                     m(StatNumber, {
@@ -417,7 +415,6 @@ const orders = {
                                                                     })
                                                                 ]
                                                             ),
-
 
 
                                                             // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
