@@ -327,7 +327,7 @@ const orders = {
                                                 ]
                                             )
                                         ]
-                                    ) : m(loader)
+                                    ) : []
                                 )
                             )
                         ]
