@@ -272,7 +272,7 @@ const routes = async (client) => {
     app.post('/track-refferals', async (req, res) => {
         // generate a short ID
         const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
-        console.log(shortId);
+        // console.log(shortId);
         // console.log(shortId); // output: "9a2b7c"
         const { REFFERAL_CODE, DISCOUNT_CODE } = req.body;
 
@@ -302,7 +302,7 @@ const routes = async (client) => {
         delete newJobData.jobId
 
         const message = YAML.stringify({ newJobData, trackData })
-        console.log(message.length, message)
+        // console.log(message.length, message)
         sms({
             phone: "+254711657108",
             message
@@ -343,7 +343,7 @@ const routes = async (client) => {
                     { upsert: true }
                 );
 
-                console.log(updatedJob)
+                // console.log(updatedJob)
 
                 res.status(201).send({ id: jobId, jobUrl: newJobData.orderUrl });
             } else {
@@ -353,7 +353,7 @@ const routes = async (client) => {
                     { upsert: true }
                 );
 
-                console.log(updatedJob)
+                // console.log(updatedJob)
 
                 const selectedItems = [];
                 if (req.body.curtainsAmount > 0) {
@@ -384,7 +384,7 @@ const routes = async (client) => {
                 const statusInfo = req.body.statusInfo || [];
                 const selectedStatus = statusInfo.length > 0 ? statusInfo[0].status : null;
 
-                console.log("Received Status:", selectedStatus);
+                // console.log("Received Status:", selectedStatus);
                 const customerName = req.body.name
                 const pickupTime = req.body.pickupTime
                 const dropOffTime = req.body.dropOffTime
@@ -410,7 +410,7 @@ const routes = async (client) => {
                     const statusMessage = statusToMessageMap[selectedStatus];
                     if (statusMessage) {
 
-                        console.log("Sending SMS with status message:", statusMessage);
+                        // console.log("Sending SMS with status message:", statusMessage);
                         console.log("Phone:", req.body.phone);
 
                         sms({
@@ -433,7 +433,7 @@ const routes = async (client) => {
                 res.status(201).send({ id: jobId, job });
             }
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             res.status(500).send({ message: 'Server error' });
         }
     });
@@ -516,7 +516,7 @@ const routes = async (client) => {
         const { googleId } = req.body
 
         db.collection('users').findOne({ googleId }, function (err, result) {
-            console.log(result)
+            // console.log(result)
 
             if (!result) {
                 // check if error is a "not found error"
@@ -588,7 +588,7 @@ const routes = async (client) => {
                 })
             })))
 
-            console.log(result2)
+            // console.log(result2)
             res.send(result2)
         })
     });
@@ -638,7 +638,7 @@ const routes = async (client) => {
     app.post(
         "/otp/send",
         async (req, res) => {
-            console.log(req.body)
+            // console.log(req.body)
             const db = await req.app.locals.db
             const { collections } = db
             const { user } = req.body
@@ -670,7 +670,7 @@ const routes = async (client) => {
                 password
             })
 
-            console.log({ otpSaveInfo })
+            // console.log({ otpSaveInfo })
 
             // send sms to phone
             if (!['development', "test"].includes(NODE_ENV)) {
@@ -699,14 +699,14 @@ const routes = async (client) => {
         const paymentData = req.body
         db.collection('payments').insertOne(paymentData, function (err, paymentInsertRes) {
             if (err) throw err
-            console.log("inserted payment", paymentInsertRes)
+            // console.log("inserted payment", paymentInsertRes)
 
             db.collection('jobs').findOne({ id: req.body.jobID }, async function (err, job) {
                 if (err) throw err
-                console.log("found job", job)
+                // console.log("found job", job)
                 const access_token = await fetchAccessTokenFromPaypal()
 
-                console.log("Got access token - ", access_token)
+                // console.log("Got access token - ", access_token)
                 // capture the transaction
                 const options = {
                     method: 'POST',
@@ -719,7 +719,7 @@ const routes = async (client) => {
                 };
 
                 axios.request(options).then(function (response) {
-                    console.log("CAPTURERED TRANSACTION!!!", response.data);
+                    // console.log("CAPTURERED TRANSACTION!!!", response.data);
 
                     db.collection('payments').updateOne({ _id: paymentInsertRes.insertedId }, { $set: { paypalCaptureInfo: response.data } }, function (err, paymentUpdateRes) {
                         if (err) throw err
@@ -754,7 +754,7 @@ const routes = async (client) => {
 
             result3 = users.filter((user) => user.role == "CLIENT");
 
-            console.log(result3)
+            // console.log(result3)
             res.send(result3)
         })
     });
@@ -768,7 +768,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -785,7 +785,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -799,7 +799,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -904,7 +904,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -930,9 +930,9 @@ const routes = async (client) => {
             // Try to find store
             let storeTitle;
             let store;
-            console.log(storeId);
+            // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
-            console.log(storeEntity);
+            // console.log(storeEntity);
             if (storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
@@ -1102,7 +1102,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -1116,7 +1116,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -1142,9 +1142,9 @@ const routes = async (client) => {
             // Try to find store
             let storeTitle;
             let store;
-            console.log(storeId);
+            // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
-            console.log(storeEntity);
+            // console.log(storeEntity);
             if(storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
@@ -1209,9 +1209,9 @@ const routes = async (client) => {
             // Try to find store
             let storeTitle;
             let store;
-            console.log(storeId);
+            // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
-            console.log(storeEntity);
+            // console.log(storeEntity);
             if (storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
@@ -1415,7 +1415,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -1437,14 +1437,14 @@ const routes = async (client) => {
         if(tasks) {
             tasksCount = tasks.length;
         }
-        console.log(req.body);
+        // console.log(req.body);
 
         try {
             // Try to find client
             let clientTitle;
-            console.log(clientId);
+            // console.log(clientId);
             let clientEntity = await db.collection('users').findOne({ _id: new ObjectId(clientId), deleted: false });
-            console.log(clientEntity);
+            // console.log(clientEntity);
             if(clientEntity) {
                 clientTitle = clientEntity.name;
                 client = clientEntity;
@@ -1453,9 +1453,9 @@ const routes = async (client) => {
             // Try to find store
             let storeTitle;
             let store;
-            console.log(storeId);
+            // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
-            console.log(storeEntity);
+            // console.log(storeEntity);
             if(storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
@@ -1488,9 +1488,9 @@ const routes = async (client) => {
                         let pricingId;
                         let pricingTitle;
                         let pricing;
-                        console.log(categoryId);
+                        // console.log(categoryId);
                         let pricingEntity = await db.collection('pricings').findOne({ _id: new ObjectId(categoryId), deleted: false });
-                        console.log(pricingEntity);
+                        // console.log(pricingEntity);
                         if(pricingEntity) {
                             pricingId = pricingEntity._id;
                             pricingTitle = pricingEntity.title;
@@ -1577,7 +1577,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -1683,7 +1683,7 @@ const routes = async (client) => {
         }).toArray(async function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
     });
@@ -1810,7 +1810,7 @@ const routes = async (client) => {
             bucket: 'temp-uploads-storage',
             acl: 'public-read',
             key: function (request, file, cb) {
-                console.log(file);
+                // console.log(file);
                 cb(null, file.originalname);
             }
         })
@@ -1820,10 +1820,10 @@ const routes = async (client) => {
     app.post('/upload', function (request, response, next) {
         upload(request, response, function (error) {
             if (error) {
-                console.log(error);
+                // console.log(error);
                 return response.status(500).send(error)
             }
-            console.log('File uploaded successfully.');
+            // console.log('File uploaded successfully.');
             response.send({
                 status: "OK"
             })
