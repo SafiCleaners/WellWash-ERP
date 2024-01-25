@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const { NODE_ENV } = process.env
+const { NODE_ENV, BUGSNUG_API_KEY } = process.env
 const express = require('express');
 const cors = require('cors');
 const moment = require('moment');
@@ -39,7 +39,7 @@ const MongoDBStore = require('express-mongodb-session')(session);
 var Bugsnag = require('@bugsnag/js')
 var BugsnagPluginExpress = require('@bugsnag/plugin-express')
 
-const bugsnagApiKey = 'f088d748c99f920d8b2b9335d95ea7d6'
+const bugsnagApiKey = BUGSNUG_API_KEY
 
 if (process.env.NODE_ENV === 'production') {
     Bugsnag.start({
