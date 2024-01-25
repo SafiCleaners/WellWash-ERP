@@ -562,13 +562,21 @@ const orders = {
                                                             // Compare dates for sorting
                                                             return dateA - dateB;
                                                         } else {
-                                                            // Original sorting logic
                                                             // Assuming createdAtDateTime is a valid date string
                                                             const dateA = new Date(a.createdAtDateTime);
                                                             const dateB = new Date(b.createdAtDateTime);
 
-                                                            // Compare dates for sorting
-                                                            return dateA - dateB;
+                                                            // Compare business dates for sorting
+                                                            const businessDateComparison = dateA - dateB;
+
+                                                            // If business dates are equal, sort by createdAtDateTime
+                                                            if (businessDateComparison === 0) {
+                                                                const createdAtDateA = new Date(a.createdAtDateTime);
+                                                                const createdAtDateB = new Date(b.createdAtDateTime);
+                                                                return createdAtDateA - createdAtDateB;
+                                                            }
+
+                                                            return businessDateComparison;
                                                         }
                                                     })
                                                     .map(({
