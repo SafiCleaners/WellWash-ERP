@@ -223,8 +223,8 @@ const orders = {
 
                 // Check if the expense is on the specified business date
                 if (
-                    expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0] ||
-                    (expense.recurrent && expense.storeId === storeId)
+                    (expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0] ||
+                    expense.recurrent) && expense.storeId === storeId
                 ) {
                     totalExpenses += parseInt(expense.cost); // Add the expense cost to the total
                 }
