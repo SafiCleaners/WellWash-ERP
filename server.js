@@ -1765,9 +1765,9 @@ const routes = async (client) => {
             userId,
             userTitle,
             user: decoded,
-            createdAtDateTime: dateTime,
-            createdAtTimestamp: timestamp,
-            createdAtFormatted: formatted,
+            updatedAtDateTime: dateTime,
+            updatedAtTimestamp: timestamp,
+            updatedAtFormatted: formatted,
         });
 
         try {
@@ -1890,9 +1890,9 @@ const routes = async (client) => {
             userId,
             userTitle,
             user: decoded,
-            createdAtDateTime: dateTime,
-            createdAtTimestamp: timestamp,
-            createdAtFormatted: formatted,
+            updatedAtDateTime: dateTime,
+            updatedAtTimestamp: timestamp,
+            updatedAtFormatted: formatted,
         });
 
         try {
@@ -2003,9 +2003,9 @@ const routes = async (client) => {
             userTitle,
             groupTitles,
             user: decoded,
-            createdAtDateTime: dateTime,
-            createdAtTimestamp: timestamp,
-            createdAtFormatted: formatted,
+            updatedAtDateTime: dateTime,
+            updatedAtTimestamp: timestamp,
+            updatedAtFormatted: formatted,
         });
 
         db.collection('clients').insertOne(newClientData);

@@ -7,9 +7,17 @@ import {
 import m from "mithril"
 
 
-const AddGroupSMSForm = {
+const EditClientForm = {
     oninit(vnode) {
-        vnode.state.groups = []
+        vnode.state.cgroups = []
+        // Access props from vnode.attrs
+        this.props = vnode.attrs;
+        this.formData = {
+            id: this.props.client._id,
+            name: this.props.client.name,
+            phone: this.props.client.phone,
+            groups: this.props.client.groups,
+        }
     },
     oncreate(vnode) {
         const options = {
@@ -21,7 +29,7 @@ const AddGroupSMSForm = {
         };
 
         axios.request(options).then(function (response) {
-            vnode.state.groups = response.data
+            vnode.state.cgroups = response.data
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -30,13 +38,9 @@ const AddGroupSMSForm = {
             console.error(error);
         });
     },
+
     showModal: false,
-    unitType: '',
-    formData: {
-        name: '',
-        phone: '',
-        groups: [],
-    },
+    formData: {},
 
     openModal: function () {
         this.showModal = true;
@@ -52,7 +56,7 @@ const AddGroupSMSForm = {
 
     handleInputAppend: function (field, value) {
         if (this.formData[field].includes(value)) {
-            this.formData[field] = this.formData[field].filter((item) => item != value); 
+            this.formData[field] = this.formData[field].filter((item) => item != value);
         } else {
             this.formData[field].push(value);
         }
@@ -64,20 +68,18 @@ const AddGroupSMSForm = {
         console.log('Form Submitted:', this.formData);
 
         const options = {
-            method: 'POST',
-            url: `${url}/clients/`,
+            method: 'PATCH',
+            url: `${url}/clients/${this.formData.id}`,
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
-            data: Object.assign(this.formData, {
-                storeId: localStorage.getItem('storeId')
-            }),
+            data: this.formData,
         };
 
         axios.request(options).then(function (response) {
             console.log(response.data);
-            location.reload()
+            location.reload();
         }).catch(function (error) {
             console.error(error);
         });
@@ -87,20 +89,16 @@ const AddGroupSMSForm = {
     },
 
     view: function (vnode) {
-
-        return m('div', [
+        return m('span', [
             // Open Modal Button
-            m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
-                m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Client"
-            ]),
+            m('button', { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mr-2", onclick: () => this.openModal() }, m('icon', { "class": "flaticon-edit" })),
 
             // Modal
             this.showModal && m('.modal', [
                 m('.modal-content', [
-                    m("div", { "class": "row" }, [
+                    m("div", { "class": "row text-left", style: "white-space: wrap;" }, [
                         m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Client'),
+                            m('h4', 'Edit Client'),
                         ]),
                         m("div", { "class": "col-1" }, [
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
@@ -127,7 +125,7 @@ const AddGroupSMSForm = {
 
                         m("div", { class: "form-group row", style: { padding: "10px" } }, [
                             m('label', 'Select Group(s):'),
-                            vnode.state.groups.map((group) => {
+                            vnode.state.cgroups.map((group) => {
                                 return m("div", { "class": "d-flex flex-stack" },
                                     [
                                         [
@@ -169,7 +167,7 @@ const AddGroupSMSForm = {
                         m("span", { "class": "border-top mt-4" }),
                         m("div", { "class": "pt-2 align-right" }, [
                             m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
+                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save Changes'),
                         ])
                     ]),
                 ]),
@@ -178,4 +176,4 @@ const AddGroupSMSForm = {
     },
 };
 
-export default AddGroupSMSForm;
+export default EditClientForm;

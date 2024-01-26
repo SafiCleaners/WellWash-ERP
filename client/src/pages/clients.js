@@ -7,9 +7,10 @@ import {
 
 import m from "mithril"
 import loader from "../components/loader"
-import addContactGroup from "../components/add_client_group"
-import addGroupSMS from "../components/add_client"
-import editContactGroup from "../components/edit_client_group"
+import addClientGroup from "../components/add_client_group"
+import editClientGroup from "../components/edit_client_group"
+import addClient from "../components/add_client"
+import editClient from "../components/edit_client"
 
 const getGroupNames = (groups, groupIds) => {
     if (!groupIds) return "N/A";
@@ -80,7 +81,7 @@ const clients = {
                                 ),
                             ]
                         ),
-                        m(addContactGroup)
+                        m(addClientGroup)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -152,7 +153,7 @@ const clients = {
                                                                     m("td", { "class": "text-center pr-0", style: "white-space: nowrap;" },
                                                                         m('div', { "class": "" },
                                                                             [
-                                                                                m(editContactGroup, { "group": item }),
+                                                                                m(editClientGroup, { "group": item }),
                                                                                 m('a', {
                                                                                     href: "javascript:void(0);",
                                                                                     "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
@@ -202,7 +203,7 @@ const clients = {
                                 ),
                             ]
                         ),
-                        m(addGroupSMS)
+                        m(addClient)
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -290,36 +291,36 @@ const clients = {
                                                                             )
                                                                         ]
                                                                     ),
-                                                                    // m("td", { "class": "text-center pr-0", style: "white-space: nowrap;" },
-                                                                    //     m('div', { "class": "" },
-                                                                    //         [
-                                                                    //             // m(editExpense, { "client": item }),
-                                                                    //             m('a', {
-                                                                    //                 href: "javascript:void(0);",
-                                                                    //                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                    //                     const options = {
-                                                                    //                         method: 'DELETE',
-                                                                    //                         url: `${url}/expenses/${item._id}`,
-                                                                    //                         headers: {
-                                                                    //                             'Content-Type': 'application/json',
-                                                                    //                             'authorization': localStorage.getItem('token')
-                                                                    //                         },
-                                                                    //                     };
+                                                                    m("td", { "class": "text-center pr-0", style: "white-space: nowrap;" },
+                                                                        m('div', { "class": "" },
+                                                                            [
+                                                                                m(editClient, { "client": item }),
+                                                                                m('a', {
+                                                                                    href: "javascript:void(0);",
+                                                                                    "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
+                                                                                        const options = {
+                                                                                            method: 'DELETE',
+                                                                                            url: `${url}/clients/${item._id}`,
+                                                                                            headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                                'authorization': localStorage.getItem('token')
+                                                                                            },
+                                                                                        };
 
-                                                                    //                     axios.request(options).then(function (response) {
-                                                                    //                         console.log(response.data);
-                                                                    //                         // window.location.reload()
-                                                                    //                         vnode.state.expenses = vnode.state.expenses.filter(p => p._id != item._id)
-                                                                    //                         m.redraw()
-                                                                    //                     }).catch(function (error) {
-                                                                    //                         console.error(error);
-                                                                    //                     });
-                                                                    //                 }
-                                                                    //             },
-                                                                    //                 m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                    //             )
-                                                                    //         ])
-                                                                    // )
+                                                                                        axios.request(options).then(function (response) {
+                                                                                            console.log(response.data);
+                                                                                            // window.location.reload()
+                                                                                            vnode.state.clients = vnode.state.clients.filter(p => p._id != item._id)
+                                                                                            m.redraw()
+                                                                                        }).catch(function (error) {
+                                                                                            console.error(error);
+                                                                                        });
+                                                                                    }
+                                                                                },
+                                                                                    m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
+                                                                                )
+                                                                            ])
+                                                                    )
                                                                 ]
                                                             )
                                                         })
