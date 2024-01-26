@@ -28,7 +28,10 @@ const getGroupNames = (groups, groupIds) => {
 
 const formatCurrency = (number) => {
     try {
-        return Intl.NumberFormat('en-US').format(number);
+        return Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(number);
     } catch (error) {
         console.error('Error formatting number:', error);
         return 'N/A';
@@ -277,7 +280,7 @@ const clients = {
                                             m("tbody",
                                                 [
                                                     vnode.state.clients
-                                                        .map((item) => {
+                                                        .map((item, index) => {
                                                             console.log(item)
                                                             return m("tr", {
                                                                 style: { "cursor": "pointer" }
@@ -287,7 +290,7 @@ const clients = {
                                                                         [
                                                                             m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
                                                                                 "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                            }, item.name)
+                                                                            }, (Number(index) + 1) + ". " + item.name)
                                                                         ]
                                                                     ),
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
