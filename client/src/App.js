@@ -24,6 +24,7 @@ import brands from "./pages/brands";
 import pricing from "./pages/pricing";
 import orders from "./pages/orders";
 import tasks from "./pages/tasks";
+import clients from "./pages/clients";
 
 var root = document.getElementById("order_reciever")
 
@@ -51,4 +52,5 @@ m.route(root, "/", {
     "/pricing": pricing,
     "/orders": orders,
     "/tasks": tasks,
+    "/clients": clients,
 })
