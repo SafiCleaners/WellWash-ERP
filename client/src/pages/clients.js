@@ -68,7 +68,7 @@ const clients = {
 
         axios.request(optionsClients).then(function (response) {
             vnode.state.clients = response.data
-            console.log(vnode.state.categories)
+            // console.log(vnode.state.categories)
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -175,7 +175,7 @@ const clients = {
                                                                                         };
 
                                                                                         axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
+                                                                                            // console.log(response.data);
                                                                                             // window.location.reload()
                                                                                             vnode.state.groups = vnode.state.groups.filter(p => p._id != item._id)
                                                                                             m.redraw()
@@ -257,7 +257,7 @@ const clients = {
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "AO-value"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "last seen ..."),
                                                         m("th", { "class": "p-0 min-w-100px text-left no-wrap" }, "DuvetWcount."),
-                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Items"),
+                                                        // m("th", { "class": "p-0 min-w-100px text-left" }, "Items"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "TKGs"),
                                                         // m("th", { "class": "p-0 min-w-200px text-left" }, "Groups"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Added By"),
@@ -269,8 +269,9 @@ const clients = {
                                             m("tbody",
                                                 [
                                                     vnode.state.clients
+                                                        .sort((a, b) => b.totalOrders - a.totalOrders)
                                                         .map((item, index) => {
-                                                            console.log(item)
+                                                            // console.log(item)
                                                             return m("tr", {
                                                                 style: { "cursor": "pointer" }
                                                             },
@@ -313,28 +314,28 @@ const clients = {
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                         [
                                                                             m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                moment(item.mostRecentBusinessDate).fromNow(), + " (" + moment(item.mostRecentBusinessDate).format('Do MMMM YYYY') + ")"
+                                                                                moment(item.mostRecentBusinessDate).fromNow() + " (" + moment(item.mostRecentBusinessDate).format('Do MMMM YYYY') + ")"
                                                                             )
                                                                         ]
                                                                     ),
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                         [
                                                                             m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.duvets
+                                                                                item.duvets ? item.duvets : ""
                                                                             )
                                                                         ]
                                                                     ),
+                                                                    // m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    //     [
+                                                                    //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                    //             item.items?.join(",")
+                                                                    //         )
+                                                                    //     ]
+                                                                    // ),
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                         [
                                                                             m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.items?.join(",")
-                                                                            )
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.kgs
+                                                                                formatCurrency(item.kgs)
                                                                             )
                                                                         ]
                                                                     ),

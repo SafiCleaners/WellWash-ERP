@@ -1961,16 +1961,25 @@ const routes = async (client) => {
             ]);
 
             // Combine and merge the data from 'clients' and 'jobs'
-            const mergedData = clients.concat(jobs.map(job => {
-                const maskedPhoneNumber = job.phone ? job.phone.substring(0, 2) + '**' + job.phone.substring(4) : "N/A";
-                job.phone = maskedPhoneNumber;
-                
-                return {
-                    name: job.clientName,
-                    phone: job.phone
-                };
-            }));
+            const mergedData = clients.concat(jobs
+                .filter(job => {
+                    if (!job.phone) {
+                        return false
+                    }
+                    return true
+                })
+                .map(job => {
+                    return {
+                        name: job.clientName,
+                        phone: job.phone
+                    };
+                }))
+                .map(job => {
+                    const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
+                    job.phone = maskedPhoneNumber;
 
+                    return job;
+                });;
 
             res.send(mergedData);
         } catch (error) {
