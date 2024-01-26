@@ -14,6 +14,7 @@ import addGroupSMS from "../components/add_client"
 import editContactGroup from "../components/edit_client_group"
 
 const getGroupNames = (groups, groupIds) => {
+    if (!groupIds) return "N/A";
     if (!groups) return "N/A";
 
     // return groups

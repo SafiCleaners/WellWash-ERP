@@ -1988,23 +1988,23 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        console.log(req.body)
+        // console.log(req.body)
         const groupTitles = [];
-        const cgroups = req.body.groups;
-        console.log(cgroups);
-        if (cgroups && cgroups.length) {
-            cgroups.forEach((cId) => {
-                console.log(`In for each loop for ${cId}`);
-                db.collection('cgroups').findOne({ _id: new ObjectId(cId), deleted: false }, (err, cgroupItem) => {
-                    if (err) {console.log(err)}
-                    if (cgroupItem) {
-                        console.log(`Group ${cgroupItem.title}`);
-                        groupTitles.push(cgroupItem.title);
-                    }
-                });
-            });
-        }
-        console.log(groupTitles);
+        // const cgroups = req.body.groups;
+        // console.log(cgroups);
+        // if (cgroups && cgroups.length) {
+        //     cgroups.forEach((cId) => {
+        //         console.log(`In for each loop for ${cId}`);
+        //         db.collection('cgroups').findOne({ _id: new ObjectId(cId), deleted: false }, (err, cgroupItem) => {
+        //             if (err) {console.log(err)}
+        //             if (cgroupItem) {
+        //                 console.log(`Group ${cgroupItem.title}`);
+        //                 groupTitles.push(cgroupItem.title);
+        //             }
+        //         });
+        //     });
+        // }
+        // console.log(groupTitles);
 
         let newClientData = Object.assign(req.body, {
             _id: new ObjectId(),
