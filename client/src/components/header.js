@@ -182,6 +182,16 @@ const header = {
                                             ]
                                         )
                                     ),
+                                    m("li", { "class": "menu-item" + (window.location.pathname.includes("clients") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/clients" },
+                                            [
+                                                m("span", { "class": "menu-text" },
+                                                    "Clients"
+                                                ),
+                                                m("span", { "class": "menu-desc" })
+                                            ]
+                                        )
+                                    ),
 
                                         // m("li", { "class": "menu-item" + (window.location.pathname.includes("orders") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                         //     m(m.route.Link, { "class": "menu-link", "href": "/orders" },

@@ -1173,7 +1173,7 @@ const routes = async (client) => {
             // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
             // console.log(storeEntity);
-            if(storeEntity) {
+            if (storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
             }
@@ -1462,7 +1462,7 @@ const routes = async (client) => {
 
         const { storeId, clientId, clientSource, total, tasks } = req.body;
         let tasksCount = 0;
-        if(tasks) {
+        if (tasks) {
             tasksCount = tasks.length;
         }
         // console.log(req.body);
@@ -1473,7 +1473,7 @@ const routes = async (client) => {
             // console.log(clientId);
             let clientEntity = await db.collection('users').findOne({ _id: new ObjectId(clientId), deleted: false });
             // console.log(clientEntity);
-            if(clientEntity) {
+            if (clientEntity) {
                 clientTitle = clientEntity.name;
                 client = clientEntity;
             }
@@ -1484,7 +1484,7 @@ const routes = async (client) => {
             // console.log(storeId);
             let storeEntity = await db.collection('stores').findOne({ _id: new ObjectId(storeId), deleted: false });
             // console.log(storeEntity);
-            if(storeEntity) {
+            if (storeEntity) {
                 storeTitle = storeEntity.title;
                 store = storeEntity;
             }
@@ -1511,7 +1511,7 @@ const routes = async (client) => {
 
                     tasks.forEach(async (task) => {
                         let categoryId = task.categoryId;
-        
+
                         // Try to find pricing
                         let pricingId;
                         let pricingTitle;
@@ -1519,7 +1519,7 @@ const routes = async (client) => {
                         // console.log(categoryId);
                         let pricingEntity = await db.collection('pricings').findOne({ _id: new ObjectId(categoryId), deleted: false });
                         // console.log(pricingEntity);
-                        if(pricingEntity) {
+                        if (pricingEntity) {
                             pricingId = pricingEntity._id;
                             pricingTitle = pricingEntity.title;
                             pricing = clientEntity;
@@ -1530,10 +1530,10 @@ const routes = async (client) => {
                             clientId, clientTitle, client,
                             storeId, storeTitle, store,
                             pricingId, pricingTitle, pricing,
-                            userId, userTitle, 
+                            userId, userTitle,
                             status: "Pending", user: decoded,
-                            quantity: task.quantity, description: task.description, 
-                            cost: task.cost, total: task.total, 
+                            quantity: task.quantity, description: task.description,
+                            cost: task.cost, total: task.total,
                             orderId: newEntity._id, user: decoded,
                             createdAtDateTime: dateTime,
                             createdAtTimestamp: timestamp,
@@ -1541,7 +1541,7 @@ const routes = async (client) => {
                             deleted: false
                         }, async (error, result) => {
                             if (error) throw error;
-            
+
                             if (result) {
                                 const newTaskId = result.insertedId;
                                 let newTaskEntity = await db.collection('tasks').findOne({ _id: newTaskId, deleted: false });
@@ -1552,7 +1552,7 @@ const routes = async (client) => {
                     });
                 }
             });
-        
+
             res.status(201).json({ message: 'Order created successfully' });
         } catch (error) {
             console.error(error);
@@ -1820,6 +1820,273 @@ const routes = async (client) => {
             logActivity(db, "Brand", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
 
             res.status(204).json({ message: 'Brand deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // Client Groups
+    app.get('/cgroups', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('cgroups').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            // console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/cgroups', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        console.log(req.body)
+
+        const newBrandData = Object.assign(req.body, {
+            _id: new ObjectId(),
+            deleted: false,
+            userId,
+            userTitle,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        db.collection('cgroups').insertOne(newBrandData);
+
+        return res.status(201).send(newBrandData);
+    });
+
+    app.patch('/cgroups/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const updatedBrandData = Object.assign(req.body, {
+            deleted: false,
+            userId,
+            userTitle,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        try {
+            let existingEntity = await db.collection('cgroups').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('cgroups').updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: updatedBrandData,
+                },
+                { upsert: true });
+            let updatedEntity = await db.collection('cgroups').findOne({ _id: new ObjectId(id), deleted: false });
+            // Log Activity
+            logActivity(db, "Contact Group", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(200).json({ message: 'Contact group updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/cgroups/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('cgroups').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('cgroups').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('cgroups').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Contact Group", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Contact Group deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // Clients
+    app.get('/clients', importantMiddleWares, (req, res) => {
+        // if (req.auth.role != "Owner")
+        //     res.status(401).send([])
+
+        db.collection('clients').find({
+            deleted: false,
+        }).toArray(async function (err, result) {
+            if (err) throw err
+
+            // console.log(result)
+            res.send(result)
+        })
+    });
+
+    app.post('/clients', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        console.log(req.body)
+        const groupTitles = [];
+        const cgroups = req.body.groups;
+        console.log(cgroups);
+        if (cgroups && cgroups.length) {
+            cgroups.forEach((cId) => {
+                console.log(`In for each loop for ${cId}`);
+                db.collection('cgroups').findOne({ _id: new ObjectId(cId), deleted: false }, (err, cgroupItem) => {
+                    if (err) {console.log(err)}
+                    if (cgroupItem) {
+                        console.log(`Group ${cgroupItem.title}`);
+                        groupTitles.push(cgroupItem.title);
+                    }
+                });
+            });
+        }
+        console.log(groupTitles);
+
+        let newClientData = Object.assign(req.body, {
+            _id: new ObjectId(),
+            deleted: false,
+            userId,
+            userTitle,
+            groupTitles,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        db.collection('clients').insertOne(newClientData);
+
+        return res.status(201).send(newClientData);
+    });
+
+    app.patch('/clients/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        const updatedBrandData = Object.assign(req.body, {
+            deleted: false,
+            userId,
+            userTitle,
+            user: decoded,
+            createdAtDateTime: dateTime,
+            createdAtTimestamp: timestamp,
+            createdAtFormatted: formatted,
+        });
+
+        try {
+            let existingEntity = await db.collection('clients').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('clients').updateOne(
+                { _id: ObjectId(id) },
+                {
+                    $set: updatedBrandData,
+                },
+                { upsert: true });
+            let updatedEntity = await db.collection('clients').findOne({ _id: new ObjectId(id), deleted: false });
+            // Log Activity
+            logActivity(db, "Client", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(200).json({ message: 'Client updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/clients/:id', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+
+        const { id } = req.params;
+
+        // Moment
+        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        const timestamp = moment(dateTime).unix();
+        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+        try {
+            let existingEntity = await db.collection('clients').findOne({ _id: new ObjectId(id), deleted: false });
+
+            let response = await db.collection('clients').updateOne({ _id: new ObjectId(id) }, {
+                $set: {
+                    deleted: true,
+                    deletedAtDateTime: dateTime,
+                    deletedAtTimestamp: timestamp,
+                    deletedAtFormatted: formatted
+                }
+            });
+            let updatedEntity = await db.collection('clients').findOne({ _id: new ObjectId(id), deleted: true });
+            // Log Activity
+            logActivity(db, "Clients", "DELETE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+            res.status(204).json({ message: 'Clients deleted successfully' });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
