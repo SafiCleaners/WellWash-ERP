@@ -1,5 +1,5 @@
 import axios from "axios";
-
+const moment = require('moment');
 
 import {
     url
@@ -24,6 +24,15 @@ const getGroupNames = (groups, groupIds) => {
     const matchingGroups = groups.filter(group => groupIds.includes(group._id));
     const titles = matchingGroups.map(group => group.title);
     return titles.join(', ');
+}
+
+const formatCurrency = (number) => {
+    try {
+        return Intl.NumberFormat('en-US').format(number);
+    } catch (error) {
+        console.error('Error formatting number:', error);
+        return 'N/A';
+    }
 }
 
 const clients = {
@@ -227,6 +236,11 @@ const clients = {
                                                         m("th", { "class": "p-0 min-w-200px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
                                                         m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+                                                        m("th", { "class": "p-0 min-w-100px" }),
+
                                                         // m("th", { "class": "p-0 min-w-50px" })
                                                     ]
                                                 )
@@ -246,6 +260,13 @@ const clients = {
                                                     [
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Name"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Phone"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "TL-Orders"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "TL-Amount"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "AO-value"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "last seen ..."),
+                                                        m("th", { "class": "p-0 min-w-100px text-left no-wrap" }, "DuvetWcount."),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "Items"),
+                                                        m("th", { "class": "p-0 min-w-100px text-left" }, "TKGs"),
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Groups"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Date Added"),
@@ -273,6 +294,55 @@ const clients = {
                                                                         [
                                                                             m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
                                                                                 item.phone
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                item.totalOrders
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                formatCurrency(item.totalAmount)
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                formatCurrency(item.averageOrderValue)
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                moment(item.mostRecentBusinessDate).fromNow(), + " (" + moment(item.mostRecentBusinessDate).format('Do MMMM YYYY') + ")"
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                item.duvets
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                item.items?.join(",")
+                                                                            )
+                                                                        ]
+                                                                    ),
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                                item.kgs
                                                                             )
                                                                         ]
                                                                     ),

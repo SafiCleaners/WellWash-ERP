@@ -156,25 +156,36 @@ const start = async () => {
                 const monthIndex = new Date(Date.parse(rowDetails.Month + ' 1, 2000')).getMonth(); // Using a trick to get the month index
 
                 // Create a new Date object
-                const date = new Date(year, monthIndex, parseInt(rowDetails.Date));
+                const businessDate = new Date(year, monthIndex, parseInt(rowDetails.Date));
+
+
+                // Format the date as 'YYYY-MM-DD'
+                const formattedBusinessDate = `${businessDate.getFullYear()}-${(businessDate.getMonth() + 1).toString().padStart(2, '0')}-${businessDate.getDate().toString().padStart(2, '0')}`;
+
+
+                // console.log(rowDetails)
 
                 const order = {
-                    // pickupDay: `${monthIndex + 1}/12/${year}`,
-                    // dropOffDay: `${monthIndex + 1}/13/${year}`,
-                    // appartmentName: rowDetails.Appartment_Details,
-                    // houseNumber: rowDetails.Appartment_Details, // Change this to the correct field in your CSV
+                    appartmentName: rowDetails.Appartment_Details,
+                    houseNumber: rowDetails.Appartment_Details,
                     phone: rowDetails.Phone_number,
                     // saved: true,
                     // paid: false,
-                    // charges: {
-                    //     curtainsCharge: rowDetails['Kg price'], // Replace with the correct field in your CSV
-                    //     curtainsAmount: parseInt(rowDetails['Kgs']), // Replace with the correct field in your CSV
-                    // },
-                    // googleId: '104289231019234429544', // You may need to dynamically generate this or fetch it from your data
+                    charges: {
+                        kgsCharge: rowDetails['Kg_price'],
+                        kgsAmount: parseInt(rowDetails['Kgs']),
+                        duvetsCharge: rowDetails['Duvet_price'],
+                        duvetsAmount: rowDetails['Duvets_Count'],
+                        item: rowDetails['Item'],
+                        itemCount: rowDetails['Item_Count'],
+                        itemAmount: rowDetails['Item_Price'],
+                        paymentAmount: rowDetails['Payment_amount']
+                    },
+                    // googleId: '104289231019234429544',
                     name: rowDetails.Name,
                     storeId: "65a3ec51c82212d0b6883303",
-                    deleted: false
-                    // businessDate: new Date().toISOString(), // Replace this with the correct date field from your CSV or adjust accordingly
+                    deleted: false,
+                    businessDate: formattedBusinessDate
                 };
 
 
@@ -184,7 +195,86 @@ const start = async () => {
             }
         })
 
-       
+        // Initialize statistics object
+        const stats = {
+            totalOrders: orderData.length,
+            totalRevenue: orderData.reduce((total, order) => total + order.charges.paymentAmount || 0, 0),
+            uniqueCustomers: new Set(orderData.map(order => order.phone)).size,
+            phoneStats: {}
+        };
+
+        // Group orders by phone number
+        const ordersByPhone = {};
+        orderData.forEach(order => {
+            const phoneNumber = order.phone;
+            if (!ordersByPhone[phoneNumber]) {
+                ordersByPhone[phoneNumber] = [];
+            }
+            ordersByPhone[phoneNumber].push(order);
+        });
+
+
+        for (const phoneNumber in ordersByPhone) {
+            const orders = ordersByPhone[phoneNumber];
+            const totalOrders = orders.length;
+            let totalAmount = 0;
+
+            const chargeDetails = {
+                duvets: 0,
+                items: [], // Initialize items as an array
+                kgs: 0
+            };
+
+            let mostRecentBusinessDate = null;
+
+            orders.forEach(order => {
+                // Add individual order charges to the total amount
+                totalAmount += parseFloat(order.charges.paymentAmount || 0);
+
+                // Update charge details based on the order
+                chargeDetails.duvets += parseFloat(order.charges.duvetsCharge || 0) * (parseInt(order.charges.duvetsAmount) || 0);
+
+                // Check if kgsAmount is valid and numeric before performing calculations
+                const kgsAmount = parseInt(order.charges.kgsAmount);
+                if (!isNaN(kgsAmount)) {
+                    chargeDetails.kgs += parseFloat(order.charges.kgsCharge || 0) * kgsAmount;
+                }
+
+                // Update the most recent business date
+                if (!mostRecentBusinessDate || new Date(order.businessDate) > new Date(mostRecentBusinessDate)) {
+                    mostRecentBusinessDate = order.businessDate;
+                }
+            });
+
+            chargeDetails.items = [...new Set(chargeDetails.items)]
+            // Update overall statistics
+            stats.totalOrders += totalOrders;
+            stats.totalRevenue += totalAmount;
+
+            // Update stats per phone number
+            stats.phoneStats[phoneNumber] = {
+                totalOrders,
+                totalAmount,
+                averageOrderValue: totalAmount / totalOrders,
+                chargeDetails,
+                mostRecentBusinessDate
+            };
+        }
+
+
+
+        // // Calculate average order value (AOV) for all orders
+        // stats.averageOrderValue = stats.totalRevenue / stats.totalOrders;
+
+        // // Calculate customer retention rate
+        // // This assumes you have data for previous months to compare against the current month
+        // const previousMonthUniqueCustomers = 1000; // Example: Previous month's unique customers
+        // stats.customerRetentionRate = (stats.uniqueCustomers / previousMonthUniqueCustomers) * 100;
+
+        // // Calculate churn rate
+        // stats.churnRate = 100 - stats.customerRetentionRate;
+
+        // console.log(JSON.stringify(stats, null, '\t'))
 
         const uniquePhoneNumbersSet = new Set();
         const uniqueOrderData = [];
@@ -192,11 +282,41 @@ const start = async () => {
         for (const order of orderData) {
             if (!uniquePhoneNumbersSet.has(order.phone)) {
                 uniquePhoneNumbersSet.add(order.phone);
-                uniqueOrderData.push(order);
+
+                Object.assign(order, stats.phoneStats[order.phone])
+                const {
+                    name,
+                    phone,
+                } = order
+
+                const {
+                    totalOrders,
+                    totalAmount,
+                    averageOrderValue,
+                    mostRecentBusinessDate
+                } = stats.phoneStats[order.phone]
+
+                const {
+                    duvets,
+                    items,
+                    kgs
+                } = stats.phoneStats[order.phone].chargeDetails
+                uniqueOrderData.push({
+                    name,
+                    phone,
+                    totalOrders,
+                    totalAmount,
+                    averageOrderValue,
+                    mostRecentBusinessDate,
+                    duvets,
+                    items,
+                    kgs,
+                    deleted:false
+                });
             }
         }
 
-        console.log(uniqueOrderData);
+        // console.log(uniqueOrderData);
         writeToCollection(uniqueOrderData)
 
     });
