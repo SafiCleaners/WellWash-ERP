@@ -8,6 +8,8 @@ import {
 import m from "mithril"
 import loader from "../components/loader"
 import addContactGroup from "../components/add_client_group"
+import sendSmsGroup from "../components/sendSmsGroup"
+
 import addGroupSMS from "../components/add_client"
 import editContactGroup from "../components/edit_client_group"
 
@@ -79,7 +81,12 @@ const clients = {
                                 ),
                             ]
                         ),
-                        m(addContactGroup)
+                        m("div", {
+                            "class": "btn-group", "role": "group",
+                        }, [
+                            m(addContactGroup),
+                            m(sendSmsGroup)
+                        ])
                     ]
                 ),
                 m("div", { "class": "card-body pt-0 pb-4" },
@@ -268,13 +275,13 @@ const clients = {
                                                                             )
                                                                         ]
                                                                     ),
-                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                getGroupNames(vnode.state.groups, item.groups)
-                                                                            )
-                                                                        ]
-                                                                    ),
+                                                                    // m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                    //     [
+                                                                    //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
+                                                                    //             getGroupNames(vnode.state.groups, item.groups)
+                                                                    //         )
+                                                                    //     ]
+                                                                    // ),
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                         [
                                                                             m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
