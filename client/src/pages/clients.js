@@ -243,7 +243,6 @@ const clients = {
                                     )
                                 )
                             ),
-
                             m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
                                 m("div", { "class": "table-responsive" },
                                     !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
@@ -260,7 +259,7 @@ const clients = {
                                                         m("th", { "class": "p-0 min-w-100px text-left no-wrap" }, "DuvetWcount."),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Items"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "TKGs"),
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Groups"),
+                                                        // m("th", { "class": "p-0 min-w-200px text-left" }, "Groups"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Added By"),
                                                         m("th", { "class": "p-0 min-w-100px text-left" }, "Date Added"),
                                                         // m("th", { "class": "p-0 min-w-50px text-center" }, "Actions")
@@ -406,6 +405,54 @@ const clients = {
         )
     }
 }
+
+// Styles
+const styles = {
+    card: {
+        border: '1px solid #ddd',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        margin: '20px',
+        maxWidth: '400px',
+        overflow: 'hidden',
+        backgroundColor: '#fff',
+    },
+    cardHeader: {
+        backgroundColor: '#3498db',
+        color: '#fff',
+        padding: '12px',
+        textAlign: 'center',
+    },
+    cardBody: {
+        padding: '16px',
+    },
+    cardFooter: {
+        borderTop: '1px solid #ddd',
+        padding: '12px',
+        textAlign: 'center',
+    },
+};
+
+// Card component
+const Card = {
+    // View function
+    view: function (vnode) {
+        // Props for the card component
+        // const { header, body, footer } = vnode.attrs;
+
+        return m('div .card', { style: styles.card }, [
+            // Card Header
+            m('.card-header', { style: styles.cardHeader }, [
+                // m('h3', header),
+                m('h3', 'Card Header'),
+            ]),
+            // Card Body
+            m('.card-body', { style: styles.cardBody }, 'Card Body'),
+            // Card Footer
+            m('.card-footer', { style: styles.cardFooter }, 'Card Footer'),
+        ]);
+    },
+};
 
 const clientsWrapper = {
     oninit(vnode) {

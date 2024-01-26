@@ -16,7 +16,7 @@ const EditClientForm = {
             id: this.props.client._id,
             name: this.props.client.name,
             phone: this.props.client.phone,
-            groups: this.props.client.groups,
+            groups: this.props.client.groups || [],
         }
     },
     oncreate(vnode) {
