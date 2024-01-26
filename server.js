@@ -1962,6 +1962,9 @@ const routes = async (client) => {
 
             // Combine and merge the data from 'clients' and 'jobs'
             const mergedData = clients.concat(jobs.map(job => {
+                const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
+                job.phone = maskedPhoneNumber;
+                
                 return {
                     name: job.clientName,
                     phone: job.phone
