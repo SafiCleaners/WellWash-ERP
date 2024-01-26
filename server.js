@@ -1952,18 +1952,31 @@ const routes = async (client) => {
     });
 
     // Clients
-    app.get('/clients', importantMiddleWares, (req, res) => {
-        // if (req.auth.role != "Owner")
-        //     res.status(401).send([])
+    app.get('/clients', importantMiddleWares, async (req, res) => {
+        try {
+            // Fetch data from 'clients' and 'jobs' collections in parallel
+            const [clients, jobs] = await Promise.all([
+                db.collection('clients').find({ deleted: false }).toArray(),
+                db.collection('jobs').find({ deleted: false }).toArray()
+            ]);
 
-        db.collection('clients').find({
-            deleted: false,
-        }).toArray(async function (err, result) {
-            if (err) throw err
+            // Combine and merge the data from 'clients' and 'jobs'
+            const mergedData = clients.concat(jobs.map(job => {
+                const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
+                job.phone = maskedPhoneNumber;
+                
+                return {
+                    name: job.clientName,
+                    phone: job.phone
+                };
+            }));
 
-            // console.log(result)
-            res.send(result)
-        })
+
+            res.send(mergedData);
+        } catch (error) {
+            console.error('Error occurred:', error);
+            res.status(500).send('Internal Server Error');
+        }
     });
 
     app.post('/clients', importantMiddleWares, async (req, res) => {

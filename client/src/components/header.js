@@ -132,7 +132,7 @@ const header = {
                                                     ]
                                                 )
                                             ),
-                                            m("li", { "class": "menu-item" + (window.location.pathname.includes("e") ? " menu-item-active" : ""), "aria-haspopup": "true" },
+                                            m("li", { "class": "menu-item" + (window.location.pathname.includes("expense") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                                 m("a", { "class": "menu-link", "href": "/e" },
                                                     [
                                                         m("span", { "class": "menu-text" },

@@ -106,7 +106,7 @@ const AddGroupSMSForm = {
                             m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
                         ]),
                         m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-8 my-2" }, [
+                        m("div", { "class": "col-12 my-2" }, [
                             m('label', 'Client Names:'),
                             m('input[type=text]', {
                                 "class": "form-control form-control-solid",
@@ -115,7 +115,7 @@ const AddGroupSMSForm = {
                                 oninput: (e) => this.handleInputChange('name', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-4 my-2" }, [
+                        m("div", { "class": "col-12 my-2" }, [
                             m('label', 'Phone Number:'),
                             m('input[type=text]', {
                                 "class": "form-control form-control-solid",
