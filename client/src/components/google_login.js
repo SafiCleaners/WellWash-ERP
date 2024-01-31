@@ -70,18 +70,23 @@ const google_login = {
       gClient = await window.google.accounts.id.initialize({
         client_id: client_id,
         callback: (response) => {
-          token = response.credential;
-          decodedToken = response.credential ? jwtDecode(response.credential) : null;
-
-          if (!decodedToken) {
-            // Alert with a message for debugging
-            alert('Error: Unable to retrieve valid credentials. Check the response for details.', JSON.stringify(response));
+          if (response.credential) {
+            const { credential } = response;
+            token = credential;
+            decodedToken = jwtDecode(credential);
+        
+            if (!decodedToken) {
+              alert('Error: Unable to retrieve valid credentials. Check the response for details.', JSON.stringify(response));
+            } else {
+              setStorage({ decodedToken, token }, () => window.location.reload());
+            }
           } else {
-            // Call setStorage only if decodedToken is available
-            setStorage({ decodedToken, token }, () => window.location.reload());
+            // Handle the case where response.credential is null or undefined
+            // You might want to display an error message or handle it differently
+            console.error('Error: response.credential is null or undefined', response);
           }
-
-        },
+        }
+        
       });
 
       await window.google.accounts.id.prompt(async (notification) => {
