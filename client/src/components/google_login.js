@@ -11,7 +11,10 @@ let token, gClient, decodedToken;
 
 const google_login = {
   async oncreate() {
-    const setStorage = async ({ decodedToken, token },cb) => {
+    const setStorage = async (tokenDetails={},cb) => {
+      console.log("tokenDetails", tokenDetails)
+      const { decodedToken, token } = tokenDetails
+
       localStorage.setItem('authToken', token);
       localStorage.setItem('googleId', decodedToken.sub);
       localStorage.setItem('name', decodedToken.name);
@@ -71,6 +74,8 @@ const google_login = {
         client_id: client_id,
         callback: (response) => {
           console.log(response)
+          alert('gClient, initialize, response', JSON.stringify(response));
+
           if (response.credential) {
             const { credential } = response;
             token = credential;
@@ -79,7 +84,8 @@ const google_login = {
             if (!decodedToken) {
               alert('Error: Unable to retrieve valid credentials. Check the response for details.', JSON.stringify(response));
             } else {
-              setStorage({ decodedToken, token }, () => window.location.reload());
+              const tokenDetails = { decodedToken, token }
+              setStorage(tokenDetails, () => window.location.reload());
             }
           } else {
             // Handle the case where response.credential is null or undefined
