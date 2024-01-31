@@ -1981,7 +1981,6 @@ const routes = async (client) => {
                     return job;
                 });;
 
-
             res.send(mergedData);
         } catch (error) {
             console.error('Error occurred:', error);
