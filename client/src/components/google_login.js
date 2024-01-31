@@ -74,7 +74,7 @@ const google_login = {
         client_id: client_id,
         callback: (response) => {
           console.log(response)
-          alert('Error: Unable to retrieve valid credentials. Check the response for details.', JSON.stringify(response));
+          alert('gClient, initialize, response', JSON.stringify(response));
 
           if (response.credential) {
             const { credential } = response;
