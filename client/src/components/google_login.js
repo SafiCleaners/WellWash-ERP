@@ -70,6 +70,7 @@ const google_login = {
       gClient = await window.google.accounts.id.initialize({
         client_id: client_id,
         callback: (response) => {
+          console.log(response)
           if (response.credential) {
             const { credential } = response;
             token = credential;
