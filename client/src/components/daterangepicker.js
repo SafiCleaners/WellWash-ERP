@@ -45,7 +45,7 @@ export const DateRangePicker = {
                         singleDatePicker: false,
                         showDropdowns: true,
                         minYear: 2022,
-                        maxYear: moment().add(1, 'day').day(),
+                        maxYear: moment().add(1, 'month').year(),
                         locale: {
                             format: rangeDisplayFormat
                         },
@@ -88,7 +88,7 @@ export const DateRangePicker = {
                     singleDatePicker: true,
                     showDropdowns: true,
                     minYear: 2022,
-                    maxYear: moment().add(1, 'day').day(),
+                    maxYear: moment().add(1, 'day').year(),
                     locale: {
                         format: displayFormat
                     },
