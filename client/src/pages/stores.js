@@ -8,6 +8,7 @@ import {
 import m from "mithril"
 import loader from "../components/loader"
 import addStore from "../components/add_store"
+import editStore from "../components/edit_store"
 
 const formatCurrency = (number) => {
     try {
@@ -151,6 +152,7 @@ const stores = {
                                                                 m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
                                                                     m('div', { "class": "" },
                                                                         [
+                                                                            m(editStore, { "brand": item }),
                                                                             m('a', {
                                                                                 href: "javascript:void(0);",
                                                                                 "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
