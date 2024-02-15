@@ -593,7 +593,7 @@ var calculator = () => {
                                 }, [
                                     m("button", {
                                         type: "button",
-                                        "class": "btn btn-lg btn-info",
+                                        "class": "btn btn-sm btn-info",
                                         onclick() {
 
                                             // alert("saving order")

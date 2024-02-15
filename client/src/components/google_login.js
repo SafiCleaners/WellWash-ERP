@@ -111,7 +111,7 @@ const google_login = {
       "button",
       {
         type: "button",
-        class: "btn btn-danger btn-lg ",
+        class: "btn btn-danger btn-sm ",
         onclick() {
           window.google.accounts.id.prompt(async (notification) => {
             if (notification.isNotDisplayed() || notification.isSkippedMoment()) {

@@ -71,7 +71,7 @@ const AddBrandForm = {
     view: function () {
         return m('div', [
             // Open Modal Button
-            m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
+            m('button', { "class": "btn btn-sm btn-info", onclick: () => this.openModal() }, [
                 m("i", { "class": "flaticon-add-circular-button" }),
                 "Add Brand"
             ]),

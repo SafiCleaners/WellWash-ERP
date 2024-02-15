@@ -26,7 +26,7 @@ const landing = () => {
                                 ),
                                 m("button", {
                                     type:"button",
-                                    "class": "btn btn-info btn-lg", "role": "button",
+                                    "class": "btn btn-info btn-sm", "role": "button",
                                     onclick() {
                                         m.route.set("/")
                                     }
