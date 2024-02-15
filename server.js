@@ -629,14 +629,6 @@ const routes = async (client) => {
         })
     });
 
-    app.patch('/users/:email', importantMiddleWares, (req, res) => {
-        db.collection('users').updateOne({ email: req.params.email }, { $set: req.body }, function (err, result) {
-            if (err) throw err
-
-            res.send(result)
-        })
-    });
-
     app.delete('/users/:email', importantMiddleWares, (req, res) => {
         db.collection('users').findOne({ email: req.params.email }, function (err, result) {
             if (err) throw err

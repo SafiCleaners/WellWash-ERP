@@ -222,7 +222,7 @@ const users = {
                                                                                                     // vnode.state.user = e
                                                                                                     const options = {
                                                                                                         method: 'PATCH',
-                                                                                                        url: url + `/users/${_id}`,
+                                                                                                        url: url + `/users/${googleId}`,
                                                                                                         headers: {
                                                                                                             'Content-Type': 'application/json',
                                                                                                             'authorization': localStorage.getItem('token')
