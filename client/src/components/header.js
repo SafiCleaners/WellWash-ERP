@@ -72,7 +72,7 @@ const header = {
                                                 m("span", { "class": "menu-text", style:{
                                                     "display": "flex",
                                                     "flex-direction": "column",
-                                                    "text-align": "left"
+                                                    "text-align": "left !important;"
                                                 } },  [
                                                     localStorage.getItem('name'),
                                                     m("small.text-muted.ml-2",localStorage.getItem('email'))    
@@ -201,7 +201,7 @@ const header = {
                                             m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                                 [
                                                     m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
-                                                        m("i.fa.fa-drivers-license-o")
+                                                        m("i.fa.fa-users")
                                                     ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Users"
@@ -243,7 +243,7 @@ const header = {
                                                         m("i.fa.fa-credit-card")
                                                     ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Pricing"
+                                                        " Pricing"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -256,7 +256,7 @@ const header = {
                                                         m("i.fa.fa-users")
                                                     ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Clients"
+                                                        " Clients"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
