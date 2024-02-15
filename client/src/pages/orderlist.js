@@ -386,13 +386,16 @@ const orders = {
                             m("h3", { "class": "card-title align-items-start flex-column" },
                                 [
                                     m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Job Queue for " + date + " in Store " + (storeName ? storeName : "")
+                                        "Job Queue for " + date
+                                    ),
+                                    m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
+                                     (storeName ? "in Store " + storeName : "Showing All Stores")
                                     )
                                 ]
                             ),
                             m("div",
                                 m("button", {
-                                    "class": "btn btn-lg btn-info", onclick() {
+                                    "class": "btn btn-sm btn-info", onclick() {
                                         m.route.set("/q-new")
                                     }
                                 },
