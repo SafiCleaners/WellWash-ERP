@@ -469,7 +469,7 @@ const orders = {
                             m("div", [
                                 ,
                                 m("button", {
-                                    "class": "btn btn-lg btn-info", onclick() {
+                                    "class": "btn btn-sm btn-info", onclick() {
                                         m.route.set("/q-new")
                                         setTimeout(() => {
                                             location.reload()

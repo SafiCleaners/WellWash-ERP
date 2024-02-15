@@ -132,7 +132,7 @@ const AddOrderForm = {
     view: function (vnode) {
         return m('div', [
             // Open Modal Button
-            m('button', { "class": "btn btn-lg btn-info", onclick: () => this.openModal() }, [
+            m('button', { "class": "btn btn-sm btn-info", onclick: () => this.openModal() }, [
                 m("i", { "class": "flaticon-add-circular-button" }),
                 "Add Order"
             ]),
@@ -305,7 +305,7 @@ const AddOrderForm = {
                                     m("div", { "class": "col-1 my-2" }, [
                                         m('label', 'Remove:'),
                                         m('button', {
-                                            "class": "py-1 btn btn-lg btn-danger",
+                                            "class": "py-1 btn btn-sm btn-danger",
                                             onclick: () => {
                                                 this.formData.tasks.splice(index, 1);
                                                 this.formData.total = 0;

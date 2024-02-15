@@ -1378,7 +1378,7 @@ const order_item = {
                         }, [
                             m("button", {
                                 type: "button",
-                                "class": "btn btn-lg btn-info",
+                                "class": "btn btn-sm btn-info",
                                 onclick() {
                                     // alert("saving order")
                                     console.log("Button clicked!");
@@ -1392,7 +1392,7 @@ const order_item = {
                             ]),
                             m("button", {
                                 type: "button",
-                                "class": "btn btn-lg btn-info",
+                                "class": "btn btn-sm btn-info",
                                 onclick: () => {
                                     m.route.set(`/j/${m.route.param("job")}/print`);
                                 },

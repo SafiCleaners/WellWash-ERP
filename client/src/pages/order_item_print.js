@@ -465,7 +465,7 @@ const order_item = {
                         ]),
                         m("button", {
                             type: "button",
-                            class: "btn btn-lg btn-secondary ml-2",
+                            class: "btn btn-sm btn-secondary ml-2",
                             onclick() {
                                 console.log("button clicked");
 
