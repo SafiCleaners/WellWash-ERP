@@ -47,8 +47,8 @@ const header = {
                 [
                     m("div", {
                         "class": "header-menu-wrapper header-menu-wrapper-left", "id": "kt_header_menu_wrapper", style: {
-                            "margin": "20px",
-                            "border-radius": "20px"
+                            "margin": "10px",
+                            "border-radius": "10px"
                         }
                     },
                         m("div", { "class": "header-menu header-menu-left header-menu-mobile header-menu-layout-default", "id": "kt_header_menu" },
@@ -72,7 +72,7 @@ const header = {
                                                 m("span", { "class": "menu-text", style:{
                                                     "display": "flex",
                                                     "flex-direction": "column",
-
+                                                    "text-align": "left"
                                                 } },  [
                                                     localStorage.getItem('name'),
                                                     m("small.text-muted.ml-2",localStorage.getItem('email'))    
@@ -82,12 +82,15 @@ const header = {
                                     )],
                                     m("li", {
                                         "class": "menu-item" + (
-                                            ["/", ""].includes(window.location.pathname) ? " menu-item-active" : ""), "aria-haspopup": "true"
+                                            ["/create"].includes(window.location.pathname) ? " menu-item-active" : ""), "aria-haspopup": "true"
                                     },
-                                        m(m.route.Link, { "class": "menu-link", "href": "/" },
+                                        m(m.route.Link, { "class": "menu-link", "href": "/" },[
+                                            m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                m("i.fa.fa-plus")
+                                            ]),
                                             m("span", { "class": "menu-text" },
                                                 "Create"
-                                            )
+                                            )]
                                         )
                                     ),
 
@@ -95,8 +98,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname === "/discounts" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/discounts" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-money")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Get Discounts"
+                                                        " Get Discounts"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -105,8 +111,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname === "/about" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/about" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-building")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "About Us"
+                                                        " About Us"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -115,8 +124,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname === "/guarantees" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/guarantees" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-book")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Guarantees"
+                                                        " Guarantees"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -125,8 +137,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname === "/services" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/services" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-bars")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Services"
+                                                        " Services"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -136,8 +151,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname === "/FAQ" ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/FAQ" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-comment")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "FAQ"
+                                                        " FAQ"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -147,8 +165,11 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("dash") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "/dash" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-area-chart")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Dashboard"
+                                                        " Dashboard"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -156,8 +177,11 @@ const header = {
                                         ), m("li", { "class": "menu-item" + (window.location.pathname.includes("j") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m("a", { "class": "menu-link", "href": "/j" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-bath")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Queue"
+                                                        " Queue"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
@@ -176,6 +200,9 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("users") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/users" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-drivers-license-o")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Users"
                                                     ),
@@ -186,6 +213,9 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("brands") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/brands" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-microchip")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Brands"
                                                     ),
@@ -196,6 +226,9 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("stores") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/stores" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-street-view")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Stores"
                                                     ),
@@ -206,6 +239,9 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("pricing") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/pricing" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-credit-card")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Pricing"
                                                     ),
@@ -216,6 +252,9 @@ const header = {
                                         m("li", { "class": "menu-item" + (window.location.pathname.includes("clients") ? " menu-item-active" : ""), "aria-haspopup": "true" },
                                             m(m.route.Link, { "class": "menu-link", "href": "/clients" },
                                                 [
+                                                    m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
+                                                        m("i.fa.fa-users")
+                                                    ]),
                                                     m("span", { "class": "menu-text" },
                                                         "Clients"
                                                     ),
