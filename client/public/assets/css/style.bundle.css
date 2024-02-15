@@ -84703,6 +84703,9 @@ body {
   }
   .header-menu-mobile .menu-nav > .menu-item > .menu-heading .menu-text,
 .header-menu-mobile .menu-nav > .menu-item > .menu-link .menu-text {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align text to the left */
     font-weight: 400;
     font-size: 1.02rem;
     text-transform: initial;
