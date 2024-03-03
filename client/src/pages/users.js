@@ -13,42 +13,38 @@ const users = {
         vnode.state.loading = true
     },
     oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/users",
+        const getUsers = axios.request({
+            method: 'GET',
+            url: url + "/users",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
-        };
-
-        axios.request(options).then(function (response) {
-            vnode.state.users = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
         });
-
-        const optionBrands = {
-            method: 'GET', url: url + "/brands",
+    
+        const getBrands = axios.request({
+            method: 'GET',
+            url: url + "/brands",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
-        };
-
-        axios.request(optionBrands).then(function (response) {
-            vnode.state.brands = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
         });
+    
+        Promise.all([getUsers, getBrands])
+            .then(function (responses) {
+                vnode.state.users = responses[0].data;
+                vnode.state.brands = responses[1].data;
+                vnode.state.loading = false;
+                m.redraw();
+            })
+            .catch(function (errors) {
+                vnode.state.loading = false;
+                m.redraw();
+                console.error(errors);
+            });
     },
+    
     view(vnode) {
         return m("div", { "class": "card card-custom gutter-b" },
             [
@@ -209,7 +205,7 @@ const users = {
                                                                         m("div", { "class": "dropdown" },
                                                                             [
                                                                                 m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                                                    brand ? brand : "Select a Brand:"
+                                                                                    brand ? vnode.state.brands?.filter(currentBrand => currentBrand._id === brand)[0].title : "Select a Brand:"
                                                                                 ),
                                                                                 m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
                                                                                     [

@@ -204,7 +204,7 @@ const header = {
                                                         m("i.fa.fa-users")
                                                     ]),
                                                     m("span", { "class": "menu-text" },
-                                                        "Users"
+                                                        " Users"
                                                     ),
                                                     m("span", { "class": "menu-desc" })
                                                 ]
