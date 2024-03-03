@@ -633,7 +633,7 @@ const routes = async (client) => {
         db.collection('users').findOne({ email: req.params.email }, function (err, result) {
             if (err) throw err
 
-            db.collection('users').updateOne({ email: req.params.email }, { $set: { deleted: !result.deleted } }, function (err, result) {
+            db.collection('users').updateOne({ email: req.params.email }, { $set: { deleted: true } }, function (err, result) {
                 if (err) throw err
 
                 res.send(result)
@@ -966,7 +966,7 @@ const routes = async (client) => {
         const timestamp = moment(dateTime).unix();
         const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
 
-        const { title, store: storeId, unit, cost } = req.body;
+        const { title, store: storeId, unit, cost, brand } = req.body;
 
         try {
             // Try to find an existing entity by title
@@ -987,7 +987,7 @@ const routes = async (client) => {
                 // If the entity already exists, update its fields
                 var response = await db.collection('categories').updateOne({ title }, {
                     $set: {
-                        unit, cost, storeId, storeTitle, store,
+                        unit, cost, brand, storeId, storeTitle, store,
                         updatedAtDateTime: dateTime,
                         updatedAtTimestamp: timestamp,
                         updatedAtFormatted: formatted
@@ -1001,7 +1001,7 @@ const routes = async (client) => {
             } else {
                 // If the entity doesn't exist, insert a new one
                 var response = await db.collection('categories').insertOne({
-                    title, unit, cost, userId, userTitle,
+                    title, unit, cost, brand, userId, userTitle,
                     storeId, storeTitle, store,
                     user: decoded,
                     createdAtDateTime: dateTime,
@@ -1029,7 +1029,7 @@ const routes = async (client) => {
         const { _id: userId, name: userTitle } = decoded;
 
         const { id } = req.params;
-        const { title, unit, cost } = req.body;
+        const { title, unit, cost, brand } = req.body;
 
         // Moment
         const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -1043,7 +1043,7 @@ const routes = async (client) => {
                 { _id: ObjectId(id) },
                 {
                     $set: {
-                        title, unit, cost,
+                        ...req.body,
                         updatedAtDateTime: dateTime,
                         updatedAtTimestamp: timestamp,
                         updatedAtFormatted: formatted

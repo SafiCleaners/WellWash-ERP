@@ -777,7 +777,9 @@ const order_item = {
                 m("div", { "class": "form-group row" },
                     [
 
-                        vnode.state.categories && vnode.state.categories.map(category => {
+                        vnode.state.categories && vnode.state.categories
+                        .filter(category=> category.brand == localStorage.getItem('brand'))
+                        .map(category => {
                             return m(incrementableInput, {
                                 name: category.title,
                                 charge: vnode.state.categoryCharges[category._id] || 0, // use this to set a default
