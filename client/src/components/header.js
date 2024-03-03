@@ -54,29 +54,31 @@ const header = {
                         m("div", { "class": "header-menu header-menu-left header-menu-mobile header-menu-layout-default", "id": "kt_header_menu" },
                             m("ul", { "class": "menu-nav" },
                                 [
-                                    !localStorage.getItem('authToken') ? [] : [ m("li.d-block.d-sm-none", {
+                                    !localStorage.getItem('authToken') ? [] : [m("li.d-block.d-sm-none", {
                                         "class": "menu-item", "aria-haspopup": "true"
                                     },
                                         m(m.route.Link, { "class": "menu-link", "href": "/" },
-                                            
+
                                             [
                                                 m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
-                                                m("img", {
-                                                    src: localStorage.getItem('imageUrl'),
-                                                    style: {
-                                                        "max-width": "100%",
-                                                        height: "auto"
+                                                    m("img", {
+                                                        src: localStorage.getItem('imageUrl'),
+                                                        style: {
+                                                            "max-width": "100%",
+                                                            height: "auto"
+                                                        }
+                                                    })
+                                                ]),
+                                                m("span", {
+                                                    "class": "menu-text", style: {
+                                                        "display": "flex",
+                                                        "flex-direction": "column",
+                                                        "text-align": "left !important;"
                                                     }
-                                                })
-                                            ]),
-                                                m("span", { "class": "menu-text", style:{
-                                                    "display": "flex",
-                                                    "flex-direction": "column",
-                                                    "text-align": "left !important;"
-                                                } },  [
+                                                }, [
                                                     localStorage.getItem('name'),
-                                                    m("small.text-muted.ml-2",localStorage.getItem('email'))    
-                                            ])
+                                                    m("small.text-muted.ml-2", localStorage.getItem('email'))
+                                                ])
                                             ]
                                         )
                                     )],
@@ -84,7 +86,7 @@ const header = {
                                         "class": "menu-item" + (
                                             ["/create"].includes(window.location.pathname) ? " menu-item-active" : ""), "aria-haspopup": "true"
                                     },
-                                        m(m.route.Link, { "class": "menu-link", "href": "/" },[
+                                        m(m.route.Link, { "class": "menu-link", "href": "/" }, [
                                             m("span", { "class": "svg-icon svg-icon-xl menu-icon" }, [
                                                 m("i.fa.fa-plus")
                                             ]),
@@ -313,21 +315,23 @@ const header = {
                                                     m.redraw()
                                                 }
                                             }, " All Stores "),
-                                            vnode.state.stores?.map(store => {
-                                                return m("a", {
-                                                    class: "dropdown-item",
-                                                    // href: "#",
-                                                    onclick: (e) => {
-                                                        // Prevent default link behavior
-                                                        e.preventDefault();
+                                            vnode.state.stores
+                                                ?.filter(store=>store.brand == localStorage.getItem('brand'))
+                                                .map(store => {
+                                                    return m("a", {
+                                                        class: "dropdown-item",
+                                                        // href: "#",
+                                                        onclick: (e) => {
+                                                            // Prevent default link behavior
+                                                            e.preventDefault();
 
-                                                        // Store store._id in local storage as storeId
-                                                        localStorage.setItem('storeId', store._id);
+                                                            // Store store._id in local storage as storeId
+                                                            localStorage.setItem('storeId', store._id);
 
-                                                        m.redraw()
-                                                    }
-                                                }, store.title);
-                                            })
+                                                            m.redraw()
+                                                        }
+                                                    }, store.title);
+                                                })
                                         ]
                                     )),
                             ]),

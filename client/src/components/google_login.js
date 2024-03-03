@@ -41,6 +41,7 @@ const google_login = {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userId', res.data.user._id);
         localStorage.setItem('role', res.data.user.role);
+        localStorage.setItem('brand', res.data.user.brand);
         cb()
       } catch (err) {
 
@@ -61,6 +62,7 @@ const google_login = {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('userId', res.data.user._id);
           localStorage.setItem('role', res.data.user.role);
+          localStorage.setItem('brand', res.data.user.brand);
           cb()
         } else {
           cb()
