@@ -655,6 +655,31 @@ const routes = async (client) => {
             })
     });
 
+    app.patch('/users/:googleId', importantMiddleWares, (req, res) => {
+        console.log(req.body)
+        db.collection('users').updateOne(
+            { googleId: req.params.googleId },
+            { $set: req.body },
+            { upsert: true },
+            function (err, result) {
+                if (err) throw err
+
+                res.send(result)
+            })
+    });
+
+    app.patch('/store/:storeId', importantMiddleWares, (req, res) => {
+        db.collection('stores').updateOne(
+            { _id: new ObjectId(req.params.storeId) },
+            { $set: req.body },
+            { upsert: true },
+            function (err, result) {
+                if (err) throw err
+
+                res.send(result)
+            })
+    });
+
     app.post(
         "/otp/send",
         async (req, res) => {
