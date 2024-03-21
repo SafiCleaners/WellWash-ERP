@@ -116,7 +116,9 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.categories.map((item) => {
+                                                    vnode.state.categories
+                                                    .filter(category=> category.brand == localStorage.getItem('brand'))
+                                                    .map((item) => {
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
