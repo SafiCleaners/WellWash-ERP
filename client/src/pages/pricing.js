@@ -123,7 +123,15 @@ const pricing = {
                                             ),
                                             m("tbody",
                                                 [
-                                                    vnode.state.pricings.map((item) => {
+                                                    vnode.state.pricings
+                                                    .filter(pricing => {
+                                                        // Find the category associated with the pricing
+                                                        const category = vnode.state.categories.find(category => category.id === pricing.category);
+                                                        console.log(category && category.brand === localStorage.getItem('brand'))
+                                                        // Check if the category's brand matches the brand stored in localStorage
+                                                        return category && category.brand === localStorage.getItem('brand');
+                                                    })
+                                                    .map((item) => {
                                                         console.log(item)
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
@@ -133,7 +141,7 @@ const pricing = {
                                                                     [
                                                                         m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
                                                                             "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                        }, vnode.state.categories && vnode.state.categories.find(c => c._id == item.category)?.title)
+                                                                        }, vnode.state.categories && vnode.state.categories.find(c => c._id == item.category))
                                                                     ]
                                                                 ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
