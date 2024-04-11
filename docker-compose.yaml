@@ -1,9 +1,46 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  mongodb:
+  mongo:
     image: mongo
+    container_name: mongo
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - mongo_data:/data/db
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mynetwork
+
+  nodejs:
+    build: .
+    container_name: nodejs
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+    command: node server.js
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
