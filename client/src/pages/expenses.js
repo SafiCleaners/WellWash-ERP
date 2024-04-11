@@ -28,44 +28,61 @@ const pricing = {
         vnode.state.loading = true
     },
     oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/expenses",
+        // Define the URLs and headers for each API request
+        const expensesOptions = {
+            method: 'GET',
+            url: url + "/expenses",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
-            },
+            }
         };
-
-        axios.request(options).then(function (response) {
-            vnode.state.expenses = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
+    
+        const categoriesOptions = {
+            method: 'GET',
+            url: url + "/categories",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
-            },
+            }
         };
 
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            console.log(vnode.state.categories)
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
+        const storesOptions = {
+            method: 'GET',
+            url: url + "/stores",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            }
+        };
+    
+        // Use axios.all to make parallel requests
+        axios.all([
+            axios.request(expensesOptions),
+            axios.request(categoriesOptions),
+            axios.request(storesOptions)
+        ])
+        .then(axios.spread((expensesResponse, categoriesResponse, storesResponse) => {
+            // Handle successful responses for both requests
+            vnode.state.expenses = expensesResponse.data;
+            vnode.state.categories = categoriesResponse.data;
+            vnode.state.stores = storesResponse.data;
+            vnode.state.loading = false;
+            m.redraw(); // Trigger redraw to reflect updated state
+        }))
+        .catch(error => {
+            // Handle any errors from either request
+            vnode.state.loading = false;
+            m.redraw(); // Trigger redraw to reflect loading state or error
+            console.error("Error fetching data:", error);
         });
     },
+    
     view(vnode) {
+        const storeId = localStorage.getItem("storeId")
+        const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
+        const getStoreName = (storeId) => vnode.state.stores.find(s => s._id == storeId)?.title
+
         return m("div", { "class": "card card-custom gutter-b" },
             [
                 m("div", { "class": "card-header border-0 pt-7" },
@@ -90,6 +107,7 @@ const pricing = {
                                             m("thead",
                                                 m("tr",
                                                     [
+                                                       
                                                         m("th", { "class": "p-0 min-w-200px" }),
                                                         m("th", { "class": "p-0 min-w-200px" }),
                                                         m("th", { "class": "p-0 min-w-50px" }),
@@ -113,6 +131,7 @@ const pricing = {
                                             m("thead",
                                                 m("tr",
                                                     [
+                                                        !storeId ? m("th", { "class": "p-0 min-w-200px text-left" }, "Store") : "",
                                                         m("th", { "class": "p-0 min-w-200px text-left" }, "Expense Reason"),
                                                         m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
                                                         m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
@@ -132,11 +151,19 @@ const pricing = {
                                                             return true
                                                         })
                                                         .map((item) => {
-                                                            console.log(item)
+                                                            // console.log(item)
                                                             return m("tr", {
                                                                 style: { "cursor": "pointer" }
                                                             },
                                                                 [
+                                                                    !storeId ? 
+                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
+                                                                        [
+                                                                            m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
+                                                                                "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
+                                                                            }, getStoreName(item.storeId))
+                                                                        ]
+                                                                    ) : "",
                                                                     m("td", { "class": "text-left", style: "white-space: nowrap;" },
                                                                         [
                                                                             m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
@@ -273,7 +300,7 @@ const pricing = {
 
                                                             // Assuming job.businessDate is a valid date string
                                                             const businessDate = new Date(job.businessDate);
-                                                            console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+                                                            // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
                                                             return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
                                                         })
                                                         .filter(job => {

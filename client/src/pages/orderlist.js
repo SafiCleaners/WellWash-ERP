@@ -164,7 +164,7 @@ const orders = {
 
         axios.request(optionsCategories).then(function (response) {
             vnode.state.categories = response.data
-            console.log(vnode.state.categories)
+            // console.log(vnode.state.categories)
             vnode.state.loading = false
             m.redraw()
         }).catch(function (error) {
@@ -199,7 +199,7 @@ const orders = {
 
                 // Assuming job.businessDate is a valid date string
                 const businessDate = new Date(job.businessDate);
-                console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+                // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
                 return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
             })
             .filter(job => {
@@ -228,32 +228,55 @@ const orders = {
         const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
 
         // Function to calculate total expenses on a business day
-        function calculateTotalExpenses(expenses, businessDate) {
-            console.log(expenses)
+        function calculateTotalExpenses(expenses, businessDate, storeId) {
             let totalExpenses = 0;
-
+            const targetDate = new Date(businessDate);
+        
+            // Object to store total expenses per store
+            const storeTotalExpenses = {};
+        
             // Iterate through expenses
             for (const expense of expenses) {
-                console.log(expense.businessDate, businessDate, expense.recurrent, expense.storeId, storeId);
-
-                // Convert string dates to Date objects
                 const expenseDate = new Date(expense.businessDate);
-                const targetDate = new Date(businessDate);
-
-                // Check if the expense is on the specified business date
-                if (
-                    (expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0] ||
-                    expense.recurrent) && expense.storeId === storeId
-                ) {
-                    totalExpenses += parseInt(expense.cost); // Add the expense cost to the total
+                const currentStoreId = expense.storeId;
+        
+                if (expense.recurrent) {
+                    // Accumulate recurrent expenses for each store
+                    if (!storeTotalExpenses[currentStoreId]) {
+                        storeTotalExpenses[currentStoreId] = parseInt(expense.cost);
+                    } else {
+                        storeTotalExpenses[currentStoreId] += parseInt(expense.cost);
+                    }
+                } else {
+                    // Check if the expense falls on the specified business date
+                    if (storeId && currentStoreId === storeId && expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0]) {
+                        // Add the cost of non-recurrent expenses for the specified store and day
+                        totalExpenses += parseInt(expense.cost);
+                    }
                 }
             }
-
-
+        
+            // If storeId is provided, return the total expenses for that store on the specified day
+            if (storeId) {
+                totalExpenses = storeTotalExpenses[storeId] || 0;
+            } else {
+                // If storeId is not provided, calculate cumulative total expenses across all stores
+                for (const storeId in storeTotalExpenses) {
+                    totalExpenses += storeTotalExpenses[storeId];
+                }
+            }
+        
             return totalExpenses;
         }
+        
 
-        const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate);
+
+
+
+
+
+
+        const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate, storeId);
         const totalProfit = Number(totalSales) - Number(totalExpenses)
 
         const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
@@ -389,7 +412,7 @@ const orders = {
                                         "Job Queue for " + date
                                     ),
                                     m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                     (storeName ? "in Store " + storeName : "Showing All Stores")
+                                        (storeName ? "in Store " + storeName : "Showing All Stores")
                                     )
                                 ]
                             ),
@@ -452,14 +475,14 @@ const orders = {
                                                     ),
                                                     m("tbody",
                                                         [
-                                                            console.log(vnode.state.selectedDate),
+                                                            // console.log(vnode.state.selectedDate),
                                                             vnode.state.jobs
                                                                 .filter(job => {
                                                                     const selectedDate = new Date(localStorage.getItem("businessDate"));
 
                                                                     // Assuming job.businessDate is a valid date string
                                                                     const businessDate = new Date(job.businessDate);
-                                                                    console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+                                                                    // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
                                                                     return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
                                                                 })
                                                                 .filter(job => {
