@@ -16,7 +16,23 @@ const OUTPUT_FILE_MIN = `${OUTPUT_FILENAME}.min.js`
 const { plugins, outputfile, mode, watch } = env == 'build'
   ? {
     plugins: [
-      new UglifyJSPlugin(),
+      new UglifyJSPlugin({
+        // UglifyJS options
+        parallel: true, // Enable parallelization for faster minification
+        uglifyOptions: {
+            output: {
+                comments: false, // Remove all comments
+            },
+            compress: {
+                // UglifyJS compression options
+                unused: true, // Drop unreferenced functions and variables
+                dead_code: true, // Remove unreachable code
+                warnings: false, // Suppress uglification warnings
+                keep_fnames: false, // Remove function name mangling
+                pure_funcs: ['console.log'], // List of functions to be removed if not used
+            },
+        },
+    }),
       new webpack.BannerPlugin(COPYRIGHT),
       new BugsnagSourceMapUploaderPlugin({
         apiKey: 'd626c9610aa4d6ab8b09d922475c57d1',

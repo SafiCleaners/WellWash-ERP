@@ -5,6 +5,9 @@ const displayFormat = 'ddd, Do MMM YYYY';
 const rangeDisplayFormat = 'Do MMM'
 const storageFormat = 'YYYY-MM-DD';
 
+let deferredPrompt
+
+
 export const DateRangePicker = {
     oninit(vnode) {
         // Retrieve the selectedDate from localStorage if available
@@ -16,14 +19,13 @@ export const DateRangePicker = {
         vnode.state.selectedDate = storedDate ? moment(storedDate).format(displayFormat) : null;
         vnode.state.selectedStartDate = storedDate ? moment(businessRangeStartDate).format(displayFormat) : null;
         vnode.state.selectedEndDate = storedDate ? moment(businessRangeEndDate).format(displayFormat) : null;
-
         window.addEventListener('beforeinstallprompt', (event) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             event.preventDefault();
             // Stash the event so it can be triggered later
-            deferredPrompt = event;
+            // deferredPrompt = event;
             // Update UI notify the user they can add to home screen
-            btnAdd.style.display = 'block';
+            // btnAdd.style.display = 'block';
         });
 
     },
