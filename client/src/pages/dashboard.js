@@ -217,70 +217,39 @@ const orders = {
 
 
         // Function to calculate total expenses on a business day
-        function calculateTotalExpenses(expenses, businessDateStart, businessDateEnd, currentDate, storeId) {
+        function calculateTotalExpenses(expenses, startDate, endDate, storeId) {
             let totalExpenses = 0;
-
-            // Convert string dates to Date objects (for date range filtering)
-            const startDate = businessDateStart ? new Date(businessDateStart) : null;
-            const endDate = businessDateEnd ? new Date(businessDateEnd) : null;
-
-            // Convert currentDate to a Date object (for specific date filtering)
-            const filterDate = currentDate ? new Date(currentDate) : null;
-
+        
             // Iterate through each expense
             for (const expense of expenses) {
                 const expenseDate = new Date(expense.businessDate);
 
-                // Check if the expense matches the filtering criteria based on the selected mode
-                if (
-                    (expense.recurrent && startDate && endDate) || // Recurrent expense within date range
-                    (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) || // Specific date mode
-                    (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate) // Date range mode
-                ) {
-                    // Check if the expense matches the storeId filter or if storeId is not provided
-                    if (!storeId || expense.storeId === storeId) {
-                        // Parse expense cost to a number (assuming expense.cost is a string)
-                        const expenseCost = parseInt(expense.cost);
-
-                        if (!isNaN(expenseCost)) {
-                            if (expense.recurrent) {
-                                // Add total recurrent expense for every day within the date range
-                                const daysInRange = calculateDaysInRange(startDate, endDate);
-                                const recurrentExpenseTotalCost = expenseCost * daysInRange;
-                                totalExpenses += recurrentExpenseTotalCost;
-                                console.log('Added recurrent expense for every day:', {
-                                    title: expense.title,
-                                    expenseCost,
-                                    daysInRange,
-                                    totalCost: recurrentExpenseTotalCost,
-                                    storeId: expense.storeId
-                                });
-                            } else {
-                                // Add non-recurrent expense for the specific date within the storeId filter
-                                if (
-                                    (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) ||
-                                    (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate)
-                                ) {
-                                    // Add expense cost only if the expense matches the specified storeId (if provided)
-                                    if (!storeId || expense.storeId === storeId) {
-                                        totalExpenses += expenseCost;
-                                        console.log('Added expense for the day:', {
-                                            title: expense.title,
-                                            date: expenseDate.toISOString().split('T')[0],
-                                            cost: expenseCost,
-                                            storeId: expense.storeId
-                                        });
-                                    }
-                                }
-                            }
-                        } else {
-                            console.warn('Invalid expense cost for:', expense.title);
+                // console.log(expense.storeId == storeId)
+        
+                // Check if the expense belongs to the specified store
+                if (expense.storeId == storeId) {
+                    // console.log(expense)
+                    if (expense.recurrent) {
+                        // Handle recurrent expenses (add for every day within the range)
+                        const daysInRange = calculateDaysInRange(startDate, endDate);
+                        // console.log({daysInRange})
+                        const dailyExpenseCost = parseInt(expense.cost) || 0;
+        
+                        // Add total expense amount for recurrent expense within the range
+                        totalExpenses += dailyExpenseCost * daysInRange;
+                    } else {
+                        // Handle non-recurrent expenses (add only for specific business date within the range)
+                        if (expenseDate >= startDate && expenseDate <= endDate) {
+                            const expenseCost = parseInt(expense.cost) || 0;
+        
+                            // Add expense amount to the total expenses
+                            totalExpenses += expenseCost;
                         }
                     }
                 }
             }
-
-            console.log('Total Expenses:', totalExpenses);
+        
+            // Return the total expenses
             return totalExpenses;
         }
 
@@ -293,7 +262,7 @@ const orders = {
         }
         // Calculate total expenses based on whether storeId is available
         const calculateTotal = (storeId) => {
-            return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, businessDate, storeId);
+            return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, storeId);
         };
 
         const storeId = localStorage.getItem("storeId");
