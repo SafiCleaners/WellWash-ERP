@@ -9,9 +9,13 @@ export const DateRangePicker = {
     oninit(vnode) {
         // Retrieve the selectedDate from localStorage if available
         const storedDate = localStorage.getItem("businessDate");
+        const businessRangeStartDate = localStorage.getItem("businessRangeStartDate");
+        const businessRangeEndDate = localStorage.getItem("businessRangeEndDate");
 
         // Set the selectedDate in state using the display format or null if not present
         vnode.state.selectedDate = storedDate ? moment(storedDate).format(displayFormat) : null;
+        vnode.state.selectedStartDate = storedDate ? moment(businessRangeStartDate).format(displayFormat) : null;
+        vnode.state.selectedEndDate = storedDate ? moment(businessRangeEndDate).format(displayFormat) : null;
 
         window.addEventListener('beforeinstallprompt', (event) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -34,6 +38,8 @@ export const DateRangePicker = {
         const currentRoute = window.location.href;
         console.log('Current Route:', currentRoute);
 
+        console.log(vnode.state)
+
         if (currentRoute.includes('dash')) {
             return m('input', {
                 ...attrs,
@@ -50,6 +56,8 @@ export const DateRangePicker = {
                             format: rangeDisplayFormat
                         },
                         opens: 'left',
+                        startDate: vnode.state.selectedStartDate,
+                        endDate: vnode.state.selectedEndDate
                     };
 
                     jQuery(`#range`).daterangepicker(datepickerOptions, (start, end, label) => {
