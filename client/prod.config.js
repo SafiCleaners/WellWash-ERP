@@ -23,14 +23,21 @@ const { plugins, outputfile, mode, watch } = env == 'build'
             output: {
                 comments: false, // Remove all comments
             },
-            compress: {
-                // UglifyJS compression options
-                unused: true, // Drop unreferenced functions and variables
-                dead_code: true, // Remove unreachable code
-                warnings: false, // Suppress uglification warnings
-                keep_fnames: false, // Remove function name mangling
-                pure_funcs: ['console.log'], // List of functions to be removed if not used
-            },
+            // compress: {
+            //     // UglifyJS compression options
+            //     unused: true, // Drop unreferenced functions and variables
+            //     dead_code: true, // Remove unreachable code
+            //     pure_funcs: ['console.log'], // List of functions to be removed if not used
+            // },
+            warnings: false,
+            parse: {},
+            compress: {},
+            mangle: true, // Note `mangle.properties` is `false` by default.
+            output: null,
+            toplevel: false,
+            nameCache: null,
+            ie8: false,
+            keep_fnames: false,
         },
     }),
       new webpack.BannerPlugin(COPYRIGHT),
