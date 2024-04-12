@@ -179,7 +179,7 @@ const orders = {
         const storedStartDate = localStorage.getItem("businessRangeStartDate");
         const storedEndDate = localStorage.getItem("businessRangeEndDate");
         const businessDate = localStorage.getItem("businessDate");
-        
+
         var jobs = vnode.state.jobs.filter(job => {
 
             // Assuming storedStartDate and storedEndDate are valid date strings
@@ -214,98 +214,83 @@ const orders = {
 
         const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
 
-        
+
 
         // Function to calculate total expenses on a business day
-        // Function to calculate total expenses based on selected mode (date range or specific date)
-        // Function to calculate total expenses based on selected mode (date range or specific date)
-        // Function to calculate total expenses based on selected mode (date range or specific date)
-function calculateTotalExpenses(expenses, businessDateStart, businessDateEnd, currentDate, storeId) {
-    let totalExpenses = 0;
+        function calculateTotalExpenses(expenses, businessDateStart, businessDateEnd, currentDate, storeId) {
+            let totalExpenses = 0;
 
-    // Convert string dates to Date objects (for date range filtering)
-    const startDate = businessDateStart ? new Date(businessDateStart) : null;
-    const endDate = businessDateEnd ? new Date(businessDateEnd) : null;
+            // Convert string dates to Date objects (for date range filtering)
+            const startDate = businessDateStart ? new Date(businessDateStart) : null;
+            const endDate = businessDateEnd ? new Date(businessDateEnd) : null;
 
-    // Convert currentDate to a Date object (for specific date filtering)
-    const filterDate = currentDate ? new Date(currentDate) : null;
+            // Convert currentDate to a Date object (for specific date filtering)
+            const filterDate = currentDate ? new Date(currentDate) : null;
 
-    // Iterate through each expense
-    for (const expense of expenses) {
-        const expenseDate = new Date(expense.businessDate);
+            // Iterate through each expense
+            for (const expense of expenses) {
+                const expenseDate = new Date(expense.businessDate);
 
-        // Check if the expense matches the filtering criteria based on the selected mode
-        if (
-            (expense.recurrent && startDate && endDate) || // Recurrent expense within date range
-            (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) || // Specific date mode
-            (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate) // Date range mode
-        ) {
-            // Check if the expense matches the storeId filter or if storeId is not provided
-            if (!storeId || expense.storeId === storeId) {
-                // Parse expense cost to a number (assuming expense.cost is a string)
-                const expenseCost = parseInt(expense.cost);
+                // Check if the expense matches the filtering criteria based on the selected mode
+                if (
+                    (expense.recurrent && startDate && endDate) || // Recurrent expense within date range
+                    (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) || // Specific date mode
+                    (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate) // Date range mode
+                ) {
+                    // Check if the expense matches the storeId filter or if storeId is not provided
+                    if (!storeId || expense.storeId === storeId) {
+                        // Parse expense cost to a number (assuming expense.cost is a string)
+                        const expenseCost = parseInt(expense.cost);
 
-                if (!isNaN(expenseCost)) {
-                    if (expense.recurrent) {
-                        // Add total recurrent expense for every day within the date range
-                        const daysInRange = calculateDaysInRange(startDate, endDate);
-                        const recurrentExpenseTotalCost = expenseCost * daysInRange;
-                        totalExpenses += recurrentExpenseTotalCost;
-                        console.log('Added recurrent expense for every day:', {
-                            title: expense.title,
-                            expenseCost,
-                            daysInRange,
-                            totalCost: recurrentExpenseTotalCost,
-                            storeId: expense.storeId
-                        });
-                    } else {
-                        // Add non-recurrent expense for the specific date within the storeId filter
-                        if (
-                            (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) ||
-                            (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate)
-                        ) {
-                            // Add expense cost only if the expense matches the specified storeId (if provided)
-                            if (!storeId || expense.storeId === storeId) {
-                                totalExpenses += expenseCost;
-                                console.log('Added expense for the day:', {
+                        if (!isNaN(expenseCost)) {
+                            if (expense.recurrent) {
+                                // Add total recurrent expense for every day within the date range
+                                const daysInRange = calculateDaysInRange(startDate, endDate);
+                                const recurrentExpenseTotalCost = expenseCost * daysInRange;
+                                totalExpenses += recurrentExpenseTotalCost;
+                                console.log('Added recurrent expense for every day:', {
                                     title: expense.title,
-                                    date: expenseDate.toISOString().split('T')[0],
-                                    cost: expenseCost,
+                                    expenseCost,
+                                    daysInRange,
+                                    totalCost: recurrentExpenseTotalCost,
                                     storeId: expense.storeId
                                 });
+                            } else {
+                                // Add non-recurrent expense for the specific date within the storeId filter
+                                if (
+                                    (filterDate && expenseDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0]) ||
+                                    (startDate && endDate && expenseDate >= startDate && expenseDate <= endDate)
+                                ) {
+                                    // Add expense cost only if the expense matches the specified storeId (if provided)
+                                    if (!storeId || expense.storeId === storeId) {
+                                        totalExpenses += expenseCost;
+                                        console.log('Added expense for the day:', {
+                                            title: expense.title,
+                                            date: expenseDate.toISOString().split('T')[0],
+                                            cost: expenseCost,
+                                            storeId: expense.storeId
+                                        });
+                                    }
+                                }
                             }
+                        } else {
+                            console.warn('Invalid expense cost for:', expense.title);
                         }
                     }
-                } else {
-                    console.warn('Invalid expense cost for:', expense.title);
                 }
             }
+
+            console.log('Total Expenses:', totalExpenses);
+            return totalExpenses;
         }
-    }
 
-    console.log('Total Expenses:', totalExpenses);
-    return totalExpenses;
-}
-
-// Helper function to calculate number of days between two dates (inclusive)
-function calculateDaysInRange(startDate, endDate) {
-    const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    return Math.round(Math.abs((end - start) / oneDay)) + 1; // Include both start and end dates in the count
-}
-
-        
-
-
-
-
-
-
-
-
-        
-
+        // Helper function to calculate number of days between two dates (inclusive)
+        function calculateDaysInRange(startDate, endDate) {
+            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            return Math.round(Math.abs((end - start) / oneDay)) + 1; // Include both start and end dates in the count
+        }
         // Calculate total expenses based on whether storeId is available
         const calculateTotal = (storeId) => {
             return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, businessDate, storeId);
@@ -324,7 +309,7 @@ function calculateDaysInRange(startDate, endDate) {
 
         const totalProfit = Number(totalSales) - Number(totalExpenses)
 
-       
+
 
         vnode.state.stats = {
             totalSales,
@@ -493,7 +478,8 @@ function calculateDaysInRange(startDate, endDate) {
                                 m("h3", { "class": "card-title align-items-start flex-column" }, [
                                     [
                                         m("span", { "class": "card-label fw-bold text-gray-800" },
-                                            "Job Queue"
+                                        !localStorage.getItem('storeId') ? " All Stores " : vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
+                                        + "'s Job Queue"
                                         ),
                                         m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
                                             dateRange
