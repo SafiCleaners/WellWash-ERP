@@ -19,7 +19,6 @@ export const DateRangePicker = {
         vnode.state.selectedDate = storedDate ? moment(storedDate).format(displayFormat) : null;
         vnode.state.selectedStartDate = storedDate ? moment(businessRangeStartDate).format(displayFormat) : null;
         vnode.state.selectedEndDate = storedDate ? moment(businessRangeEndDate).format(displayFormat) : null;
-        
         window.addEventListener('beforeinstallprompt', (event) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             event.preventDefault();
