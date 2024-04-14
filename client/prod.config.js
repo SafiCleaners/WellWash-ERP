@@ -32,7 +32,7 @@ const { plugins, outputfile, mode, watch } = env == 'build'
             warnings: false,
             parse: {},
             compress: {},
-            mangle: true, // Note `mangle.properties` is `false` by default.
+            // mangle: true, // Note `mangle.properties` is `false` by default.
             output: null,
             toplevel: false,
             nameCache: null,
