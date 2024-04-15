@@ -1,0 +1,3 @@
+[submodule "Mpesa-Checkout-Node-Js-Sample"]
+    path = Mpesa-Checkout-Node-Js-Sample
+    url = https://github.com/BransonGitomeh/Mpesa-Checkout-Node-Js-Sample.git
