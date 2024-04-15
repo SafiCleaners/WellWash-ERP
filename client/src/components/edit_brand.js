@@ -7,6 +7,7 @@ import {
 import m from "mithril"
 
 
+
 const EditBrandForm = {
     oninit(vnode) {
         // Access props from vnode.attrs
@@ -71,6 +72,32 @@ const EditBrandForm = {
     },
 
     view: function () {
+        // Function to handle input change and update formData state
+        const handleInputChange = (field, value) => {
+            // Assuming this.formData is your component's state for form data
+            this.formData[field] = value;
+        };
+
+        // Function to handle file input change
+        const handleFileInputChange = (event) => {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                // Define callback function when file reading is complete
+                reader.onload = (e) => {
+                    const base64String = e.target.result;
+                    
+                    // Use the base64 string as the value (e.target.value)
+                    handleInputChange('logo', base64String);
+                };
+
+                // Read the file as a base64 string
+                reader.readAsDataURL(file);
+            }
+        };
+
         return m('span', [
             // Open Modal Button
             m('button', { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mr-2", onclick: () => this.openModal() }, m('icon', { "class": "flaticon-edit" })),
@@ -101,6 +128,7 @@ const EditBrandForm = {
                                 "class": "form-control form-control-solid",
                                 "id": "logoInput",
                                 "placeholder": "Upload logo",
+                                onchange: (e) => handleFileInputChange(e),
                             }),
                         ]),
                         m("span", { "class": "border-top mt-4" }),

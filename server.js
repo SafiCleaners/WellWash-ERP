@@ -28,7 +28,7 @@ const { v4: uuidv4 } = require("uuid")
 const crypto = require('crypto');
 
 // Express body parser
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '3mb' }));
 app.use(express.json());
 app.use(cors());
 app.use(morgan(['development', "test"].includes(NODE_ENV) ? 'tiny' : 'combined'))
