@@ -289,9 +289,34 @@ const orders = {
             totalExpenses
         };
 
+
         const formattedBusinessDate = selectedDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 
         const date = `${formattedBusinessDate}`;
+
+        const filteredJobs = vnode.state.jobs
+        .filter(job => {
+            const selectedDate = new Date(localStorage.getItem("businessDate"));
+
+            // Assuming job.businessDate is a valid date string
+            const businessDate = new Date(job.businessDate);
+            // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
+            return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
+        })
+        .filter(job => {
+            if (localStorage.getItem("storeId"))
+                return job.storeId == localStorage.getItem("storeId")
+
+            return true
+        })
+        .sort((a, b) => {
+            // Assuming createdAtDateTime is a valid date string
+            const dateA = new Date(a.createdAtDateTime);
+            const dateB = new Date(b.createdAtDateTime);
+
+            // Compare dates for sorting
+            return dateA - dateB;
+        })
 
         return [
             m("div", { "class": "table-responsive" },
@@ -475,30 +500,53 @@ const orders = {
                                                     ),
                                                     m("tbody",
                                                         [
+                                                            filteredJobs.length == 0 ? [
+                                                                m("tr", {
+                                                                    style: { textAlign: "center" } // Inline style for centering content
+                                                                }, [
+                                                                    m("td", {
+                                                                        colspan: 3 // Spanning across all 3 columns
+                                                                    }, [
+                                                                        m("svg", {
+                                                                            width: "250", // Set SVG width (adjust as needed)
+                                                                            height: "250" // Set SVG height (adjust as needed)
+                                                                        }, [
+                                                                            // Image element within SVG
+                                                                            m("image", {
+                                                                                href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
+                                                                                width: "200", // Set image width within SVG (adjust as needed)
+                                                                                height: "200", // Set image height within SVG (adjust as needed)
+                                                                                x: "25", // X position of the image within SVG canvas
+                                                                                y: "25" // Y position of the image within SVG canvas
+                                                                            }),
+                                                                            // Text element below the image
+                                                                            m("text", {
+                                                                                x: "50%",
+                                                                                y: "230",
+                                                                                "text-anchor": "middle", 
+                                                                                fill: "black" // Text color
+                                                                            }, "No Sales yet for " + date) // Text content
+                                                                        ]),
+                                                                        // Button element below the SVG and text
+                                                                        m("button", {
+                                                                            class: "btn btn-sm btn-info",
+                                                                            onclick: () => {
+                                                                                m.route.set("/q-new");
+                                                                                setTimeout(() => {
+                                                                                    location.reload();
+                                                                                }, 1000);
+                                                                            }
+                                                                        }, [
+                                                                            m("i", { class: "flaticon-add-circular-button" }), 
+                                                                            "Add Some" 
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                                
+                                                                
+                                                            ] :
                                                             // console.log(vnode.state.selectedDate),
-                                                            vnode.state.jobs
-                                                                .filter(job => {
-                                                                    const selectedDate = new Date(localStorage.getItem("businessDate"));
-
-                                                                    // Assuming job.businessDate is a valid date string
-                                                                    const businessDate = new Date(job.businessDate);
-                                                                    // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
-                                                                    return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
-                                                                })
-                                                                .filter(job => {
-                                                                    if (localStorage.getItem("storeId"))
-                                                                        return job.storeId == localStorage.getItem("storeId")
-
-                                                                    return true
-                                                                })
-                                                                .sort((a, b) => {
-                                                                    // Assuming createdAtDateTime is a valid date string
-                                                                    const dateA = new Date(a.createdAtDateTime);
-                                                                    const dateB = new Date(b.createdAtDateTime);
-
-                                                                    // Compare dates for sorting
-                                                                    return dateA - dateB;
-                                                                })
+                                                            filteredJobs
                                                                 .map(({
                                                                     _id,
                                                                     paid = "",

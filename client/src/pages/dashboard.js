@@ -219,13 +219,13 @@ const orders = {
         // Function to calculate total expenses on a business day
         function calculateTotalExpenses(expenses, startDate, endDate, storeId) {
             let totalExpenses = 0;
-        
+
             // Iterate through each expense
             for (const expense of expenses) {
                 const expenseDate = new Date(expense.businessDate);
 
                 // console.log(expense.storeId == storeId)
-        
+
                 // Check if the expense belongs to the specified store
                 if (expense.storeId == storeId) {
                     // console.log(expense)
@@ -234,21 +234,21 @@ const orders = {
                         const daysInRange = calculateDaysInRange(startDate, endDate);
                         // console.log({daysInRange})
                         const dailyExpenseCost = parseInt(expense.cost) || 0;
-        
+
                         // Add total expense amount for recurrent expense within the range
                         totalExpenses += dailyExpenseCost * daysInRange;
                     } else {
                         // Handle non-recurrent expenses (add only for specific business date within the range)
                         if (expenseDate >= startDate && expenseDate <= endDate) {
                             const expenseCost = parseInt(expense.cost) || 0;
-        
+
                             // Add expense amount to the total expenses
                             totalExpenses += expenseCost;
                         }
                     }
                 }
             }
-        
+
             // Return the total expenses
             return totalExpenses;
         }
@@ -297,6 +297,61 @@ const orders = {
         const formattedSelectedBusinessDate = selectedBusinessDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 
         const dateRange = !['/dash'].includes(m.route.get()) ? formattedSelectedBusinessDate : `${formattedStartDate} - ${formattedEndDate}`;
+
+        var filteredJobs = vnode.state.jobs
+            .filter(job => {
+                const storedStartDate = localStorage.getItem("businessRangeStartDate");
+                const storedEndDate = localStorage.getItem("businessRangeEndDate");
+
+                // Assuming storedStartDate and storedEndDate are valid date strings
+                const startDate = new Date(storedStartDate);
+                const endDate = new Date(storedEndDate);
+
+                const businessDate = new Date(job.businessDate);
+
+                // console.log({ businessDate, startDate, businessDate, endDate })
+                // Check if the job's business date is within the stored date range
+                return businessDate >= startDate && businessDate <= endDate;
+            })
+            .filter(job => {
+                if (localStorage.getItem("storeId"))
+                    return job.storeId == localStorage.getItem("storeId")
+                return true
+            })
+            .filter(job => {
+                // Apply filter only if showUnpaid is true
+                if (vnode.state.showUnpaid) {
+                    return job.paid !== vnode.state.showUnpaid;
+                }
+                // Return true if showUnpaid is false or undefined, meaning no filter applied
+                return true;
+            })
+            .sort((a, b) => {
+                if (vnode.state.showUnpaid) {
+                    // Assuming businessDate is a valid date string
+                    const dateA = new Date(a.businessDate);
+                    const dateB = new Date(b.businessDate);
+
+                    // Compare dates for sorting
+                    return dateA - dateB;
+                } else {
+                    // Assuming createdAtDateTime is a valid date string
+                    const dateA = new Date(a.createdAtDateTime);
+                    const dateB = new Date(b.createdAtDateTime);
+
+                    // Compare business dates for sorting
+                    const businessDateComparison = dateA - dateB;
+
+                    // If business dates are equal, sort by createdAtDateTime
+                    if (businessDateComparison === 0) {
+                        const createdAtDateA = new Date(a.createdAtDateTime);
+                        const createdAtDateB = new Date(b.createdAtDateTime);
+                        return createdAtDateA - createdAtDateB;
+                    }
+
+                    return businessDateComparison;
+                }
+            })
 
         return m("div", { "class": "card card-custom gutter-b" },
             [
@@ -447,8 +502,8 @@ const orders = {
                                 m("h3", { "class": "card-title align-items-start flex-column" }, [
                                     [
                                         m("span", { "class": "card-label fw-bold text-gray-800" },
-                                        !localStorage.getItem('storeId') ? " All Stores " : vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
-                                        + "'s Job Queue"
+                                            !localStorage.getItem('storeId') ? " All Stores " : vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
+                                                + "'s Job Queue"
                                         ),
                                         m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
                                             dateRange
@@ -530,61 +585,55 @@ const orders = {
                                         ),
                                         m("tbody",
                                             [
-                                                vnode.state.jobs
-                                                    .filter(job => {
-                                                        const storedStartDate = localStorage.getItem("businessRangeStartDate");
-                                                        const storedEndDate = localStorage.getItem("businessRangeEndDate");
-
-                                                        // Assuming storedStartDate and storedEndDate are valid date strings
-                                                        const startDate = new Date(storedStartDate);
-                                                        const endDate = new Date(storedEndDate);
-
-                                                        const businessDate = new Date(job.businessDate);
-
-                                                        // console.log({ businessDate, startDate, businessDate, endDate })
-                                                        // Check if the job's business date is within the stored date range
-                                                        return businessDate >= startDate && businessDate <= endDate;
-                                                    })
-                                                    .filter(job => {
-                                                        if (localStorage.getItem("storeId"))
-                                                            return job.storeId == localStorage.getItem("storeId")
-                                                        return true
-                                                    })
-                                                    .filter(job => {
-                                                        // Apply filter only if showUnpaid is true
-                                                        if (vnode.state.showUnpaid) {
-                                                            return job.paid !== vnode.state.showUnpaid;
-                                                        }
-                                                        // Return true if showUnpaid is false or undefined, meaning no filter applied
-                                                        return true;
-                                                    })
-                                                    .sort((a, b) => {
-                                                        if (vnode.state.showUnpaid) {
-                                                            // Assuming businessDate is a valid date string
-                                                            const dateA = new Date(a.businessDate);
-                                                            const dateB = new Date(b.businessDate);
-
-                                                            // Compare dates for sorting
-                                                            return dateA - dateB;
-                                                        } else {
-                                                            // Assuming createdAtDateTime is a valid date string
-                                                            const dateA = new Date(a.createdAtDateTime);
-                                                            const dateB = new Date(b.createdAtDateTime);
-
-                                                            // Compare business dates for sorting
-                                                            const businessDateComparison = dateA - dateB;
-
-                                                            // If business dates are equal, sort by createdAtDateTime
-                                                            if (businessDateComparison === 0) {
-                                                                const createdAtDateA = new Date(a.createdAtDateTime);
-                                                                const createdAtDateB = new Date(b.createdAtDateTime);
-                                                                return createdAtDateA - createdAtDateB;
-                                                            }
-
-                                                            return businessDateComparison;
-                                                        }
-                                                    })
-                                                    .map(({
+                                                filteredJobs.length === 0
+                                                    ? [
+                                                        m("tr", {
+                                                            style: { textAlign: "center" } // Inline style for centering content
+                                                        }, [
+                                                            m("td", {
+                                                                colspan: 3 // Spanning across all 3 columns
+                                                            }, [
+                                                                m("svg", {
+                                                                    width: "250", // Set SVG width (adjust as needed)
+                                                                    height: "250" // Set SVG height (adjust as needed)
+                                                                }, [
+                                                                    // Image element within SVG
+                                                                    m("image", {
+                                                                        href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
+                                                                        width: "200", // Set image width within SVG (adjust as needed)
+                                                                        height: "200", // Set image height within SVG (adjust as needed)
+                                                                        x: "25", // X position of the image within SVG canvas
+                                                                        y: "25" // Y position of the image within SVG canvas
+                                                                    }),
+                                                                    // Text element below the image
+                                                                    m("text", {
+                                                                        x: "50%",
+                                                                        y: "230",
+                                                                        "text-anchor": "middle", 
+                                                                        fill: "black" // Text color
+                                                                    }, "No Jobs yet for " + dateRange) // Text content
+                                                                ]),
+                                                                m("br"),
+                                                                // Button element below the SVG and text
+                                                                m("button", {
+                                                                    class: "btn btn-sm btn-info",
+                                                                    onclick: () => {
+                                                                        m.route.set("/q-new");
+                                                                        setTimeout(() => {
+                                                                            location.reload();
+                                                                        }, 1000);
+                                                                    }
+                                                                }, [
+                                                                    m("i", { class: "flaticon-add-circular-button" }), 
+                                                                    "Add Some" 
+                                                                ])
+                                                            ])
+                                                        ])
+                                                        
+                                                        
+                                                    ] :
+                                                    
+                                                    filteredJobs.map(({
                                                         _id,
                                                         paid = "",
                                                         status = "",
