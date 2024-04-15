@@ -542,6 +542,7 @@ const orders = {
                                                                                 fill: "black" // Text color
                                                                             }, "No Sales yet for " + date) // Text content
                                                                         ]),
+                                                                        m("br"),
                                                                         // Button element below the SVG and text
                                                                         m("button", {
                                                                             class: "btn btn-sm btn-info",

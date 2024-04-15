@@ -71,6 +71,52 @@ const orders = {
             totalExpenses: 0
         }
         vnode.state.showUnpaid = false
+
+        function getValueFromLocalStorageOrQueryParams(key, defaultValue) {
+            // Attempt to retrieve the value from localStorage
+            let storedValue = localStorage.getItem(key);
+        
+            // If value is not found in localStorage, try to retrieve it from query parameters
+            if (!storedValue) {
+                const urlParams = new URLSearchParams(window.location.search);
+                storedValue = urlParams.get(key);
+        
+                // If value is found in query parameters, save it to localStorage for future use
+                if (storedValue) {
+                    localStorage.setItem(key, storedValue);
+                } else {
+                    // If value is not found in localStorage or query parameters
+                    if (defaultValue !== undefined && defaultValue !== null) {
+                        // Use the provided defaultValue and save it to both localStorage and query parameters
+                        storedValue = defaultValue;
+                        localStorage.setItem(key, storedValue);
+        
+                        // Update query parameters with the default value
+                        const updatedUrlParams = new URLSearchParams(window.location.search);
+                        updatedUrlParams.set(key, storedValue);
+                        const updatedUrl = `${window.location.pathname}?${updatedUrlParams.toString()}`;
+                        window.history.replaceState({}, '', updatedUrl);
+                    } else {
+                        // No defaultValue provided; set storedValue to null or empty string
+                        storedValue = null; // or storedValue = ''; depending on your preference
+                    }
+                }
+            }
+        
+            return storedValue;
+        }
+        
+
+        // getValueFromLocalStorageOrQueryParams("businessDate", new Date().toISOString())
+
+        // Calculate default date as current date minus 3 days
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() - 3);
+        const default3DaysAgoDateISO = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+        getValueFromLocalStorageOrQueryParams("businessRangeStartDate", default3DaysAgoDateISO)
+        getValueFromLocalStorageOrQueryParams("businessRangeEndDate", new Date().toISOString())
+        getValueFromLocalStorageOrQueryParams("storeId", "defaultStoreId")
     },
     oncreate(vnode) {
         const fetchData = async (options) => {
@@ -178,7 +224,7 @@ const orders = {
     view(vnode) {
         const storedStartDate = localStorage.getItem("businessRangeStartDate");
         const storedEndDate = localStorage.getItem("businessRangeEndDate");
-        const businessDate = localStorage.getItem("businessDate");
+        const storeId = localStorage.getItem("storeId");
 
         var jobs = vnode.state.jobs.filter(job => {
 
@@ -265,7 +311,6 @@ const orders = {
             return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, storeId);
         };
 
-        const storeId = localStorage.getItem("storeId");
         const totalExpensesArray = storeId
             ? [calculateTotal(storeId)]  // Calculate total expenses for the specific store
             : vnode.state.stores.map(store => calculateTotal(store._id));  // Calculate total expenses for all stores
@@ -609,7 +654,7 @@ const orders = {
                                                                     m("text", {
                                                                         x: "50%",
                                                                         y: "230",
-                                                                        "text-anchor": "middle", 
+                                                                        "text-anchor": "middle",
                                                                         fill: "black" // Text color
                                                                     }, "No Jobs yet for " + dateRange) // Text content
                                                                 ]),
@@ -624,15 +669,15 @@ const orders = {
                                                                         }, 1000);
                                                                     }
                                                                 }, [
-                                                                    m("i", { class: "flaticon-add-circular-button" }), 
-                                                                    "Add Some" 
+                                                                    m("i", { class: "flaticon-add-circular-button" }),
+                                                                    "Add Some"
                                                                 ])
                                                             ])
                                                         ])
-                                                        
-                                                        
+
+
                                                     ] :
-                                                    
+
                                                     filteredJobs.map(({
                                                         _id,
                                                         paid = "",
