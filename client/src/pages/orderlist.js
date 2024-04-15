@@ -69,6 +69,21 @@ const orders = {
         vnode.state.categories = []
         vnode.state.loading = true
         vnode.state.selectedDate = new Date()
+
+        // Retrieve businessDate from localStorage and convert it to a Date object
+        const storedBusinessDate = localStorage.getItem("businessDate");
+        let selectedDate;
+
+        if (storedBusinessDate) {
+            // If businessDate exists in localStorage, parse it as a Date
+            selectedDate = new Date(storedBusinessDate);
+        } else {
+            // If businessDate is not found in localStorage, set a default value (e.g., current date)
+            selectedDate = new Date(); // Default to current date/time
+            const storageFormattedDate = selectedDate.toISOString(); // Convert to ISO string for storage
+            localStorage.setItem("businessDate", storageFormattedDate); // Save to localStorage
+        }
+
     },
     oncreate(vnode) {
         const options = {
@@ -527,6 +542,7 @@ const orders = {
                                                                                 fill: "black" // Text color
                                                                             }, "No Sales yet for " + date) // Text content
                                                                         ]),
+                                                                        m("br"),
                                                                         // Button element below the SVG and text
                                                                         m("button", {
                                                                             class: "btn btn-sm btn-info",

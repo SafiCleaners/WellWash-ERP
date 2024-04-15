@@ -316,22 +316,34 @@ const header = {
                                                 }
                                             }, " All Stores "),
                                             vnode.state.stores
-                                                ?.filter(store=>store.brand == localStorage.getItem('brand'))
+                                                ?.filter(store => store.brand == localStorage.getItem('brand'))
                                                 .map(store => {
                                                     return m("a", {
                                                         class: "dropdown-item",
-                                                        // href: "#",
+                                                        href: "#", // Ensure href is provided to allow clicking behavior
                                                         onclick: (e) => {
-                                                            // Prevent default link behavior
-                                                            e.preventDefault();
+                                                            e.preventDefault(); // Prevent default link behavior
 
-                                                            // Store store._id in local storage as storeId
-                                                            localStorage.setItem('storeId', store._id);
+                                                            // Store store._id in localStorage as storeId
+                                                            const selectedStoreId = store._id;
+                                                            localStorage.setItem('storeId', selectedStoreId);
 
-                                                            m.redraw()
+                                                            // Update the URL query parameter with the selected storeId
+                                                            const urlSearchParams = new URLSearchParams(window.location.search);
+                                                            urlSearchParams.set('storeId', selectedStoreId);
+
+                                                            // Construct the updated URL with the new query parameters
+                                                            const updatedUrl = `${window.location.pathname}?${urlSearchParams.toString()}`;
+
+                                                            // Replace the current URL with the updated URL containing the modified query parameter
+                                                            window.history.replaceState({}, '', updatedUrl);
+
+                                                            // Force Mithril to redraw the component
+                                                            m.redraw();
                                                         }
                                                     }, store.title);
                                                 })
+
                                         ]
                                     )),
                             ]),
