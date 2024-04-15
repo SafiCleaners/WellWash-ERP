@@ -127,15 +127,17 @@ const pricing = {
                                                     .filter(pricing => {
                                                         // console.log(pricing)
                                                         // Find the category associated with the pricing
-                                                        const category = vnode.state.categories.find(category => category.id == pricing.category);
+                                                        const category = vnode.state.categories.find(category => category._id == pricing.category);
+                                                        if(category?.brand)
+                                                            console.log(category, pricing )
                                                         // console.log(category && category.brand == localStorage.getItem('brand'))
                                                         // Check if the category's brand matches the brand stored in localStorage
                                                         return category && category.brand == localStorage.getItem('brand');
                                                         // return true
                                                     })
                                                     .map((item) => {
-                                                        item.category ? console.log(item.category) : null
-                                                        console.log(item, vnode.state.categories.find(c => c._id == item.category))
+                                                        // item.category ? console.log(item.category) : null
+                                                        // console.log(item, vnode.state.categories.find(c => c._id == item.category))
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
@@ -144,7 +146,7 @@ const pricing = {
                                                                     [
                                                                         m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
                                                                             "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                        }, vnode.state.categories && vnode.state.categories.find(c => c._id == item.category))
+                                                                        }, vnode.state.categories.find(category => category._id == item.category)?.title)
                                                                     ]
                                                                 ),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
