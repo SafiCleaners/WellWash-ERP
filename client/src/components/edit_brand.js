@@ -31,6 +31,7 @@ const EditBrandForm = {
     },
 
     handleSubmit: function () {
+        const _this = this
         // Handle form submission logic here
         console.log('Form Submitted:', this.formData);
         const fileInput = document.getElementById('logoInput');
@@ -44,7 +45,7 @@ const EditBrandForm = {
                 const base64String = reader.result.split(',')[1]; 
     
                 // Call the function to upload the base64 string to the server using Axios
-                this.formData.image = base64String;
+                _this.formData.image = base64String;
             };
     
             reader.readAsDataURL(file);
