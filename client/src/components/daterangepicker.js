@@ -58,9 +58,12 @@ export const DateRangePicker = {
                             format: rangeDisplayFormat
                         },
                         opens: 'left',
+                    };
+
+                    vnode.state.selectedStartDate ? Object.assign(datepickerOptions,{
                         startDate: vnode.state.selectedStartDate,
                         endDate: vnode.state.selectedEndDate
-                    };
+                    }) : null
 
                     jQuery(`#range`).daterangepicker(datepickerOptions, (start, end, label) => {
                         const formattedStartDate = start.format(rangeDisplayFormat);

@@ -125,14 +125,17 @@ const pricing = {
                                                 [
                                                     vnode.state.pricings
                                                     .filter(pricing => {
+                                                        // console.log(pricing)
                                                         // Find the category associated with the pricing
-                                                        const category = vnode.state.categories.find(category => category.id === pricing.category);
-                                                        console.log(category && category.brand === localStorage.getItem('brand'))
+                                                        const category = vnode.state.categories.find(category => category.id == pricing.category);
+                                                        // console.log(category && category.brand == localStorage.getItem('brand'))
                                                         // Check if the category's brand matches the brand stored in localStorage
-                                                        return category && category.brand === localStorage.getItem('brand');
+                                                        return category && category.brand == localStorage.getItem('brand');
+                                                        // return true
                                                     })
                                                     .map((item) => {
-                                                        console.log(item)
+                                                        item.category ? console.log(item.category) : null
+                                                        console.log(item, vnode.state.categories.find(c => c._id == item.category))
                                                         return m("tr", {
                                                             style: { "cursor": "pointer" }
                                                         },
