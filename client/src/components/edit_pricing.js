@@ -15,6 +15,7 @@ const EditPricingForm = {
             id: this.props.pricing._id,
             title: this.props.pricing.title,
             cost: this.props.pricing.cost,
+            category: this.props.pricing.category,
         }
     },
     oncreate(vnode) {
@@ -78,6 +79,7 @@ const EditPricingForm = {
     },
 
     view: function (vnode) {
+
         return m('span', [
             // Open Modal Button
             m('button', { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mr-2", onclick: () => this.openModal() }, m('icon', { "class": "flaticon-edit" })),
@@ -97,10 +99,19 @@ const EditPricingForm = {
                             m('label', 'Select Category:'),
                             m('select', {
                                 "class": "form-control form-control-solid",
-                                value: this.formData.title,
+                                value: this.props.pricing.category,
                                 onchange: (e) => this.handleInputChange('category', e.target.value),
                             }, [
-                                vnode.state.categories.map((c) => { return m('option', { value: c._id }, c.title) }),
+
+                                vnode.state.categories
+                                .filter(c=>c.brand == localStorage.getItem('brand'))
+                                .map((c) => {
+                                    return m('option', {
+                                        value: c._id,
+                                        selected: this.props.pricing.category === c._id // Use strict equality (===)
+                                    }, c.title);
+                                }),
+                                
                             ]),
                         ]),
                         m("div", { "class": "col-6 my-2" }, [
