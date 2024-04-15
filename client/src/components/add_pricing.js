@@ -115,10 +115,12 @@ const AddPricingForm = {
                             m('label', 'Select Category:'),
                             m('select', {
                                 "class": "form-control form-control-solid",
-                                value: this.formData.store,
+                                // value: this.formData.store,
                                 onchange: (e) => this.handleInputChange('category', e.target.value),
                             }, [
-                                vnode.state.categories.map((c) => { return m('option', { value: c._id }, c.title) }),
+                                vnode.state.categories
+                                .filter(c=>c.brand == localStorage.getItem('brand'))
+                                .map((c) => { return m('option', { value: c._id }, c.title) }),
                             ]),
                         ]),
                         m("div", { "class": "col-6 my-2" }, [

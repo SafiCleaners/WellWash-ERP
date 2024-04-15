@@ -128,8 +128,8 @@ const pricing = {
                                                         // console.log(pricing)
                                                         // Find the category associated with the pricing
                                                         const category = vnode.state.categories.find(category => category._id == pricing.category);
-                                                        if(category?.brand)
-                                                            console.log(category, pricing )
+                                                        // if(category?.brand)
+                                                        //     console.log(category, pricing )
                                                         // console.log(category && category.brand == localStorage.getItem('brand'))
                                                         // Check if the category's brand matches the brand stored in localStorage
                                                         return category && category.brand == localStorage.getItem('brand');
