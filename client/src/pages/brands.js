@@ -110,13 +110,13 @@ const brands = {
                                                                         )
                                                                     ]
                                                                 ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.logo
-                                                                        )
-                                                                    ]
-                                                                ),
+                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" }, [
+                                                                    !item.logo ? [] : m("img", {
+                                                                        src: `${item.logo}`, // Assuming item.logo is a Base64-encoded PNG image
+                                                                        alt: "Logo",
+                                                                        style: "max-height: 50px; max-width: 100%;", // Adjust max-height as needed
+                                                                    })
+                                                                ]),
                                                                 m("td", { "class": "text-right", style: "white-space: nowrap;" },
                                                                     [
                                                                         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
