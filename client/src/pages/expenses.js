@@ -56,17 +56,28 @@ const pricing = {
             }
         };
 
+        const brandsOptions = {
+            method: 'GET',
+            url: url + "/brands",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            }
+        };
+
         // Use axios.all to make parallel requests
         axios.all([
             axios.request(expensesOptions),
             axios.request(categoriesOptions),
-            axios.request(storesOptions)
+            axios.request(storesOptions),
+            axios.request(brandsOptions)
         ])
-            .then(axios.spread((expensesResponse, categoriesResponse, storesResponse) => {
+            .then(axios.spread((expensesResponse, categoriesResponse, storesResponse, brandsResponse) => {
                 // Handle successful responses for both requests
                 vnode.state.expenses = expensesResponse.data;
                 vnode.state.categories = categoriesResponse.data;
                 vnode.state.stores = storesResponse.data;
+                vnode.state.brands = brandsResponse.data;
                 vnode.state.loading = false;
                 m.redraw(); // Trigger redraw to reflect updated state
             }))
@@ -86,6 +97,12 @@ const pricing = {
         const filteredExpenses = vnode.state.expenses
             .filter(item => item.recurrent)
             .filter(item => {
+                const store = vnode.state.stores.find(store => store._id == item.storeId);
+                const storeBrand = vnode.state.brands.find(brand => brand._id == store.brand);
+
+                if(storeBrand._id != localStorage.getItem("brand"))
+                    return false
+
                 if (localStorage.getItem("storeId"))
                     return item.storeId == localStorage.getItem("storeId")
 
@@ -93,6 +110,14 @@ const pricing = {
             })
 
         const filteredEmmergentExpenses = vnode.state.expenses
+            .filter(expense => {
+                // Find the brand corresponding to the expense's storeId
+                const storeBrand = vnode.state.brands.find(brand => brand._id == expense.storeId);
+
+                // console.log({storeBrand})
+                // Check if the storeBrand matches the desired brand ID from localStorage
+                return storeBrand && storeBrand._id == localStorage.getItem("brand");
+            })
             .filter(item => !item.recurrent)
             .filter(job => {
                 const selectedDate = new Date(localStorage.getItem("businessDate"));
