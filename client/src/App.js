@@ -1,6 +1,7 @@
 import _ from "lodash"
 import m from "mithril"
 import header from "./components/header"
+import mobile_header from "./components/mobile_header.js"
 import subheader from "./components/subheader"
 
 
@@ -29,6 +30,9 @@ import POS from "./pages/POS";
 
 var root = document.getElementById("order_reciever")
 
+
+
+m.mount(document.getElementById("kt_header_mobile"), mobile_header)
 m.mount(document.getElementById("kt_header_in"), header)
 m.mount(document.getElementById("subheader"), subheader)
 
