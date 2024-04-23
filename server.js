@@ -1061,47 +1061,6 @@ const routes = async (client) => {
         }
     });
 
-    app.patch('/categories/:id', importantMiddleWares, async (req, res) => {
-        const token = req.headers.authorization;
-        // Verify the token
-        const decoded = jwt.verify(token, JWT_TOKEN);
-        // Extract the user's id from the token
-        const { _id: userId, name: userTitle } = decoded;
-
-        const { id } = req.params;
-        const { title, unit, cost } = req.body;
-
-        // Moment
-        const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
-        const timestamp = moment(dateTime).unix();
-        const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
-
-        try {
-            let existingEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
-
-            let response = await db.collection('categories').updateOne(
-                { _id: ObjectId(id) },
-                {
-                    $set: {
-                        title, unit, cost,
-                        updatedAtDateTime: dateTime,
-                        updatedAtTimestamp: timestamp,
-                        updatedAtFormatted: formatted
-                    }
-                },
-                { upsert: true });
-            let updatedEntity = await db.collection('categories').findOne({ _id: new ObjectId(id), deleted: false });
-            // Log Activity
-            logActivity(db, "Categories", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
-
-            res.status(200).json({ message: 'Category updated successfully' });
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    });
-
-
     app.delete('/categories/:id', importantMiddleWares, async (req, res) => {
         const token = req.headers.authorization;
         // Verify the token
@@ -1338,6 +1297,131 @@ const routes = async (client) => {
             res.status(500).json({ error: 'Internal server error' });
         }
     });
+
+    app.get('/stock-adjustments/:pricingId', importantMiddleWares, async (req, res) => {
+        try {
+            const { pricingId } = req.params;
+    
+            // Fetch all stock adjustments for the specified pricingId
+            const adjustments = await db.collection('stock_adjustments').find({ pricingId: new ObjectId(pricingId) }).toArray();
+    
+            res.status(200).json(adjustments);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.get('/stock-adjustments/:storeId', importantMiddleWares, async (req, res) => {
+        try {
+            const { pricingId } = req.params;
+    
+            // Fetch all stock adjustments for the specified pricingId
+            const adjustments = await db.collection('stock_adjustments').find({ pricingId: new ObjectId(pricingId), storeId }).toArray();
+    
+            res.status(200).json(adjustments);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.post('/stock-adjustments', importantMiddleWares, async (req, res) => {
+        const token = req.headers.authorization;
+        // Verify the token
+        const decoded = jwt.verify(token, JWT_TOKEN);
+        // Extract the user's id from the token
+        const { _id: userId, name: userTitle } = decoded;
+    
+        const { pricingId, quantity, businessDate, reason, cost } = req.body;
+    
+        try {
+            // Insert a new stock adjustment record
+            const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+            const timestamp = moment(dateTime).unix();
+            const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+    
+            const newAdjustment = {
+                pricingId: new ObjectId(pricingId),
+                quantity,
+                cost,
+                businessDate,
+                reason,
+                userId,
+                userTitle,
+                createdAtDateTime: dateTime,
+                createdAtTimestamp: timestamp,
+                createdAtFormatted: formatted
+            };
+    
+            const response = await db.collection('stock_adjustments').insertOne(newAdjustment);
+    
+            res.status(201).json({ message: 'Stock adjustment created successfully', adjustment: newAdjustment });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.patch('/stock-adjustments/:id', importantMiddleWares, async (req, res) => {
+        const { id } = req.params;
+        const { quantity, businessDate, reason } = req.body;
+    
+        try {
+            // Update the specified stock adjustment
+            const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+            const timestamp = moment(dateTime).unix();
+            const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+    
+            const updatedAdjustment = {
+                quantity,
+                businessDate,
+                reason,
+                updatedAtDateTime: dateTime,
+                updatedAtTimestamp: timestamp,
+                updatedAtFormatted: formatted
+            };
+    
+            const response = await db.collection('stock_adjustments').updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updatedAdjustment }
+            );
+    
+            res.status(200).json({ message: 'Stock adjustment updated successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.delete('/stock-adjustments/:id', importantMiddleWares, async (req, res) => {
+        const { id } = req.params;
+    
+        try {
+            // Soft delete the specified stock adjustment
+            const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+            const timestamp = moment(dateTime).unix();
+            const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+    
+            const response = await db.collection('stock_adjustments').updateOne(
+                { _id: new ObjectId(id) },
+                {
+                    $set: {
+                        deleted: true,
+                        deletedAtDateTime: dateTime,
+                        deletedAtTimestamp: timestamp,
+                        deletedAtFormatted: formatted
+                    }
+                }
+            );
+    
+            res.status(204).json({ message: 'Stock adjustment deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+    
 
     app.patch('/expenses/:id', importantMiddleWares, async (req, res) => {
         const token = req.headers.authorization;

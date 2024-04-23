@@ -202,7 +202,7 @@ const pricing = {
                                                             style: { textAlign: "center" } // Inline style for centering content
                                                         }, [
                                                             m("td", {
-                                                                colspan: 3 // Spanning across all 3 columns
+                                                                colspan: 4 // Spanning across all 3 columns
                                                             }, [
                                                                 m("svg", {
                                                                     width: "250", // Set SVG width (adjust as needed)
@@ -381,7 +381,7 @@ const pricing = {
                                                             style: { textAlign: "center" } // Inline style for centering content
                                                         }, [
                                                             m("td", {
-                                                                colspan: 3 // Spanning across all 3 columns
+                                                                colspan: 4 // Spanning across all 3 columns
                                                             }, [
                                                                 m("svg", {
                                                                     width: "250", // Set SVG width (adjust as needed)

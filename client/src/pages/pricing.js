@@ -28,43 +28,51 @@ const pricing = {
         vnode.state.loading = true
     },
     oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/pricings",
+        // Define the Axios request configurations
+        const pricingOptions = {
+            method: 'GET',
+            url: url + "/pricings",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
-            },
+            }
         };
-
-        axios.request(options).then(function (response) {
-            vnode.state.pricings = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
+    
+        const categoriesOptions = {
+            method: 'GET',
+            url: url + "/categories",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
-            },
+            }
         };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            console.log(vnode.state.categories)
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
+    
+        // Use Promise.all to execute both requests concurrently
+        Promise.all([
+            axios.request(pricingOptions),  // First Axios request for pricings
+            axios.request(categoriesOptions)  // Second Axios request for categories
+        ])
+        .then(function (responses) {
+            // Responses will be an array containing the resolved responses from both requests
+            const pricingResponse = responses[0];
+            const categoriesResponse = responses[1];
+    
+            // Update vnode.state with the retrieved data
+            vnode.state.pricings = pricingResponse.data;
+            vnode.state.categories = categoriesResponse.data;
+    
+            // Set loading to false and trigger a redraw
+            vnode.state.loading = false;
+            m.redraw();
+        })
+        .catch(function (errors) {
+            // Handle any errors that occurred in either request
+            vnode.state.loading = false;
+            m.redraw();
+            console.error("Error fetching data:", errors);
         });
     },
+    
     view(vnode) {
         return m("div", { "class": "card card-custom gutter-b" },
             [

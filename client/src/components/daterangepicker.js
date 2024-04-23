@@ -46,7 +46,7 @@ export const DateRangePicker = {
         }
     },
     onremove: (el) => {
-        console.log("removing range")
+        // console.log("removing range")
         jQuery(`#range`).daterangepicker('remove');
         jQuery(`#single`).daterangepicker('remove');
     },
@@ -54,9 +54,9 @@ export const DateRangePicker = {
         const attrs = vnode.attrs;
 
         const currentRoute = window.location.href;
-        console.log('Current Route:', currentRoute);
+        // console.log('Current Route:', currentRoute);
 
-        console.log(vnode.state)
+        // console.log(vnode.state)
 
         if (currentRoute.includes('dash')) {
             return m('input', {
