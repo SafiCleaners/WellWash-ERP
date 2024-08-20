@@ -30,6 +30,7 @@
     "pino-pretty": "^9.1.1",
     "querystring": "^0.2.1",
     "request": "^2.88.2",
+    "serverless-http": "^3.2.0",
     "uuidv4": "^6.2.13",
     "ws": "^8.13.0"
   },

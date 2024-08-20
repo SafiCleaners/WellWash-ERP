@@ -1,8 +1,11 @@
 require('dotenv').config()
 
-const { NODE_ENV, BUGSNUG_API_KEY } = process.env
+const { NODE_ENV, BUGSNUG_API_KEY, DB_NAME } = process.env
 const express = require('express');
+const { Router } = express;
+
 const cors = require('cors');
+const serverless = require('serverless-http')
 const moment = require('moment');
 const aws = require('aws-sdk');
 const morgan = require('morgan');
@@ -14,127 +17,149 @@ var jwt = require('jsonwebtoken');
 var querystring = require('querystring');
 const { join } = require("path");
 const YAML = require('json-to-pretty-yaml');
-const sms = require("./client/utils/sms")
-const traderProcess = require('./Trader')
+const sms = require("../client/utils/sms")
+const traderProcess = require('../Trader')
 
 
 const DeviceDetector = require("device-detector-js");
 
-const app = express();
+
 
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
 const { v4: uuidv4 } = require("uuid")
 const crypto = require('crypto');
 
-// Express body parser
-app.use(express.urlencoded({ extended: true, limit: '3mb' }));
-app.use(express.json());
-app.use(cors());
-app.use(morgan(['development', "test"].includes(NODE_ENV) ? 'tiny' : 'combined'))
 
-const session = require('express-session');
-const MongoDBStore = require('express-mongodb-session')(session);
 
-var Bugsnag = require('@bugsnag/js')
-var BugsnagPluginExpress = require('@bugsnag/plugin-express')
+const routes = async (event, context) => {
+    const {
+        JWT_TOKEN = 'shhhhh',
+        DB_URL,
+        DB_NAME
+    } = process.env
 
-const bugsnagApiKey = BUGSNUG_API_KEY
+    const app = express();
+    const uri = DB_URL;
 
-if (process.env.NODE_ENV == 'production') {
-    Bugsnag.start({
-        apiKey: bugsnagApiKey,
-        plugins: [BugsnagPluginExpress],
-        enabledReleaseStages: ['production'],
-        // Additional production-specific configuration
-        releaseStage: 'production', // Set the release stage explicitly
-        appType: 'node', // Set the application type
-        appVersion: '1.0.0', // Set the version of your application
-        notifyReleaseStages: ['production'], // Specify which release stages should send notifications
-        autoDetectErrors: true, // Enable automatic error detection
-        maxBreadcrumbs: 20, // Set the maximum number of breadcrumbs to store
-        metaData: {
-            // Add any additional metadata specific to your production environment
-            environment: 'production',
-            datacenter: 'us-east-1'
+    if (DB_URL === '') {
+        throw 'Mongo url missing'
+    }
+
+    const client = new MongoClient(uri);
+
+    try {
+        // Connect to the MongoDB cluster
+        await client.connect();
+    } catch(error){
+        console.log("Unnable to connect to db")
+    }
+
+
+    // console.log(client)
+    const db = await client.db("WellAutoWashers")
+
+    // Express body parser
+    app.use(express.urlencoded({ extended: true, limit: '3mb' }));
+    app.use(express.json());
+    app.use(cors());
+    app.use(morgan(['development', "test"].includes(NODE_ENV) ? 'tiny' : 'combined'))
+
+    const session = require('express-session');
+    const MongoDBStore = require('express-mongodb-session')(session);
+
+    var Bugsnag = require('@bugsnag/js')
+    var BugsnagPluginExpress = require('@bugsnag/plugin-express')
+
+    const bugsnagApiKey = BUGSNUG_API_KEY
+
+    if (process.env.NODE_ENV == 'production') {
+        Bugsnag.start({
+            apiKey: bugsnagApiKey,
+            plugins: [BugsnagPluginExpress],
+            enabledReleaseStages: ['production'],
+            // Additional production-specific configuration
+            releaseStage: 'production', // Set the release stage explicitly
+            appType: 'node', // Set the application type
+            appVersion: '1.0.0', // Set the version of your application
+            notifyReleaseStages: ['production'], // Specify which release stages should send notifications
+            autoDetectErrors: true, // Enable automatic error detection
+            maxBreadcrumbs: 20, // Set the maximum number of breadcrumbs to store
+            metaData: {
+                // Add any additional metadata specific to your production environment
+                environment: 'production',
+                datacenter: 'us-east-1'
+            },
+            // ... other production-specific configuration
+        });
+    } else {
+        // If not in production, configure Bugsnag for local development or other environments
+        Bugsnag.start({
+            apiKey: bugsnagApiKey,
+            plugins: [BugsnagPluginExpress],
+            enabledReleaseStages: ['development', 'staging'],
+            // ... other local/development-specific configuration
+        });
+    }
+
+
+
+
+    const store = new MongoDBStore({
+        uri: `${DB_URL}`,
+        collection: 'connect_mongodb_session_test'
+    });
+
+    app.use(require('express-session')({
+        secret: 'This is a secret',
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
         },
-        // ... other production-specific configuration
-    });
-} else {
-    // If not in production, configure Bugsnag for local development or other environments
-    Bugsnag.start({
-        apiKey: bugsnagApiKey,
-        plugins: [BugsnagPluginExpress],
-        enabledReleaseStages: ['development', 'staging'],
-        // ... other local/development-specific configuration
-    });
-}
-
-const {
-    JWT_TOKEN = 'shhhhh',
-    DB_URL,
-    DB_NAME
-} = process.env
-
-
-const store = new MongoDBStore({
-    uri: `${DB_URL}`,
-    collection: 'connect_mongodb_session_test'
-});
-
-app.use(require('express-session')({
-    secret: 'This is a secret',
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
-    },
-    genid: function (req) {
-        return uuidv4() // use UUIDs for session IDs
-    },
-    store: store,
-    // Boilerplate options, see:
-    // * https://www.npmjs.com/package/express-session#resave
-    // * https://www.npmjs.com/package/express-session#saveuninitialized
-    resave: true,
-    saveUninitialized: true
-}));
-
-// Catch errors
-store.on('error', function (error) {
-    console.log(error);
-});
-
-const logActivity = (db, entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted) => {
-    db.collection('activity_log').insertOne({
-        entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted,
-        deleted: false,
-    });
-}
-
-const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => {
-    const options = {
-        method: 'POST',
-        withCredentials: true,
-        url: 'https://api-m.paypal.com/v1/oauth2/token',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: 'Basic QWFWa25NeHE1STY4TlU0ajJ6LUdJTk5keFBoMXc5RlhWcHc4N2x2bUpUb0FycTVBQU9hUllOdC0zZWxMWmo3LWlxMVNIY0pBdEFOQXllVVo6RU1tNUhEbHdiU0wtamo2bTdBcUpPY2Z0TUtydk9Id1JfQkR6bGNsTkZjaTlnbEs1R3JxWmZ6X3Q5U3JsYURkYXZITjhhVTdEOG53SEpqNi0='
+        genid: function (req) {
+            return uuidv4() // use UUIDs for session IDs
         },
-        auth: {
-            username: "AaVknMxq5I68NU4j2z-GINNdxPh1w9FXVpw87lvmJToArq5AAOaRYNt-3elLZj7-iq1SHcJAtANAyeUZ",
-            password: "EMm5HDlwbSL-jj6m7AqJOcftMKrvOHwR_BDzlclNFci9glK5GrqZfz_t9SrlaDdavHN8aU7D8nwHJj6-"
-        },
-        data: querystring.stringify({ 'grant_type': 'client_credentials' })
-    };
+        store: store,
+        // Boilerplate options, see:
+        // * https://www.npmjs.com/package/express-session#resave
+        // * https://www.npmjs.com/package/express-session#saveuninitialized
+        resave: true,
+        saveUninitialized: true
+    }));
 
-    axios.request(options).then(function (response) {
-        resolve(response.data.access_token);
-    }).catch(function (error) {
-        reject(error);
+    // Catch errors
+    store.on('error', function (error) {
+        console.log(error);
     });
-})
 
-const routes = async (client) => {
-    const db = await client.db(DB_NAME || "WellAutoWashers")
+    const logActivity = (db, entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted) => {
+        db.collection('activity_log').insertOne({
+            entity, action, before, after, userId, userTitle, user, createdAtDateTime, createdAtTimestamp, createdAtFormatted,
+            deleted: false,
+        });
+    }
+
+    const fetchAccessTokenFromPaypal = async () => new Promise((resolve, reject) => {
+        const options = {
+            method: 'POST',
+            withCredentials: true,
+            url: 'https://api-m.paypal.com/v1/oauth2/token',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: 'Basic QWFWa25NeHE1STY4TlU0ajJ6LUdJTk5keFBoMXc5RlhWcHc4N2x2bUpUb0FycTVBQU9hUllOdC0zZWxMWmo3LWlxMVNIY0pBdEFOQXllVVo6RU1tNUhEbHdiU0wtamo2bTdBcUpPY2Z0TUtydk9Id1JfQkR6bGNsTkZjaTlnbEs1R3JxWmZ6X3Q5U3JsYURkYXZITjhhVTdEOG53SEpqNi0='
+            },
+            auth: {
+                username: "AaVknMxq5I68NU4j2z-GINNdxPh1w9FXVpw87lvmJToArq5AAOaRYNt-3elLZj7-iq1SHcJAtANAyeUZ",
+                password: "EMm5HDlwbSL-jj6m7AqJOcftMKrvOHwR_BDzlclNFci9glK5GrqZfz_t9SrlaDdavHN8aU7D8nwHJj6-"
+            },
+            data: querystring.stringify({ 'grant_type': 'client_credentials' })
+        };
+
+        axios.request(options).then(function (response) {
+            resolve(response.data.access_token);
+        }).catch(function (error) {
+            reject(error);
+        });
+    })
 
     if (app.get('env') === 'production') {
         app.set('trust proxy', 1) // trust first proxy
@@ -1301,10 +1326,10 @@ const routes = async (client) => {
     app.get('/stock-adjustments/:pricingId', importantMiddleWares, async (req, res) => {
         try {
             const { pricingId } = req.params;
-    
+
             // Fetch all stock adjustments for the specified pricingId
             const adjustments = await db.collection('stock_adjustments').find({ pricingId: new ObjectId(pricingId) }).toArray();
-    
+
             res.status(200).json(adjustments);
         } catch (error) {
             console.error(error);
@@ -1315,10 +1340,10 @@ const routes = async (client) => {
     app.get('/stock-adjustments/:storeId', importantMiddleWares, async (req, res) => {
         try {
             const { pricingId } = req.params;
-    
+
             // Fetch all stock adjustments for the specified pricingId
             const adjustments = await db.collection('stock_adjustments').find({ pricingId: new ObjectId(pricingId), storeId }).toArray();
-    
+
             res.status(200).json(adjustments);
         } catch (error) {
             console.error(error);
@@ -1332,15 +1357,15 @@ const routes = async (client) => {
         const decoded = jwt.verify(token, JWT_TOKEN);
         // Extract the user's id from the token
         const { _id: userId, name: userTitle } = decoded;
-    
+
         const { pricingId, quantity, businessDate, reason, cost } = req.body;
-    
+
         try {
             // Insert a new stock adjustment record
             const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
             const timestamp = moment(dateTime).unix();
             const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
-    
+
             const newAdjustment = {
                 pricingId: new ObjectId(pricingId),
                 quantity,
@@ -1353,9 +1378,9 @@ const routes = async (client) => {
                 createdAtTimestamp: timestamp,
                 createdAtFormatted: formatted
             };
-    
+
             const response = await db.collection('stock_adjustments').insertOne(newAdjustment);
-    
+
             res.status(201).json({ message: 'Stock adjustment created successfully', adjustment: newAdjustment });
         } catch (error) {
             console.error(error);
@@ -1366,13 +1391,13 @@ const routes = async (client) => {
     app.patch('/stock-adjustments/:id', importantMiddleWares, async (req, res) => {
         const { id } = req.params;
         const { quantity, businessDate, reason } = req.body;
-    
+
         try {
             // Update the specified stock adjustment
             const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
             const timestamp = moment(dateTime).unix();
             const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
-    
+
             const updatedAdjustment = {
                 quantity,
                 businessDate,
@@ -1381,12 +1406,12 @@ const routes = async (client) => {
                 updatedAtTimestamp: timestamp,
                 updatedAtFormatted: formatted
             };
-    
+
             const response = await db.collection('stock_adjustments').updateOne(
                 { _id: new ObjectId(id) },
                 { $set: updatedAdjustment }
             );
-    
+
             res.status(200).json({ message: 'Stock adjustment updated successfully' });
         } catch (error) {
             console.error(error);
@@ -1396,13 +1421,13 @@ const routes = async (client) => {
 
     app.delete('/stock-adjustments/:id', importantMiddleWares, async (req, res) => {
         const { id } = req.params;
-    
+
         try {
             // Soft delete the specified stock adjustment
             const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
             const timestamp = moment(dateTime).unix();
             const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
-    
+
             const response = await db.collection('stock_adjustments').updateOne(
                 { _id: new ObjectId(id) },
                 {
@@ -1414,14 +1439,14 @@ const routes = async (client) => {
                     }
                 }
             );
-    
+
             res.status(204).json({ message: 'Stock adjustment deleted successfully' });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
     });
-    
+
 
     app.patch('/expenses/:id', importantMiddleWares, async (req, res) => {
         const token = req.headers.authorization;
@@ -2076,8 +2101,8 @@ const routes = async (client) => {
                     };
                 }))
                 .map(job => {
-                    const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
-                    job.phone = maskedPhoneNumber;
+                    // const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
+                    // job.phone = maskedPhoneNumber;
 
                     return job;
                 });;
@@ -2336,27 +2361,17 @@ const routes = async (client) => {
 
     // This handles any errors that Express catches
     app.use(Bugsnag.getPlugin('express').errorHandler)
+
+    app.listen(PORT, console.log(`Server started on port ${PORT}`));
+
+    return serverless(app)(event, context)
 }
 
 const PORT = process.env.PORT || 8002;
 
 async function main(startUpCompleteCallBack) {
-    const { DB_URL = '' } = process.env
-    const uri = DB_URL;
-
-    if (DB_URL === '') {
-        throw 'Mongo url missing'
-    }
-
-    const client = new MongoClient(uri);
-
     try {
-        // Connect to the MongoDB cluster
-        await client.connect();
-
-        // Make the appropriate DB calls
-        routes(client)
-        app.listen(PORT, console.log(`Server started on port ${PORT}`));
+        routes({},{})
         startUpCompleteCallBack()
     } catch (e) {
         console.error(e);
@@ -2364,6 +2379,9 @@ async function main(startUpCompleteCallBack) {
         // await client.close();
     }
 }
+
+module.exports.handler = routes
+
 
 main(() => {
     // console.log("Starting trader Process...")

@@ -6,8 +6,13 @@ const PNF = require('google-libphonenumber').PhoneNumberFormat;
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 
 const func = ({ phone, message }, reply) => {
-    const number = phoneUtil.parseAndKeepRawInput(phone, 'KE');
-    const formattedNumber = phoneUtil.format(number, PNF.E164)
+    let formattedNumber;
+    try {
+        const number = phoneUtil.parseAndKeepRawInput(phone, 'KE');
+        formattedNumber = phoneUtil.format(number, PNF.E164);
+    } catch (error) {
+        return reply({ error: `Invalid phone number format: ${error.message}` });
+    }
 
     const options = {
         method: 'POST',
