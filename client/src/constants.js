@@ -1,6 +1,6 @@
 var client_id = "857253574802-n690pf89nhrda0n6sf686ndaqagjfsc2.apps.googleusercontent.com";
 // "345449971495-h5hr0g4bs8tiq2u0kk4dl1icofavq4bg.apps.googleusercontent.com";
-let url = "https://seal-app-elywd.ondigitalocean.app";
+let url = "https://us-central1-wellwash-411511.cloudfunctions.net/wellwash-server";
 
 if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
   url = "http://localhost:8002";
