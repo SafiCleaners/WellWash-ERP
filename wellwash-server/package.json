@@ -1,0 +1,40 @@
+{
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "deploy":"gcloud functions deploy wellwash-server --runtime=nodejs22 --trigger-http",
+        "start":"npx nodemon function.js"
+    },
+    "dependencies": {
+        "@google-cloud/functions-framework": "^3.0.0",
+        "@bugsnag/js": "^7.19.0",
+        "@bugsnag/plugin-express": "^7.19.0",
+        "aws-sdk": "^2.983.0",
+        "axios": "^0.24.0",
+        "cors": "^2.8.5",
+        "csv": "^6.2.1",
+        "device-detector-js": "^3.0.3",
+        "dotenv": "^16.3.1",
+        "express": "^4.17.1",
+        "express-mongodb-session": "^3.2.1",
+        "express-session": "^1.17.3",
+        "google-libphonenumber": "^3.2.31",
+        "html-minifier": "^4.0.0",
+        "json-to-pretty-yaml": "^1.2.2",
+        "jsonwebtoken": "^8.5.1",
+        "live-server": "^1.2.2",
+        "moment": "^2.29.3",
+        "mongodb": "^4.1.1",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.3",
+        "multer-s3": "^2.9.0",
+        "node-binance-api": "^0.13.1",
+        "node-csv": "^0.1.2",
+        "pino-pretty": "^9.1.1",
+        "querystring": "^0.2.1",
+        "request": "^2.88.2",
+        "uuidv4": "^6.2.13",
+        "ws": "^8.13.0"
+    }
+}

@@ -70,7 +70,7 @@ const routes = async (app) => {
     var Bugsnag = require('@bugsnag/js')
     var BugsnagPluginExpress = require('@bugsnag/plugin-express')
 
-    const bugsnagApiKey = "e756bdee-38ea-4b91-aba3-581e040994b9"
+    const bugsnagApiKey = "0317269250b8a7feb478c477567f8549"
 
     if (process.env.NODE_ENV == 'production') {
         Bugsnag.start({
@@ -2368,14 +2368,10 @@ const routes = async (app) => {
 }
 
 
-const app = express();
-const router = express.Router();
-
-
-routes(app,router)
-app.use(router);
+const appInitial = express();
 
 // Export the app as a Google Cloud Function
-functions.http('helloHttp', (req, res) => {
-    app(req, res);  // Handle requests with Express
+functions.http('helloHttp', async (req, res) => {
+    const appHoisted = await routes(appInitial)
+    appHoisted(req, res);
 });

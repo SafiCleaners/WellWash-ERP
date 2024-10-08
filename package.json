@@ -37,7 +37,8 @@
   "scripts": {
     "start": "node --harmony server.js",
     "dev": "concurrently \"npx nodemon netlify/server.js | pino-pretty\" \"cd client && yarn dev\"",
-    "dev-trader": "nodemon --inspect --unhandled-rejections=strict v5"
+    "dev-trader": "nodemon --inspect --unhandled-rejections=strict v5",
+    "deploy":"gcloud functions deploy wellwash-server --runtime=nodejs22 --trigger-http"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
