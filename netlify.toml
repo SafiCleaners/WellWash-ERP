@@ -1,29 +1,12 @@
-[build]
-  command = "npm run build"  # Your build command (e.g., for React/Vue)
-  publish = "dist"          # Your build output folder (e.g., "dist", "build")
-  functions = "netlify/functions"
-
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true              # Ensures SPA routing works on reload
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/proxy/:splat"
   status = 200
-  force = false             # Don't force if API needs proper methods (GET/POST)
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    Cache-Control = "public, max-age=3600"  # Cache static assets
-
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"        # Adjust CORS as needed
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+[build]
+  functions = "netlify/functions"
