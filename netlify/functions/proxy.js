@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
-  const targetUrl = `http://68.183.27.113${event.path.replace('/.netlify/functions/proxy', '')}`;
+  const targetUrl = `http://68.183.27.113:8002${event.path.replace('/.netlify/functions/proxy', '')}`;
   
   try {
     const response = await fetch(targetUrl, {
