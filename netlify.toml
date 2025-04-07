@@ -1,10 +1,3 @@
-[build]
-  # Run build command inside the client directory
-  base = "client"
-  command = "npm run build"
-  publish = "dist"  # or "client/build" depending on your framework
-  functions = "netlify/functions"  # Functions remain in root
-
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -14,12 +7,6 @@
   from = "/api/*"
   to = "/.netlify/functions/proxy/:splat"
   status = 200
-  force = true
 
-# Optional: Add headers if needed
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = "default-src 'self'"
+[build]
+  functions = "netlify/functions"
