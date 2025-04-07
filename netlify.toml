@@ -2,7 +2,7 @@
   # Run build command inside the client directory
   base = "client"
   command = "npm run build"
-  publish = "client/dist"  # or "client/build" depending on your framework
+  publish = "dist"  # or "client/build" depending on your framework
   functions = "netlify/functions"  # Functions remain in root
 
 [[redirects]]
