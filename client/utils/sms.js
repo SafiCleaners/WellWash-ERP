@@ -1,25 +1,31 @@
-const axios = require("axios");
-// Require `PhoneNumberFormat`.
-const PNF = require('google-libphonenumber').PhoneNumberFormat;
+const axios = require('axios');
+const { PhoneNumberFormat, PhoneNumberUtil } = require('google-libphonenumber');
 
-// Get an instance of `PhoneNumberUtil`.
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+// Initialize phone number utilities
+const PNF = PhoneNumberFormat;
+const phoneUtil = PhoneNumberUtil.getInstance();
 
-const func = ({ phone, message }, reply) => {
+// Function to send an SMS
+const sendSMS = ({ phone, message }, reply) => {
     let formattedNumber;
+
+    // Attempt to format the phone number
     try {
         const number = phoneUtil.parseAndKeepRawInput(phone, 'KE');
         formattedNumber = phoneUtil.format(number, PNF.E164);
     } catch (error) {
-        return reply({ error: `Invalid phone number format: ${error.message}` });
+        const errorMsg = `Invalid phone number format: ${error.message}`;
+        console.error(errorMsg);
+        return reply({ error: errorMsg });
     }
 
+    // Define the request options for sending the SMS
     const options = {
         method: 'POST',
         url: 'https://api.mobilesasa.com/v1/send/message',
         headers: {
             Accept: 'application/json',
-            Authorization: 'Bearer XC8fHuQFlRJoI5qW08SNuAicPApTvHq3mw0CuK41rY3klpieuqd9N12RpMnB',
+            Authorization: 'Bearer QEAVBBLs2GsjN4OaQlRCW9o2nTVnZrTV509hOjG7leCZ3tD3ZSpdPFiPskqA', // Ensure to keep this secure
             'Content-Type': 'application/json'
         },
         data: {
@@ -29,18 +35,21 @@ const func = ({ phone, message }, reply) => {
         }
     };
 
-    axios.request(options).then(function (response) {
-        console.log('SMS sent successfully:', response.data);
-        reply(response.data);
-    }).catch(console.log);
-}
+    // Send the SMS request
+    axios.request(options)
+        .then(response => {
+            console.log('SMS sent successfully:', response.data);
+            reply(response.data);
+        })
+        .catch(error => {
+            const errorMsg = `Error sending SMS: ${error.message}`;
+            console.error(errorMsg);
+            reply({ error: errorMsg });
+        });
+};
 
+// Example usage (for testing)
+// sendSMS({ phone: "+254711657108", message: "Hello" }, console.log);
 
-// tests
-
-// console.log(makeid())
-// func({ data: { password: makeid(), phone: "+254711657108" } }, console.log)
-
-// func({ phone: "+254711657108", message:"Hello" }, console.log)
-
-module.exports = func
+// Export the function
+module.exports = sendSMS;

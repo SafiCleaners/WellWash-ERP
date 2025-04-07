@@ -34,14 +34,16 @@ const header = {
         axios.request(options).then(function (response) {
             vnode.state.stores = response.data
             vnode.state.loading = false
-            m.redraw()
+            
+            // m.redraw()
         }).catch(function (error) {
             vnode.state.loading = false
-            m.redraw()
+            // m.redraw()
             console.error(error);
         });
     },
     view(vnode) {
+        console.log(vnode.state.stores)
         return m("div", { "class": "header header-fixed", "id": "kt_header" },
             m("div", { "class": "container" },
                 [
