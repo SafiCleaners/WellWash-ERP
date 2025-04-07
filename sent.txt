@@ -1,0 +1,1115 @@
+[
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS/DUVET WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Timestamp": "2024-10-17T12:03:28.590Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS/DUVET WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Timestamp": "2024-10-17T12:03:28.915Z"
+  },
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS/DUVET WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:12:03.811Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS/DUVET WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:12:04.066Z"
+  },
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d4454e7-359e-4371-872d-ee41e87b6419"
+    },
+    "Timestamp": "2024-10-17T12:27:57.728Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off to make your life so much easier. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:27:57.874Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44550a-0130-45a4-bdd8-8ac562788879"
+    },
+    "Timestamp": "2024-10-17T12:28:20.510Z"
+  },
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44550a-41e5-4777-a6b7-6a17429f6737"
+    },
+    "Timestamp": "2024-10-17T12:28:20.677Z"
+  },
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:30:11.773Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:30:11.976Z"
+  },
+  {
+    "Name": "Wanjiku",
+    "Phone": "+254701173735",
+    "Message": "Hi Wanjiku, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:30:23.275Z"
+  },
+  {
+    "Name": "Branson",
+    "Phone": "+254741147930",
+    "Message": "Hi Branson, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 409"
+    },
+    "Timestamp": "2024-10-17T12:30:23.427Z"
+  },
+  {
+    "Name": "Joyce",
+    "Phone": " ",
+    "Message": "Hi Joyce, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "error": "Invalid phone number format: The string supplied did not seem to be a phone number"
+    },
+    "Timestamp": "2024-10-17T12:31:30.723Z"
+  },
+  {
+    "Name": "Phari",
+    "Phone": "713007557",
+    "Message": "Hi Phari, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562d-f022-4f99-b6ff-40781155144f"
+    },
+    "Timestamp": "2024-10-17T12:31:31.940Z"
+  },
+  {
+    "Name": "Aloysius",
+    "Phone": "708258685",
+    "Message": "Hi Aloysius, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562d-f43c-44cb-9e3c-121e51bb025a"
+    },
+    "Timestamp": "2024-10-17T12:31:31.941Z"
+  },
+  {
+    "Name": "Peter",
+    "Phone": "714343338",
+    "Message": "Hi Peter, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562d-ef14-4792-9536-cba368d78e75"
+    },
+    "Timestamp": "2024-10-17T12:31:31.943Z"
+  },
+  {
+    "Name": "Benjamin",
+    "Phone": "700932946",
+    "Message": "Hi Benjamin, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562d-ffee-47f8-b87d-dc2f4938aa32"
+    },
+    "Timestamp": "2024-10-17T12:31:31.946Z"
+  },
+  {
+    "Name": "Freddy",
+    "Phone": "726088908",
+    "Message": "Hi Freddy, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-07bc-4d16-b065-0f6749130aee"
+    },
+    "Timestamp": "2024-10-17T12:31:31.948Z"
+  },
+  {
+    "Name": "Jacquiline",
+    "Phone": "742185872",
+    "Message": "Hi Jacquiline, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-0928-4a78-aeb2-d4eebcb1acc4"
+    },
+    "Timestamp": "2024-10-17T12:31:31.950Z"
+  },
+  {
+    "Name": "Sarafina",
+    "Phone": "700707026",
+    "Message": "Hi Sarafina, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-0983-4dbd-a4f6-4a79d8ac3837"
+    },
+    "Timestamp": "2024-10-17T12:31:31.957Z"
+  },
+  {
+    "Name": "Mary",
+    "Phone": "714475829",
+    "Message": "Hi Mary, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-0e4f-44eb-91ab-18557c2527e2"
+    },
+    "Timestamp": "2024-10-17T12:31:31.963Z"
+  },
+  {
+    "Name": "Andrew",
+    "Phone": "722963800",
+    "Message": "Hi Andrew, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-1dd4-4780-b4e1-eef692475873"
+    },
+    "Timestamp": "2024-10-17T12:31:31.990Z"
+  },
+  {
+    "Name": "Malvin",
+    "Phone": "704017223",
+    "Message": "Hi Malvin, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-1e10-442b-b781-0c507b2ecb3d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.005Z"
+  },
+  {
+    "Name": "Timothy",
+    "Phone": "712244464",
+    "Message": "Hi Timothy, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-389d-42c4-8623-a66e12a1017f"
+    },
+    "Timestamp": "2024-10-17T12:31:32.044Z"
+  },
+  {
+    "Name": "Nazarena",
+    "Phone": "705434749",
+    "Message": "Hi Nazarena, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-398b-452d-9d88-9cbb90872420"
+    },
+    "Timestamp": "2024-10-17T12:31:32.046Z"
+  },
+  {
+    "Name": "Leah",
+    "Phone": "721540290",
+    "Message": "Hi Leah, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-4a7f-46a5-bbe3-e682d6da6961"
+    },
+    "Timestamp": "2024-10-17T12:31:32.089Z"
+  },
+  {
+    "Name": "Winter",
+    "Phone": "700031319",
+    "Message": "Hi Winter, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-4d25-4a50-bef9-46be2f06f86e"
+    },
+    "Timestamp": "2024-10-17T12:31:32.093Z"
+  },
+  {
+    "Name": "Michael",
+    "Phone": "721811231",
+    "Message": "Hi Michael, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-5ddb-4191-a58b-e7f1311cd28d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.120Z"
+  },
+  {
+    "Name": "Jacqline",
+    "Phone": "723174941",
+    "Message": "Hi Jacqline, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-5f13-4be0-a16d-5670680c3471"
+    },
+    "Timestamp": "2024-10-17T12:31:32.137Z"
+  },
+  {
+    "Name": "Kim",
+    "Phone": "785501591",
+    "Message": "Hi Kim, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-210b-4dec-b59a-13e64df05ca9"
+    },
+    "Timestamp": "2024-10-17T12:31:32.153Z"
+  },
+  {
+    "Name": "Bonface",
+    "Phone": "756666444",
+    "Message": "Hi Bonface, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-3a5e-4e0c-8809-0ae935bf640d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.169Z"
+  },
+  {
+    "Name": "Joyce",
+    "Phone": "725081574",
+    "Message": "Hi Joyce, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-75f3-4108-8eee-9458c705c5d8"
+    },
+    "Timestamp": "2024-10-17T12:31:32.172Z"
+  },
+  {
+    "Name": "Jimmy",
+    "Phone": "725256621",
+    "Message": "Hi Jimmy, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-7af6-4301-8f3c-705e17e61ae0"
+    },
+    "Timestamp": "2024-10-17T12:31:32.205Z"
+  },
+  {
+    "Name": "Antony",
+    "Phone": "720967270",
+    "Message": "Hi Antony, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-7bda-41c6-9588-8623d30e7b2e"
+    },
+    "Timestamp": "2024-10-17T12:31:32.214Z"
+  },
+  {
+    "Name": "Nathan",
+    "Phone": "724116405",
+    "Message": "Hi Nathan, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-8197-4e7d-89c9-0a02dc0363a4"
+    },
+    "Timestamp": "2024-10-17T12:31:32.216Z"
+  },
+  {
+    "Name": "Fred",
+    "Phone": "71**75061",
+    "Message": "Hi Fred, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "error": "Error sending SMS: Request failed with status code 422"
+    },
+    "Timestamp": "2024-10-17T12:31:32.250Z"
+  },
+  {
+    "Name": "Anne",
+    "Phone": "718380790",
+    "Message": "Hi Anne, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-937e-43fe-b3b0-4afbad3481dc"
+    },
+    "Timestamp": "2024-10-17T12:31:32.256Z"
+  },
+  {
+    "Name": "Loyford",
+    "Phone": "757109711",
+    "Message": "Hi Loyford, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-8ceb-4573-ae19-b2b53b3cdc7d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.259Z"
+  },
+  {
+    "Name": "Bridget",
+    "Phone": "717053068",
+    "Message": "Hi Bridget, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-9662-406b-887f-15c3cdf1c999"
+    },
+    "Timestamp": "2024-10-17T12:31:32.263Z"
+  },
+  {
+    "Name": "Peter",
+    "Phone": "722513942",
+    "Message": "Hi Peter, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-969f-4504-aa27-eacc35c45774"
+    },
+    "Timestamp": "2024-10-17T12:31:32.265Z"
+  },
+  {
+    "Name": "James",
+    "Phone": "720030953",
+    "Message": "Hi James, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-ac20-4292-86b2-ce2ab9345357"
+    },
+    "Timestamp": "2024-10-17T12:31:32.313Z"
+  },
+  {
+    "Name": "Brian",
+    "Phone": "717087208",
+    "Message": "Hi Brian, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-ae20-45e6-ac99-b46e517c5cd5"
+    },
+    "Timestamp": "2024-10-17T12:31:32.330Z"
+  },
+  {
+    "Name": "David",
+    "Phone": "722514900",
+    "Message": "Hi David, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-ae6c-4005-9359-cc87e151daa6"
+    },
+    "Timestamp": "2024-10-17T12:31:32.334Z"
+  },
+  {
+    "Name": "Mbogo",
+    "Phone": "722818742",
+    "Message": "Hi Mbogo, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-c03a-4d04-94a6-9b36ff1bcac5"
+    },
+    "Timestamp": "2024-10-17T12:31:32.364Z"
+  },
+  {
+    "Name": "Erick",
+    "Phone": "710428683",
+    "Message": "Hi Erick, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-c3df-4764-a1d7-13daa90d480a"
+    },
+    "Timestamp": "2024-10-17T12:31:32.378Z"
+  },
+  {
+    "Name": "Brian",
+    "Phone": "712104623",
+    "Message": "Hi Brian, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-c5a8-4cfd-b5fb-2ac44d5430c0"
+    },
+    "Timestamp": "2024-10-17T12:31:32.392Z"
+  },
+  {
+    "Name": "James",
+    "Phone": "729365683",
+    "Message": "Hi James, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-c6b2-4f6b-a587-65e9b89fd376"
+    },
+    "Timestamp": "2024-10-17T12:31:32.396Z"
+  },
+  {
+    "Name": "Marcus",
+    "Phone": "711331998",
+    "Message": "Hi Marcus, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-d3ad-4dea-8543-6f671c8c5ab1"
+    },
+    "Timestamp": "2024-10-17T12:31:32.431Z"
+  },
+  {
+    "Name": "Kelvin",
+    "Phone": "712990392",
+    "Message": "Hi Kelvin, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-de7b-4642-b93d-4bf21e3fb248"
+    },
+    "Timestamp": "2024-10-17T12:31:32.456Z"
+  },
+  {
+    "Name": "Samsha",
+    "Phone": "700135702",
+    "Message": "Hi Samsha, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-e1b4-464c-90a3-a52a2fc0b64f"
+    },
+    "Timestamp": "2024-10-17T12:31:32.475Z"
+  },
+  {
+    "Name": "Elvin",
+    "Phone": "726239861",
+    "Message": "Hi Elvin, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-e409-4488-b083-8594df2233c5"
+    },
+    "Timestamp": "2024-10-17T12:31:32.477Z"
+  },
+  {
+    "Name": "Peter",
+    "Phone": "715030114",
+    "Message": "Hi Peter, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-eab8-476d-92e6-bf1dc3ad2142"
+    },
+    "Timestamp": "2024-10-17T12:31:32.498Z"
+  },
+  {
+    "Name": "Clarance",
+    "Phone": "792405274",
+    "Message": "Hi Clarance, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-f7e2-4bda-92c7-b5ecee1370da"
+    },
+    "Timestamp": "2024-10-17T12:31:32.512Z"
+  },
+  {
+    "Name": "Phibian",
+    "Phone": "722601062",
+    "Message": "Hi Phibian, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-faed-4add-af54-9a11b7b791ca"
+    },
+    "Timestamp": "2024-10-17T12:31:32.525Z"
+  },
+  {
+    "Name": "Glady",
+    "Phone": "727760062",
+    "Message": "Hi Glady, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562e-ff9c-45c2-94fe-aa1a3a5382c2"
+    },
+    "Timestamp": "2024-10-17T12:31:32.538Z"
+  },
+  {
+    "Name": "Grace",
+    "Phone": "728847541",
+    "Message": "Hi Grace, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-0dfa-4c77-8417-410d2f03b63b"
+    },
+    "Timestamp": "2024-10-17T12:31:32.566Z"
+  },
+  {
+    "Name": "Daniel",
+    "Phone": "722564794",
+    "Message": "Hi Daniel, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-113e-4268-99a9-8c2cae3a933e"
+    },
+    "Timestamp": "2024-10-17T12:31:32.589Z"
+  },
+  {
+    "Name": "Stanley",
+    "Phone": "791321558",
+    "Message": "Hi Stanley, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-16d9-40ac-b60a-994bb6af209c"
+    },
+    "Timestamp": "2024-10-17T12:31:32.603Z"
+  },
+  {
+    "Name": "Chebet",
+    "Phone": "708521895",
+    "Message": "Hi Chebet, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-1e8b-4261-a571-ec2464a301d0"
+    },
+    "Timestamp": "2024-10-17T12:31:32.608Z"
+  },
+  {
+    "Name": "Wandeli",
+    "Phone": "799131499",
+    "Message": "Hi Wandeli, thank you! we're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 to claim this savings now! This offer expires at the end of the week saturday, don't miss out!",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-2241-4d2d-b3d1-bf1507a548b5"
+    },
+    "Timestamp": "2024-10-17T12:31:32.630Z"
+  },
+  {
+    "Name": "Mathew",
+    "Phone": "791252324",
+    "Message": "Hi Mathew, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-299f-48ee-a1f7-1d0a712e5d2b"
+    },
+    "Timestamp": "2024-10-17T12:31:32.655Z"
+  },
+  {
+    "Name": "Ann",
+    "Phone": "715006859",
+    "Message": "Hi Ann, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-2e64-48be-84a2-df8799c32415"
+    },
+    "Timestamp": "2024-10-17T12:31:32.657Z"
+  },
+  {
+    "Name": "Abel",
+    "Phone": "723231118",
+    "Message": "Hi Abel, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-2c3a-41cc-b3e8-c0f7a6ae94d9"
+    },
+    "Timestamp": "2024-10-17T12:31:32.661Z"
+  },
+  {
+    "Name": "Teresia",
+    "Phone": "718332074",
+    "Message": "Hi Teresia, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-38ec-464a-8964-7ee8f6e5c11d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.676Z"
+  },
+  {
+    "Name": "Faith",
+    "Phone": "710401252",
+    "Message": "Hi Faith, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-3eaa-422f-96df-eba1dd495f64"
+    },
+    "Timestamp": "2024-10-17T12:31:32.694Z"
+  },
+  {
+    "Name": "Irene",
+    "Phone": "768882350",
+    "Message": "Hi Irene, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-46b9-498a-98e2-67495920e18d"
+    },
+    "Timestamp": "2024-10-17T12:31:32.711Z"
+  },
+  {
+    "Name": "Fred",
+    "Phone": "705425895",
+    "Message": "Hi Fred, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-4878-4030-b53f-77532d5db0d1"
+    },
+    "Timestamp": "2024-10-17T12:31:32.716Z"
+  },
+  {
+    "Name": "Millicent",
+    "Phone": "729735056",
+    "Message": "Hi Millicent, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-4cbc-4a50-a9c0-d3713e79f61a"
+    },
+    "Timestamp": "2024-10-17T12:31:32.726Z"
+  },
+  {
+    "Name": "Peter",
+    "Phone": "707163019",
+    "Message": "Hi Peter, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-5082-4d18-8b58-b9427c31be97"
+    },
+    "Timestamp": "2024-10-17T12:31:32.736Z"
+  },
+  {
+    "Name": "David",
+    "Phone": "706345600",
+    "Message": "Hi David, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-5f21-4f3a-aad6-a45ec74bc301"
+    },
+    "Timestamp": "2024-10-17T12:31:32.768Z"
+  },
+  {
+    "Name": "Tom",
+    "Phone": "720899210",
+    "Message": "Hi Tom, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-5f7a-4583-bb34-674a5c2a5d99"
+    },
+    "Timestamp": "2024-10-17T12:31:32.770Z"
+  },
+  {
+    "Name": "Klein",
+    "Phone": "712883555",
+    "Message": "Hi Klein, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-5f66-413f-b25d-3dc96b03d3f1"
+    },
+    "Timestamp": "2024-10-17T12:31:32.773Z"
+  },
+  {
+    "Name": "Hillary",
+    "Phone": "724128799",
+    "Message": "Hi Hillary, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-6465-4777-a537-25a9103f4a00"
+    },
+    "Timestamp": "2024-10-17T12:31:32.799Z"
+  },
+  {
+    "Name": "Tiffany",
+    "Phone": "790548345",
+    "Message": "Hi Tiffany, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-7425-48e5-b433-4d93d31babcd"
+    },
+    "Timestamp": "2024-10-17T12:31:32.822Z"
+  },
+  {
+    "Name": "Getrude",
+    "Phone": "722614001",
+    "Message": "Hi Getrude, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-72b8-4e8c-9f01-6efa8b80b60c"
+    },
+    "Timestamp": "2024-10-17T12:31:32.843Z"
+  },
+  {
+    "Name": "Betty",
+    "Phone": "705658941",
+    "Message": "Hi Betty, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-7740-4450-bdee-1271879878af"
+    },
+    "Timestamp": "2024-10-17T12:31:32.848Z"
+  },
+  {
+    "Name": "King",
+    "Phone": "721925228",
+    "Message": "Hi King, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-7858-4d8d-aade-07c28c16fe63"
+    },
+    "Timestamp": "2024-10-17T12:31:32.852Z"
+  },
+  {
+    "Name": "Duncan",
+    "Phone": "721910338",
+    "Message": "Hi Duncan, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-8a61-4b17-abc7-3bbf3c03ac39"
+    },
+    "Timestamp": "2024-10-17T12:31:32.879Z"
+  },
+  {
+    "Name": "Onesmus",
+    "Phone": "716074077",
+    "Message": "Hi Onesmus, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-8da3-44d5-b929-9810006f0da2"
+    },
+    "Timestamp": "2024-10-17T12:31:32.895Z"
+  },
+  {
+    "Name": "Mulual",
+    "Phone": "704496132",
+    "Message": "Hi Mulual, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-9141-42b0-8924-8f4045a062b2"
+    },
+    "Timestamp": "2024-10-17T12:31:32.908Z"
+  },
+  {
+    "Name": "Lillian",
+    "Phone": "728427857",
+    "Message": "Hi Lillian, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-8f3b-4090-b54d-00d2b409ed54"
+    },
+    "Timestamp": "2024-10-17T12:31:32.923Z"
+  },
+  {
+    "Name": "Lucky",
+    "Phone": "712413515",
+    "Message": "Hi Lucky, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-9716-4bac-a55d-9efe4698bd65"
+    },
+    "Timestamp": "2024-10-17T12:31:32.943Z"
+  },
+  {
+    "Name": "Peter",
+    "Phone": "711876443",
+    "Message": "Hi Peter, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-9e08-4e10-a79a-f0378a91b9d9"
+    },
+    "Timestamp": "2024-10-17T12:31:32.946Z"
+  },
+  {
+    "Name": "John",
+    "Phone": "792405178",
+    "Message": "Hi John, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-a66b-4bb3-8cee-f0abf98465a5"
+    },
+    "Timestamp": "2024-10-17T12:31:32.960Z"
+  },
+  {
+    "Name": "Charity",
+    "Phone": "725894595",
+    "Message": "Hi Charity, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-a522-4553-94ed-d35b81d179d3"
+    },
+    "Timestamp": "2024-10-17T12:31:32.968Z"
+  },
+  {
+    "Name": "Linda",
+    "Phone": "741540275",
+    "Message": "Hi Linda, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-ae4f-4099-a4df-bc8adef1b505"
+    },
+    "Timestamp": "2024-10-17T12:31:32.971Z"
+  },
+  {
+    "Name": "Lucy",
+    "Phone": "721671699",
+    "Message": "Hi Lucy, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-b790-43ab-bae1-443558cd0a8a"
+    },
+    "Timestamp": "2024-10-17T12:31:32.998Z"
+  },
+  {
+    "Name": "Esther",
+    "Phone": "715384125",
+    "Message": "Hi Esther, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-a628-46f6-9128-e6d542757823"
+    },
+    "Timestamp": "2024-10-17T12:31:33.001Z"
+  },
+  {
+    "Name": "Bridgit",
+    "Phone": "719543469",
+    "Message": "Hi Bridgit, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-bed3-4a7d-bacc-59e3c26e5595"
+    },
+    "Timestamp": "2024-10-17T12:31:33.015Z"
+  },
+  {
+    "Name": "Makkie",
+    "Phone": "715736609",
+    "Message": "Hi Makkie, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-c13f-4e7f-9ecf-6acab14ae792"
+    },
+    "Timestamp": "2024-10-17T12:31:33.027Z"
+  },
+  {
+    "Name": "Gabriel",
+    "Phone": "716969332",
+    "Message": "Hi Gabriel, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-bf20-40ed-b54d-855b0a8740d5"
+    },
+    "Timestamp": "2024-10-17T12:31:33.031Z"
+  },
+  {
+    "Name": "Billy",
+    "Phone": "724934292",
+    "Message": "Hi Billy, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-bc88-47ea-88cc-bd07d192a366"
+    },
+    "Timestamp": "2024-10-17T12:31:33.036Z"
+  },
+  {
+    "Name": "David",
+    "Phone": "706946044",
+    "Message": "Hi David, we've missed you! Get a a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Call/WhatsApp 0701173735 now to schedule your cleaning. This limited-time offer ends this week, so don't wait! Free delivery included.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-caa2-43dc-9e9e-61123ddcdcc0"
+    },
+    "Timestamp": "2024-10-17T12:31:33.069Z"
+  },
+  {
+    "Name": "Wambo",
+    "Phone": "715035504",
+    "Message": "Hi Wambo, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-d187-43e5-93a7-cd881d573cbd"
+    },
+    "Timestamp": "2024-10-17T12:31:33.071Z"
+  },
+  {
+    "Name": "Cathy",
+    "Phone": "718476754",
+    "Message": "Hi Cathy, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-d87f-44ab-a85b-fdbc916cf0d1"
+    },
+    "Timestamp": "2024-10-17T12:31:33.083Z"
+  },
+  {
+    "Name": "Beatrice",
+    "Phone": "712939771",
+    "Message": "Hi Beatrice, we appreciate you! We're offering you a 25% discount on the next CURTAINS WASH this week only! Plus, take advantage of pick-up and drop-off same day express services. Free delivery included. Call/WhatsApp 0701173735 today to claim your offer! Offer valid for this week only.",
+    "Response": {
+      "status": true,
+      "responseCode": "0200",
+      "message": "Accepted",
+      "messageId": "9d44562f-da93-487a-a635-a33302afd69e"
+    },
+    "Timestamp": "2024-10-17T12:31:33.108Z"
+  }
+]
