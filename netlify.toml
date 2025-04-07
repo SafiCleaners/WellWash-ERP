@@ -9,10 +9,14 @@
   status = 200
   force = true              # Ensures SPA routing works on reload
 
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/proxy/:splat"
   status = 200
+
+[build]
+  functions = "netlify/functions"
   force = false             # Don't force if API needs proper methods (GET/POST)
 
 [[headers]]
