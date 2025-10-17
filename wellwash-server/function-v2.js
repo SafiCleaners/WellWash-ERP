@@ -13,7 +13,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const querystring = require('querystring');
 const YAML = require('json-to-pretty-yaml');
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 const crypto = require('crypto');
 const functions = require('@google-cloud/functions-framework');
 const DeviceDetector = require("device-detector-js");
@@ -375,6 +375,8 @@ const startServer = (ontology) => {
     // --- Remaining custom routes
     app.post('/track-refferals', async (req, res) => {
         try {
+            // const { v4: uuidv4 } = await import('uuid');
+
             const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
             const deviceDetector = new DeviceDetector();
             const device = deviceDetector.parse(req.headers['user-agent']);
