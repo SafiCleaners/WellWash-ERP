@@ -3,8 +3,7 @@
         "node": ">=20"
     },
     "scripts": {
-        "deploy": "gcloud functions deploy wellwash-server --runtime=nodejs22 --trigger-http",
-        "start": "npx nodemon function.js"
+        "start": "npx nodemon function-v2.js"
     },
     "dependencies": {
         "@bugsnag/js": "^7.25.0",
