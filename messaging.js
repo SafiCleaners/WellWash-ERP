@@ -29,8 +29,10 @@ const requestOptions = {
 
 // Mock test data for testing
 const testData = [
-    { name: "Branson", phone: "+254741147930", totalOrders: 12 },
-    { name: "Phyliss", phone: "+254743214479", totalOrders: 12 },
+    { name: "Wellwash", phone: "+254701173735", totalOrders: 12 },
+    { name: "Branson", phone: "+254743214479", totalOrders: 12 },
+    // { name: "Shiks", phone: "+254743214479", totalOrders: 12 },
+    { name: "Maggie", phone: "+254725039063", totalOrders: 12 },
     // { name: "Branson", phone: "+254701173735", totalOrders: 7 },
     // { name: "Millen", phone: "+254707850005", totalOrders: 3 },
     // { name: "Phyliss", phone: "+254707288107", totalOrders: 3 },
@@ -97,28 +99,13 @@ function createMessages(clients) {
         );
 
         // Condensed laundry offer with a free duvet wash and 20% discount for today's orders
-        const laundryOffer = `we're reaching out to request you to take advantage of our LaundryFactory Weekend Endmonth GIFT!
-
-- per kg laundry 30% off for you
-- duvets get a 30% cut
-- shoes 40% off
-- curtains 35% off
-- for every 7kgs laundry = claim a FREE duvet wash!
-- free stain removal & ironing
-- refer a friend with code ENDMONTH = enjoy 40% each off as friends
-- affordable monthly plans available for singles, families and businesses.
-
-Valid for 27th-2nd ,5 days!
-
-We Pick,Wash, Iron & Deliver 
-On time all around Nairobi, Kiambu and Thika road
-
-Call/WhatsApp: 0701173735
-WellWash Drycleaners,  OJ, Opp Shell
-Terms and Conditions are applied.`;
+        const laundryOffer = `just for you: an exclusive Easter Laundry deal: 30% OFF + Pick&Drop! 
+        Starts today, valid until Apr 22nd. 
+        Covers Suits, Bulk kgs+Ironing, Duvets, Curtains, Shoes, Carpets+, Gowns, Wedding dresses, Official Wear + more!. 
+        WellWash DryCleaners, find us at ValleyView, Opp Shell Oj Membley. Call/Whatsapp 0701173735. See you soon!`;
 
         // Customize the greeting based on whether name is generic
-        const greeting = isGenericName ? "Good afternoon!" : `Good afternoon ${firstName}!`;
+        const greeting = isGenericName ? "Hello!" : `Hello ${firstName}!`;
 
         // Customize the message based on total orders
         if (client.totalOrders > 10) {
