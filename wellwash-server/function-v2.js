@@ -87,7 +87,7 @@ const sms = (options, callback) => {
 
 const config = {
     adapters: { 'sails-postgresql': sailsPostgresAdapter },
-    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL } },
+    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL, migrate: 'alter' } },
     models: { schema: true } // Enforce schema to prevent saving unintended fields
 };
 
