@@ -101,28 +101,15 @@ const startServer = (ontology) => {
     // =================================================================
     // --- START: CORS CONFIGURATION ---
     // =================================================================
-
-    // Define the list of domains that are allowed to connect.
-    const allowedOrigins = [
-        '*', // Your production frontend
-    ];
-
-    const corsOptions = {
-        origin: (origin, callback) => {
-            // The 'origin' is the URL of the site making the request (e.g., https://wellwash.netlify.app)
-            // The check '!origin' allows requests from tools like Postman or server-to-server calls.
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true); // Allow the request
-            } else {
-                callback(new Error('Not allowed by CORS')); // Block the request
-            }
-        },
-        methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], // Specify allowed methods
-        allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
-    };
-
     // REPLACE your old app.use(cors()); with this:
-    app.use(cors(corsOptions));
+    app.use(cors((req, callback) => {
+        // const origin = req.header('Origin');
+        // if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true); // Allow the request
+        // } else {
+        //     callback(new Error('Not allowed by CORS')); // Block the request
+        // }
+    }));
 
     // =================================================================
     // --- END: CORS CONFIGURATION ---
