@@ -42,7 +42,7 @@ const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
     attributes: {
-        id: { type: 'number', required: true, autoIncrement: true },
+        id: { type: 'number', required: true },
         createdAt: { type: 'number', autoCreatedAt: true, },
         updatedAt: { type: 'number', autoUpdatedAt: true, },
         deleted: { type: 'boolean', defaultsTo: false },
