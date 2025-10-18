@@ -97,7 +97,37 @@ const startServer = (ontology) => {
     // ... (The rest of your express app setup, middleware, and routes go here as before)
     app.use(express.urlencoded({ extended: true, limit: '3mb' }));
     app.use(express.json());
-    app.use(cors());
+
+    // =================================================================
+    // --- START: CORS CONFIGURATION ---
+    // =================================================================
+
+    // Define the list of domains that are allowed to connect.
+    const allowedOrigins = [
+        'https://wellwash.netlify.app', // Your production frontend
+    ];
+
+    const corsOptions = {
+        origin: (origin, callback) => {
+            // The 'origin' is the URL of the site making the request (e.g., https://wellwash.netlify.app)
+            // The check '!origin' allows requests from tools like Postman or server-to-server calls.
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true); // Allow the request
+            } else {
+                callback(new Error('Not allowed by CORS')); // Block the request
+            }
+        },
+        methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], // Specify allowed methods
+        allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    };
+
+    // REPLACE your old app.use(cors()); with this:
+    app.use(cors(corsOptions));
+
+    // =================================================================
+    // --- END: CORS CONFIGURATION ---
+    // =================================================================
+
     app.use(morgan(NODE_ENV === 'development' ? 'tiny' : 'combined'));
 
     const logActivity = async (req, entity, action, before, after) => {
