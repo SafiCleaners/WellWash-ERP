@@ -20,7 +20,6 @@ const DeviceDetector = require("device-detector-js");
 const sailsPostgresAdapter = require('sails-postgresql');
 
 // --- Waterline ORM Imports ---
-// CORRECTED IMPORT: We only need the main Waterline object.
 const Waterline = require('waterline');
 
 // --- Environment Variables ---
@@ -43,12 +42,7 @@ const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
     attributes: {
-        // --- THIS IS THE CORRECTED PART ---
-        // For Postgres, simply defining the primary key as type 'number' is enough.
-        // The `sails-postgresql` adapter will automatically create it as a SERIAL
-        // (auto-incrementing) column.
-        id: { type: 'number', required: true },
-
+        id: { type: 'number', required: true, autoIncrement: true },
         createdAt: { type: 'number', autoCreatedAt: true, },
         updatedAt: { type: 'number', autoUpdatedAt: true, },
         deleted: { type: 'boolean', defaultsTo: false },
@@ -57,7 +51,6 @@ const baseModel = {
     }
 };
 
-// CORRECTED: Changed all instances of `WLCollection.extend` to `Waterline.Collection.extend`
 const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...baseModel.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
 const Job = Waterline.Collection.extend({ ...baseModel, identity: 'job', attributes: { ...baseModel.attributes, clientName: { type: 'string' }, phone: { type: 'string' }, shortId: { type: 'string' }, orderUrl: { type: 'string' }, statusInfo: { type: 'json' } } });
 const Store = Waterline.Collection.extend({ ...baseModel, identity: 'store', attributes: { ...baseModel.attributes, title: { type: 'string', required: true }, phone: { type: 'string' }, email: { type: 'string' }, address: { type: 'string' } } });
@@ -73,13 +66,14 @@ const Track = Waterline.Collection.extend({ ...baseModel, identity: 'track', att
 const StockAdjustment = Waterline.Collection.extend({ ...baseModel, identity: 'stock_adjustment', attributes: { ...baseModel.attributes, pricingId: { type: 'string' }, quantity: { type: 'number' }, businessDate: { type: 'string' }, reason: { type: 'string' }, cost: { type: 'number' } } });
 const ActivityLog = Waterline.Collection.extend({ ...baseModel, identity: 'activitylog', attributes: { ...baseModel.attributes, entity: { type: 'string' }, action: { type: 'string' }, before: { type: 'json' }, after: { type: 'json' }, userId: { type: 'string' }, userTitle: { type: 'string' } } });
 
+const allModels = [User, Job, Store, Category, Pricing, Expense, Order, Task, Brand, CGroup, Client, Track, StockAdjustment, ActivityLog];
 
 // =================================================================
 // --- 2. WATERLINE AND SERVER INITIALIZATION
 // =================================================================
 
 const waterline = new Waterline();
-// Placeholder for your actual SMS function
+
 const sms = (options, callback) => {
     console.log(`-- SMS SIMULATION --\nTO: ${options.phone}\nMESSAGE: ${options.message}\n--------------------`);
     if (callback) callback(null, { status: "success" });
@@ -87,30 +81,25 @@ const sms = (options, callback) => {
 
 const config = {
     adapters: { 'sails-postgresql': sailsPostgresAdapter },
-    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL, migrate: 'alter' } },
-    models: { schema: true } // Enforce schema to prevent saving unintended fields
+    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL, migrate: 'safe' } }, // Changed migrate to 'safe'
+    models: { schema: true }
 };
 
-// Register all models with Waterline
-[User, Job, Store, Category, Pricing, Expense, Order, Task, Brand, CGroup, Client, Track, StockAdjustment, ActivityLog].forEach(model => {
+allModels.forEach(model => {
     waterline.registerModel(model);
 });
 
 const startServer = (ontology) => {
     const app = express();
-    // Make Waterline models available on the app object
     app.models = ontology.collections;
     app.connections = ontology.connections;
 
-    // --- 3. MIDDLEWARE SETUP ---
+    // ... (The rest of your express app setup, middleware, and routes go here as before)
     app.use(express.urlencoded({ extended: true, limit: '3mb' }));
     app.use(express.json());
     app.use(cors());
     app.use(morgan(NODE_ENV === 'development' ? 'tiny' : 'combined'));
 
-    // --- Bugsnag and Session Management can be added here as in the original file ---
-
-    // --- CUSTOM MIDDLEWARE ---
     const logActivity = async (req, entity, action, before, after) => {
         try {
             await app.models.activitylog.create({
@@ -130,7 +119,7 @@ const startServer = (ontology) => {
 
         try {
             const decoded = jwt.verify(token, JWT_TOKEN);
-            req.tokenPayload = decoded; // Attach decoded token payload
+            req.tokenPayload = decoded;
             next();
         } catch (err) {
             return res.status(401).json({ message: "Unauthorized: Invalid token" });
@@ -139,11 +128,10 @@ const startServer = (ontology) => {
 
     const userBlockedMiddleware = async (req, res, next) => {
         try {
-            // Note: with Postgres, the ID in the token might be a number, not `_id`
             const userId = req.tokenPayload.id || req.tokenPayload._id;
             const user = await app.models.user.findOne({ id: userId, deleted: false });
             if (!user) return res.status(403).json({ message: "Forbidden: User is blocked or does not exist." });
-            req.user = user; // Attach full, current user object to request
+            req.user = user;
             next();
         } catch (error) {
             console.error(error);
@@ -158,12 +146,8 @@ const startServer = (ontology) => {
 
     const importantMiddleWares = [userAuthMiddleware, userBlockedMiddleware, userTrackingMiddleware];
 
-    // =================================================================
-    // --- 4. ROUTES
-    // =================================================================
     app.get('/health', (req, res) => res.send({ status: "ok" }));
     app.get("/auth_config.json", (req, res) => {
-        // In a real app, ensure this file exists or handle the error
         try {
             res.sendFile(join(__dirname, "auth_config.json"));
         } catch (e) {
@@ -204,7 +188,6 @@ const startServer = (ontology) => {
                 const updatedJob = await app.models.job.updateOne({ id: jobId }).set(jobData).fetch();
                 res.json(updatedJob);
             } else {
-                // Upsert logic: Create if it doesn't exist
                 jobData.shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
                 const newJob = await app.models.job.create({ ...jobData, createdBy: req.user.id }).fetch();
                 res.status(201).json(newJob);
@@ -322,7 +305,6 @@ const startServer = (ontology) => {
     app.post('/orders', importantMiddleWares, async (req, res) => {
         const { storeId, clientId, tasks, total } = req.body;
         try {
-            // Fetch related data for embedding/logging
             const [client, store] = await Promise.all([
                 app.models.user.findOne({ id: clientId }),
                 app.models.store.findOne({ id: storeId })
@@ -352,7 +334,6 @@ const startServer = (ontology) => {
                     }).fetch();
                 });
                 const createdTasks = await Promise.all(taskPromises);
-                // Log task creation individually
                 for (const task of createdTasks) {
                     await logActivity(req, "Task", "CREATE", {}, task.toJSON());
                 }
@@ -365,7 +346,6 @@ const startServer = (ontology) => {
 
     app.delete('/orders/:id', importantMiddleWares, async (req, res) => {
         try {
-            // Also delete associated tasks
             await app.models.task.update({ orderId: req.params.id }).set({ deleted: true, updatedBy: req.user.id });
             await app.models.order.updateOne({ id: req.params.id }).set({ deleted: true, updatedBy: req.user.id });
             res.status(204).send();
@@ -375,8 +355,6 @@ const startServer = (ontology) => {
     // --- Remaining custom routes
     app.post('/track-refferals', async (req, res) => {
         try {
-            // const { v4: uuidv4 } = await import('uuid');
-
             const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
             const deviceDetector = new DeviceDetector();
             const device = deviceDetector.parse(req.headers['user-agent']);
@@ -399,42 +377,115 @@ const startServer = (ontology) => {
         } catch (e) { res.status(500).json({ error: e.message }); }
     });
 
-    // --- Placeholder/External API routes from original file ---
     app.post('/payments', (req, res) => res.status(501).send({ message: "Not Implemented" }));
     app.post('/upload', (req, res) => res.status(501).send({ message: "Not Implemented" }));
     app.use("/billing/confirmation", (req, res) => res.json({ ResponseCode: "00000000", ResponseDesc: "success" }));
     app.use("/billing/validation", (req, res) => res.json({ ResponseCode: "00000000", ResponseDesc: "success" }));
     app.use("/billing/lipaCallback/:txid", (req, res) => res.json({ ResponseCode: "00000000", ResponseDesc: "success" }));
 
+
     return app;
 };
-
 
 // =================================================================
 // --- 5. ORM INITIALIZATION AND SERVER START
 // =================================================================
 
+/**
+ * Checks if the database schema is initialized and creates tables if not.
+ * @param {object} ontology - The Waterline ontology object.
+ */
+async function initializeDatabase(ontology) {
+    const datastore = ontology.datastores.default;
+    const schemaVersionTable = '_schema_version';
+
+    const runQuery = (query, values = []) => {
+        return new Promise((resolve, reject) => {
+            datastore.sendNativeQuery(query, values, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+    };
+
+    const mapTypeToPostgres = (attr) => {
+        switch (attr.type) {
+            case 'string': return 'VARCHAR(255)';
+            case 'number': return attr.autoIncrement ? 'SERIAL' : 'INTEGER';
+            case 'boolean': return 'BOOLEAN';
+            case 'json': return 'JSON';
+            default: return 'VARCHAR(255)';
+        }
+    };
+
+    try {
+        const checkResult = await runQuery(
+            `SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name = $1
+            )`, [schemaVersionTable]
+        );
+
+        if (checkResult.rows[0].exists) {
+            console.log('Database schema already initialized. Skipping setup.');
+            return;
+        }
+
+        console.log('Initial database setup required. Creating tables...');
+
+        for (const model of allModels) {
+            const tableName = model.identity;
+            const attributes = model.attributes;
+            const columns = Object.entries(attributes).map(([name, attr]) => {
+                let columnDef = `"${name}" ${mapTypeToPostgres(attr)}`;
+                if (name === 'id') columnDef += ' PRIMARY KEY';
+                if (attr.required) columnDef += ' NOT NULL';
+                if (attr.defaultsTo !== undefined) {
+                    const defaultValue = typeof attr.defaultsTo === 'string' ? `'${attr.defaultsTo}'` : attr.defaultsTo;
+                    columnDef += ` DEFAULT ${defaultValue}`;
+                }
+                return columnDef;
+            });
+
+            const createTableQuery = `CREATE TABLE "${tableName}" (${columns.join(', ')});`;
+            console.log(`Creating table: ${tableName}`);
+            await runQuery(createTableQuery);
+        }
+
+        await runQuery(`CREATE TABLE "${schemaVersionTable}" (version INT NOT NULL, "createdAt" BIGINT);`);
+        await runQuery(`INSERT INTO "${schemaVersionTable}" (version, "createdAt") VALUES (1, $1);`, [Date.now()]);
+
+        console.log('✅ Initial database setup complete.');
+
+    } catch (error) {
+        console.error('Error during database initialization:', error);
+        process.exit(1);
+    }
+}
+
+
 console.log('Attempting to initialize Waterline ORM...');
-waterline.initialize(config, (err, ontology) => {
+waterline.initialize(config, async (err, ontology) => {
     if (err) {
         console.error('Failed to initialize Waterline ORM:', err);
         process.exit(1);
     }
     console.log('Waterline ORM initialized successfully.');
 
+    // Perform initial database setup if required
+    await initializeDatabase(ontology);
+
     const app = startServer(ontology);
 
     if (FUNCTIONS_FRAMEWORK === 'true') {
-        // Export for Google Cloud Functions
         functions.http('api', app);
     } else {
-        // Run as a standalone server
         const PORT = process.env.PORT || 8002;
         app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
     }
 });
 
-// Graceful shutdown
 process.on('SIGINT', () => {
     console.log("\nShutting down server...");
     waterline.teardown(() => {
