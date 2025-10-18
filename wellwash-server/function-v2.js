@@ -104,7 +104,7 @@ const startServer = (ontology) => {
 
     // Define the list of domains that are allowed to connect.
     const allowedOrigins = [
-        'https://wellwash.netlify.app', // Your production frontend
+        '*', // Your production frontend
     ];
 
     const corsOptions = {
