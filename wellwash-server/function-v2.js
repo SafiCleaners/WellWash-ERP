@@ -504,7 +504,7 @@ waterline.initialize(config, async (err, ontology) => {
     console.log('Waterline ORM initialized successfully.');
 
     // Perform initial database setup if required
-    await initializeDatabase(ontology);
+    // await initializeDatabase(ontology);
 
     const app = startServer(ontology);
 
