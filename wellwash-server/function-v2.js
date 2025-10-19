@@ -56,7 +56,7 @@ const baseModel = {
     // No more beforeCreate hook here
 };
 
-const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...base.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
+const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...baseModel.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
 const Job = Waterline.Collection.extend({ ...baseModel, identity: 'job', attributes: { ...baseModel.attributes, clientName: { type: 'string' }, phone: { type: 'string' }, shortId: { type: 'string' }, orderUrl: { type: 'string' }, statusInfo: { type: 'json' } } });
 const Store = Waterline.Collection.extend({ ...baseModel, identity: 'store', attributes: { ...baseModel.attributes, title: { type: 'string', required: true }, phone: { type: 'string' }, email: { type: 'string' }, address: { type: 'string' } } });
 const Category = Waterline.Collection.extend({ ...baseModel, identity: 'category', attributes: { ...baseModel.attributes, title: { type: 'string' }, store: { type: 'json' }, storeId: { type: 'string' }, unit: { type: 'string' }, cost: { type: 'number' }, brand: { type: 'string' } } });
