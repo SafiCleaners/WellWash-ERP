@@ -37,9 +37,6 @@ if (!DB_URL) {
 // --- 1. WATERLINE MODEL DEFINITIONS
 // =================================================================
 
-// Make sure crypto is imported at the top of your file
-const crypto = require('crypto');
-
 const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
