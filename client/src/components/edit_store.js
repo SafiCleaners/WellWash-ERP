@@ -1,128 +1,96 @@
 import axios from "axios";
+import m from "mithril";
+import { url } from "../constants";
 
-import {
-    url,
-} from "../constants"
-
-import m from "mithril"
-
-
-const EditBrandForm = {
+const EditStoreForm = {
     oninit(vnode) {
-        // Access props from vnode.attrs
-        this.props = vnode.attrs;
-        this.formData = this.props.brand
-    },
-    showModal: false,
-    openModal: function () {
-        this.showModal = true;
+        vnode.state.showModal = false;
+        // Create a *copy* of the store data to avoid mutating parent state on cancel
+        vnode.state.formData = { ...vnode.attrs.store };
     },
 
-    closeModal: function () {
-        this.showModal = false;
-    },
+    view(vnode) {
+        const { showModal, formData } = vnode.state;
 
-    handleInputChange: function (field, value) {
-        this.formData[field] = value;
-    },
-
-    handleSubmit: function () {
-        // Handle form submission logic here
-        console.log('Form Submitted:', this.formData);
-        const fileInput = document.getElementById('logoInput');
-        const file = fileInput.files[0];
-    
-        if (file) {
-            const reader = new FileReader();
-    
-            reader.onloadend = function () {
-                // Get the base64 string without the data:image/png;base64, prefix
-                const base64String = reader.result.split(',')[1]; 
-    
-                // Call the function to upload the base64 string to the server using Axios
-                this.formData.image = base64String;
-            };
-    
-            reader.readAsDataURL(file);
-        } 
-
-        const options = {
-            method: 'PATCH',
-            url: `${url}/stores/${this.formData.id}`,
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-            data: this.formData,
+        const openModal = () => vnode.state.showModal = true;
+        const closeModal = () => {
+            // On close, reset the form data back to the original to discard changes
+            vnode.state.formData = { ...vnode.attrs.store };
+            vnode.state.showModal = false;
         };
 
-        axios.request(options).then(function (response) {
-            console.log(response.data);
-            location.reload()
-        }).catch(function (error) {
-            console.error(error);
-        });
+        const handleInputChange = (field, value) => {
+            vnode.state.formData[field] = value;
+        };
 
-        // Close the modal after submission
-        // this.closeModal();
-    },
+        const handleSubmit = () => {
+            const options = {
+                method: 'PATCH',
+                url: `${url}/stores/${formData.id}`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
+                data: formData,
+            };
 
-    view: function () {
+            axios.request(options).then(response => {
+                // Call the parent's callback with the updated data
+                if (vnode.attrs.onStoreUpdated) {
+                    vnode.attrs.onStoreUpdated(response.data);
+                }
+                closeModal();
+            }).catch(error => {
+                console.error(error);
+                alert("Failed to update store. Please check the console.");
+            });
+        };
+
         return m('span', [
-            // Open Modal Button
-            m('button', { "class": "btn btn-icon btn-light btn-hover-primary btn-sm mr-2", onclick: () => this.openModal() }, m('icon', { "class": "flaticon-edit" })),
+            m('button.btn.btn-icon.btn-light.btn-hover-primary.btn-sm.mr-2', { onclick: openModal },
+                m('i.flaticon-edit')
+            ),
 
-            // Modal
-            this.showModal && m('.modal', [
+            showModal && m('.modal', [
                 m('.modal-content', [
-                    m("div", { "class": "row text-left", style: "white-space: wrap;" }, [
-                        m("div", { "class": "col-11" }, [
-                            m('h4', 'Edit Store'),
-                        ]),
-                        m("div", { "class": "col-1" }, [
-                            m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
-                        ]),
-                        m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-12 my-2" }, [
+                    m(".row.text-left", [
+                        m(".col-11", m('h4', 'Edit Store')),
+                        m(".col-1", m('span.close', { onclick: closeModal }, 'x')),
+                        m("span.border-bottom.mb-4"),
+
+                        m(".col-12.my-2", [
                             m('label', 'Title:'),
-                            m('input[type=text]', {
-                                "class": "py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter title",
-                                value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('title', e.target.value),
+                            m('input.form-control', {
+                                value: formData.title,
+                                oninput: e => handleInputChange('title', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-4 my-2" }, [
+                        m(".col-4.my-2", [
                             m('label', 'Phone:'),
-                            m('input[type=number]', {
-                                "class": "py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter phone",
-                                value: this.formData.phone,
-                                oninput: (e) => this.handleInputChange('phone', e.target.value),
+                            m('input.form-control[type=tel]', {
+                                value: formData.phone,
+                                oninput: e => handleInputChange('phone', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-8 my-2" }, [
+                        m(".col-8.my-2", [
                             m('label', 'Email:'),
-                            m('input[type=email]', {
-                                "class": "py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter email",
-                                value: this.formData.email,
-                                oninput: (e) => this.handleInputChange('email', e.target.value),
+                            m('input.form-control[type=email]', {
+                                value: formData.email,
+                                oninput: e => handleInputChange('email', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-12 my-2" }, [
+                        m(".col-12.my-2", [
                             m('label', 'Address:'),
-                            m('input[type=text]', {
-                                "class": "py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter address",
-                                value: this.formData.address,
-                                oninput: (e) => this.handleInputChange('address', e.target.value),
+                            m('input.form-control', {
+                                value: formData.address,
+                                oninput: e => handleInputChange('address', e.target.value),
                             }),
                         ]),
-                        m("span", { "class": "border-top mt-4" }),
-                        m("div", { "class": "pt-2 align-right" }, [
-                            m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
+
+                        m("span.border-top.mt-4"),
+                        m(".pt-2.align-right", [
+                            m('button.btn.btn-danger.px-6.mr-3', { onclick: closeModal }, 'Close'),
+                            m('button.btn.btn-info.px-6', { onclick: handleSubmit }, 'Save'),
                         ])
                     ]),
                 ]),
@@ -131,4 +99,4 @@ const EditBrandForm = {
     },
 };
 
-export default EditBrandForm;
+export default EditStoreForm;

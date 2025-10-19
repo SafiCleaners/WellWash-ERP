@@ -1,178 +1,138 @@
 import axios from "axios";
-
-import {
-    url,
-} from "../constants"
-
-import m from "mithril"
-
+import m from "mithril";
+import { url } from "../constants";
 
 const AddStoreForm = {
-    showModal: false,
-    unitType: '',
-    formData: {
-        title: '',
-        address: '',
-        phone: '',
-        email: '',
-    },
-
-    openModal: function () {
-        this.showModal = true;
-    },
-
-    closeModal: function () {
-        this.showModal = false;
-    },
-
-    handleInputChange: function (field, value) {
-        this.formData[field] = value;
-    },
-    oninit: function(vnode) {
-        vnode.state.brands = []
-    },
-
-    oncreate: function(vnode) {
-        const optionStore = {
-            method: 'GET', url: url + "/brands",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
+    oninit(vnode) {
+        // Use vnode.state for clean, instance-specific state
+        vnode.state.showModal = false;
+        vnode.state.brands = [];
+        vnode.state.formData = {
+            title: '',
+            address: '',
+            phone: '',
+            email: '',
+            brand: null,
         };
+        vnode.state.loading = true;
 
-        axios.request(optionStore).then(function (response) {
-            vnode.state.brands = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
+        // Fetch brands when the component is initialized
+        axios.get(`${url}/brands`, {
+            headers: { authorization: localStorage.getItem('token') }
+        }).then(response => {
+            vnode.state.brands = response.data;
+        }).catch(error => {
+            console.error("Failed to fetch brands:", error);
+        }).finally(() => {
+            vnode.state.loading = false;
+            m.redraw();
         });
     },
 
-    handleSubmit: function (vnode) {
-        // Handle form submission logic here
-        console.log('Form Submitted:', this.formData);
+    view(vnode) {
+        const { showModal, formData, brands } = vnode.state;
+        const brandMap = brands.reduce((acc, brand) => ({ ...acc, [brand.id]: brand.title }), {});
 
-        const options = {
-            method: 'POST',
-            url: `${url}/stores/`,
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-            data: this.formData,
+        const openModal = () => vnode.state.showModal = true;
+        const closeModal = () => vnode.state.showModal = false;
+
+        const handleInputChange = (field, value) => {
+            vnode.state.formData[field] = value;
         };
 
-        axios.request(options).then(function (response) {
-            console.log(response.data);
-            location.reload()
-        }).catch(function (error) {
-            console.error(error);
-        });
+        const handleSubmit = () => {
+            if (!formData.title) {
+                return alert("Title is a required field.");
+            }
 
-        
+            const options = {
+                method: 'POST',
+                url: `${url}/stores`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                },
+                data: formData,
+            };
 
-        // Close the modal after submission
-        // this.closeModal();
-    },
+            axios.request(options).then(response => {
+                // Call the parent's callback function instead of reloading
+                if (vnode.attrs.onStoreAdded) {
+                    vnode.attrs.onStoreAdded(response.data);
+                }
+                // Reset form and close modal for a better UX
+                vnode.state.formData = { title: '', address: '', phone: '', email: '', brand: null };
+                closeModal();
+            }).catch(error => {
+                console.error(error);
+                alert("Failed to add store. Please check the console.");
+            });
+        };
 
-    view: function (vnode) {
         return m('div', [
-            // Open Modal Button
-            m('button', { "class": "btn btn-sm btn-info", onclick: () => this.openModal() }, [
-                m("i", { "class": "flaticon-add-circular-button" }),
+            m('button.btn.btn-sm.btn-info', { onclick: openModal }, [
+                m("i.flaticon-add-circular-button"),
                 " Add Store"
             ]),
 
-            // Modal
-            this.showModal && m('.modal', [
+            showModal && m('.modal', [
                 m('.modal-content', [
-                    m("div", { "class": "row" }, [
-                        m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Store'),
-                        ]),
-                        m("div", { "class": "col-1" }, [
-                            m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
-                        ]),
-                        m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-12 my-2" }, [
+                    m(".row", [
+                        m(".col-11", m('h4', 'Add Store')),
+                        m(".col-1", m('span.close', { onclick: closeModal }, 'x')),
+                        m("span.border-bottom.mb-4"),
+
+                        m(".col-12.my-2", [
                             m('label', 'Title:'),
-                            m('input[type=text]', {
-                                "class": "form-control py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter title",
-                                value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('title', e.target.value),
+                            m('input.form-control', {
+                                placeholder: "Enter title",
+                                value: formData.title,
+                                oninput: e => handleInputChange('title', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-4 my-2" }, [
+                        m(".col-4.my-2", [
                             m('label', 'Phone:'),
-                            m('input[type=number]', {
-                                "class": "form-control py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter phone",
-                                value: this.formData.phone,
-                                oninput: (e) => this.handleInputChange('phone', e.target.value),
+                            m('input.form-control[type=tel]', {
+                                placeholder: "Enter phone",
+                                value: formData.phone,
+                                oninput: e => handleInputChange('phone', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-8 my-2" }, [
+                        m(".col-8.my-2", [
                             m('label', 'Email:'),
-                            m('input[type=email]', {
-                                "class": "form-control py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter email",
-                                value: this.formData.email,
-                                oninput: (e) => this.handleInputChange('email', e.target.value),
+                            m('input.form-control[type=email]', {
+                                placeholder: "Enter email",
+                                value: formData.email,
+                                oninput: e => handleInputChange('email', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-12 my-2" }, [
+                        m(".col-12.my-2", [
                             m('label', 'Address:'),
-                            m('input[type=text]', {
-                                "class": "form-control py-2 px-3 w-100 rounded",
-                                "placeholder": "Enter address",
-                                value: this.formData.address,
-                                oninput: (e) => this.handleInputChange('address', e.target.value),
+                            m('input.form-control', {
+                                placeholder: "Enter address",
+                                value: formData.address,
+                                oninput: e => handleInputChange('address', e.target.value),
                             }),
                         ]),
-                        m("div", { "class": "col-12 my-2" }, [
+                        m(".col-12.my-2", [
                             m('label', 'Brand:'),
-                            m("br"),
-                            m("button", { "class": "btn btn-md btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                    !this.formData.brand ? " No Brand " : vnode.state.brands?.filter(brand => brand._id == this.formData.brand)[0]?.title
+                            m('.dropdown', [
+                                m("button.btn.btn-md.btn-secondary.dropdown-toggle.w-100", { "data-toggle": "dropdown" },
+                                    brandMap[formData.brand] || "Select a Brand"
                                 ),
-                            m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                        [
-                                            m("a", {
-                                                class: "dropdown-item",
-                                                // href: "#",
-                                                onclick: (e) => {
-                                                    // Prevent default link behavior
-                                                    e.preventDefault();
-
-                                                    // Store store._id in local storage as storeId
-                                                    localStorage.removeItem('storeId');
-
-                                                    m.redraw()
-                                                }
-                                            }, " No brand "),
-                                            vnode.state.brands?.map(brand => {
-                                                return m("a", {
-                                                    class: "dropdown-item",
-                                                    // href: "#",
-                                                    onclick: (e) => {
-                                                        e.preventDefault();
-                                                        this.handleInputChange('brand', brand._id)
-                                                        m.redraw()
-                                                    }
-                                                }, brand.title);
-                                            })
-                                        ]
-                                    )
+                                m(".dropdown-menu", [
+                                    m("a.dropdown-item", { onclick: () => handleInputChange('brand', null) }, "No Brand"),
+                                    brands.map(brand => m("a.dropdown-item", {
+                                        onclick: () => handleInputChange('brand', brand.id) // Use 'id'
+                                    }, brand.title))
+                                ])
+                            ])
                         ]),
-                        m("span", { "class": "border-top mt-4" }),
-                        m("div", { "class": "pt-2 align-right" }, [
-                            m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
+
+                        m("span.border-top.mt-4"),
+                        m(".pt-2.align-right", [
+                            m('button.btn.btn-danger.px-6.mr-3', { onclick: closeModal }, 'Close'),
+                            m('button.btn.btn-info.px-6', { onclick: handleSubmit }, 'Save'),
                         ])
                     ]),
                 ]),

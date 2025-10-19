@@ -1,256 +1,169 @@
 import axios from "axios";
+import m from "mithril";
 
+import { url } from "../constants"; // Assumes url is '/api'
+import loader from "../components/loader";
+import addStore from "../components/add_store";
+import editStore from "../components/edit_store";
 
-import {
-    url
-} from "../constants"
+// Helper function to handle API loading and state updates
+const loadData = (vnode) => {
+    vnode.state.loading = true;
 
-import m from "mithril"
-import loader from "../components/loader"
-import addStore from "../components/add_store"
-import editStore from "../components/edit_store"
+    const getStores = axios.get(`${url}/stores`, {
+        headers: { authorization: localStorage.getItem('token') }
+    });
 
-const formatCurrency = (number) => {
-    try {
-        return Intl.NumberFormat('en-US').format(number);
-    } catch (error) {
-        console.error('Error formatting number:', error);
-        return 'N/A';
+    const getBrands = axios.get(`${url}/brands`, {
+        headers: { authorization: localStorage.getItem('token') }
+    });
+
+    Promise.all([getStores, getBrands])
+        .then(([storesResponse, brandsResponse]) => {
+            vnode.state.stores = storesResponse.data;
+            vnode.state.brands = brandsResponse.data;
+
+            // PERFORMANCE: Create a map for quick brand name lookups (O(1) instead of O(n))
+            vnode.state.brandMap = vnode.state.brands.reduce((acc, brand) => {
+                acc[brand.id] = brand.title; // Use 'id'
+                return acc;
+            }, {});
+
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            alert("Failed to load store data. Please check the console for details.");
+        })
+        .finally(() => {
+            vnode.state.loading = false;
+            m.redraw();
+        });
+};
+
+// Helper function to handle updating a store's brand
+const updateStoreBrand = (vnode, storeId, brandId) => {
+    const options = {
+        method: 'PATCH',
+        url: `${url}/stores/${storeId}`, // CORRECTED: Plural 'stores' and uses 'id'
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': localStorage.getItem('token')
+        },
+        data: { brand: brandId }
+    };
+
+    axios.request(options)
+        .then(response => {
+            // UX IMPROVEMENT: Update state directly instead of reloading the page
+            const storeToUpdate = vnode.state.stores.find(s => s.id === storeId);
+            if (storeToUpdate) {
+                storeToUpdate.brand = brandId;
+            }
+        })
+        .catch(error => {
+            console.error("Error updating brand:", error);
+            alert("Failed to update brand.");
+        })
+        .finally(() => {
+            m.redraw(); // Redraw to reflect the change
+        });
+};
+
+// Helper function to handle deleting a store
+const deleteStore = (vnode, storeId) => {
+    if (!confirm("Are you sure you want to delete this store?")) {
+        return;
     }
-}
+
+    const options = {
+        method: 'DELETE',
+        url: `${url}/stores/${storeId}`, // CORRECTED: Uses 'id'
+        headers: { authorization: localStorage.getItem('token') },
+    };
+
+    axios.request(options)
+        .then(() => {
+            vnode.state.stores = vnode.state.stores.filter(s => s.id !== storeId);
+        })
+        .catch(error => {
+            console.error("Error deleting store:", error);
+            alert("Failed to delete store.");
+        })
+        .finally(() => {
+            m.redraw();
+        });
+};
+
 
 const stores = {
     oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.loading = true
+        vnode.state.stores = [];
+        vnode.state.brands = [];
+        vnode.state.brandMap = {}; // Map for brand titles
+        vnode.state.loading = true;
     },
+
     oncreate(vnode) {
-        const getStores = axios.request({
-            method: 'GET', 
-            url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
-
-        const getBrands = axios.request({
-            method: 'GET',
-            url: url + "/brands",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
-
-        Promise.all([getStores, getBrands])
-            .then(function (responses) {
-                console.log(responses)
-                vnode.state.stores = responses[0].data;
-                vnode.state.brands = responses[1].data;
-                vnode.state.loading = false;
-                m.redraw();
-            })
-            .catch(function (errors) {
-                vnode.state.loading = false;
-                m.redraw();
-                console.error(errors);
-            });
+        loadData(vnode);
     },
+
     view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" },
-            [
-                m("div", { "class": "card-header border-0 pt-7" },
-                    [
-                        m("h3", { "class": "card-title align-items-start flex-column" },
-                            [
-                                m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Stores"
-                                ),
-                            ]
-                        ),
-                        m(addStore)
-                    ]
+        const { loading, stores, brands, brandMap } = vnode.state;
+
+        return m(".card.card-custom.gutter-b", [
+            m(".card-header.border-0.pt-7", [
+                m("h3.card-title.align-items-start.flex-column",
+                    m("span.card-label.font-weight-bold.font-size-h4.text-dark-75", "Available Stores")
                 ),
-                m("div", { "class": "card-body pt-0 pb-4" },
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                        [
-                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                m("div", { "class": "table-responsive" },
-                                    m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-150px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" })
-                                                    ]
-                                                )
+                m(addStore)
+            ]),
+            m(".card-body.pt-0.pb-4", [
+                m(".table-responsive",
+                    loading
+                        ? m(loader)
+                        : m("table.table.table-borderless.table-vertical-center", [
+                            m("thead", m("tr", [
+                                m("th.p-0.min-w-200px.text-left", "Title"),
+                                m("th.p-0.min-w-150px.text-left", "Address"),
+                                m("th.p-0.min-w-150px.text-left", "Brand"),
+                                m("th.p-0.min-w-100px.text-left", "Phone"),
+                                m("th.p-0.min-w-100px.text-left", "Email"),
+                                // Removed unused columns for clarity, you can add them back if needed
+                                m("th.p-0.min-w-50px.text-right", "Actions")
+                            ])),
+                            m("tbody", stores?.map(item =>
+                                m("tr", { key: item.id }, [ // Use item.id for the key
+                                    m("td.text-left", m("span.text-dark-75.font-weight-bolder", item.title)),
+                                    m("td.text-left", m("span.text-dark-75", item.address)),
+                                    m("td.text-left",
+                                        m(".dropdown", [
+                                            m("button.btn.btn-secondary.dropdown-toggle", { "data-toggle": "dropdown" },
+                                                // Fast lookup from the brandMap
+                                                brandMap[item.brand] || "Select a Brand"
                                             ),
-
-                                        ]
-                                    )
-                                )
-                            ),
-                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                m("div", { "class": "table-responsive" },
-                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Title"),
-                                                        m("th", { "class": "p-0 min-w-150px text-right" }, "Address"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Phone"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Email"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
-                                                    ]
-                                                )
-                                            ),
-                                            m("tbody",
-                                                [
-                                                    vnode.state.stores?.map((item) => {
-                                                        return m("tr", {
-                                                            style: { "cursor": "pointer" }
-                                                        },
-                                                            [
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.title
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.address
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-
-                                                                        m("div", { "class": "dropdown" },
-                                                                            [
-                                                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                                                    item.brand ? vnode.state.brands?.filter(currentBrand => currentBrand._id === item.brand)[0].title : "Select a Brand:"
-                                                                                ),
-                                                                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                                                                    [
-                                                                                        vnode.state.brands?.map(brand => {
-                                                                                            return m("a", {
-                                                                                                style: { "z-index": 10000 },
-                                                                                                href: "javascript:void(0);",
-                                                                                                onclick() {
-                                                                                                    // update db on role change
-                                                                                                    // vnode.state.user = e
-                                                                                                    const options = {
-                                                                                                        method: 'PATCH',
-                                                                                                        url: url + `/store/${item._id}`,
-                                                                                                        headers: {
-                                                                                                            'Content-Type': 'application/json',
-                                                                                                            'authorization': localStorage.getItem('token')
-                                                                                                        },
-                                                                                                        data: { brand: brand._id }
-                                                                                                    };
-
-                                                                                                    axios.request(options).then(function (response) {
-                                                                                                        console.log(response.data);
-                                                                                                        window.location.reload()
-                                                                                                    }).catch(function (error) {
-                                                                                                        console.error(error);
-                                                                                                    });
-                                                                                                },
-                                                                                                "class": "dropdown-item",
-                                                                                            },
-                                                                                                brand.title
-                                                                                            )
-                                                                                        })
-                                                                                    ]
-                                                                                )
-                                                                            ]
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.phone
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.email
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.userTitle
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.createdAtFormatted
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                    m('div', { "class": "" },
-                                                                        [
-                                                                            m(editStore, { "brand": item }),
-                                                                            m('a', {
-                                                                                href: "javascript:void(0);",
-                                                                                "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                    const options = {
-                                                                                        method: 'DELETE',
-                                                                                        url: `${url}/stores/${item._id}`,
-                                                                                        headers: {
-                                                                                            'Content-Type': 'application/json',
-                                                                                            'authorization': localStorage.getItem('token')
-                                                                                        },
-                                                                                    };
-
-                                                                                    axios.request(options).then(function (response) {
-                                                                                        vnode.state.stores = vnode.state.stores.filter(s => s._id != item._id)
-                                                                                        m.redraw()
-                                                                                    }).catch(function (error) {
-                                                                                        console.error(error);
-                                                                                    });
-                                                                                }
-                                                                            },
-                                                                                m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                            )
-                                                                        ])
-                                                                )
-                                                            ]
-                                                        )
-                                                    })
-                                                ]
-                                            )
-                                        ]
-                                    ) : m(loader)
-                                )
-                            )
-                        ]
-                    )
+                                            m(".dropdown-menu", brands?.map(brand =>
+                                                m("a.dropdown-item", {
+                                                    onclick: () => updateStoreBrand(vnode, item.id, brand.id)
+                                                }, brand.title)
+                                            ))
+                                        ])
+                                    ),
+                                    m("td.text-left", m("span.text-dark-75", item.phone)),
+                                    m("td.text-left", m("span.text-dark-75", item.email)),
+                                    m("td.text-right.pr-0", [
+                                        m(editStore, { brand: item }),
+                                        m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
+                                            onclick: () => deleteStore(vnode, item.id),
+                                            title: "Delete Store"
+                                        }, m("i.flaticon2-rubbish-bin-delete-button"))
+                                    ])
+                                ])
+                            ))
+                        ])
                 )
-            ]
-        )
+            ])
+        ]);
     }
-}
+};
 
-export default stores
+export default stores;
