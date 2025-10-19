@@ -1,244 +1,152 @@
 import axios from "axios";
+import m from "mithril";
 
+import { url } from "../constants";
+import loader from "../components/loader";
+import addPricing from "../components/add_pricing";
+import editPricing from "../components/edit_pricing";
+import categories from "../pages/categories"; // For displaying the category management view
 
-import {
-    url
-} from "../constants"
-
-import m from "mithril"
-import loader from "../components/loader"
-import addPricing from "../components/add_pricing"
-import editPricing from "../components/edit_pricing"
-import categories from "../pages/categories"
-
+// Helper function to format currency safely
 const formatCurrency = (number) => {
-    try {
-        return Intl.NumberFormat('en-US').format(number);
-    } catch (error) {
-        console.error('Error formatting number:', error);
-        return 'N/A';
+    if (typeof number !== 'number') return 'N/A';
+    return new Intl.NumberFormat('en-US').format(number);
+};
+
+// Helper function to handle all initial data loading
+const loadData = (vnode) => {
+    vnode.state.loading = true;
+    const brandId = localStorage.getItem('brand');
+    if (!brandId) {
+        console.warn("No brand selected in localStorage.");
+        vnode.state.loading = false;
+        return;
     }
-}
 
-const pricing = {
-    oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.categories = []
-        vnode.state.pricings = []
-        vnode.state.loading = true
-    },
-    oncreate(vnode) {
-        // Define the Axios request configurations
-        const pricingOptions = {
-            method: 'GET',
-            url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-    
-        const categoriesOptions = {
-            method: 'GET',
-            url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-    
-        // Use Promise.all to execute both requests concurrently
-        Promise.all([
-            axios.request(pricingOptions),  // First Axios request for pricings
-            axios.request(categoriesOptions)  // Second Axios request for categories
-        ])
-        .then(function (responses) {
-            // Responses will be an array containing the resolved responses from both requests
-            const pricingResponse = responses[0];
-            const categoriesResponse = responses[1];
-    
-            // Update vnode.state with the retrieved data
-            vnode.state.pricings = pricingResponse.data;
+    const pricingsRequest = axios.get(`${url}/pricings`, { headers: { authorization: localStorage.getItem('token') } });
+    const categoriesRequest = axios.get(`${url}/categories`, { headers: { authorization: localStorage.getItem('token') } });
+
+    Promise.all([pricingsRequest, categoriesRequest])
+        .then(([pricingsResponse, categoriesResponse]) => {
+            vnode.state.pricings = pricingsResponse.data;
             vnode.state.categories = categoriesResponse.data;
-    
-            // Set loading to false and trigger a redraw
-            vnode.state.loading = false;
-            m.redraw();
+
+            // PERFORMANCE: Create a map for instantaneous category lookups
+            vnode.state.categoryMap = vnode.state.categories.reduce((acc, category) => {
+                acc[category.id] = category; // Store the whole category object
+                return acc;
+            }, {});
         })
-        .catch(function (errors) {
-            // Handle any errors that occurred in either request
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            alert("Failed to load pricing data. Please check the console.");
+        })
+        .finally(() => {
             vnode.state.loading = false;
             m.redraw();
-            console.error("Error fetching data:", errors);
         });
+};
+
+// Helper function to handle deleting a pricing item
+const deletePricing = (vnode, pricingId) => {
+    if (!confirm("Are you sure you want to delete this pricing entry?")) return;
+
+    axios.delete(`${url}/pricings/${pricingId}`, {
+        headers: { authorization: localStorage.getItem('token') }
+    }).then(() => {
+        vnode.state.pricings = vnode.state.pricings.filter(p => p.id !== pricingId);
+    }).catch(error => {
+        console.error("Error deleting pricing:", error);
+        alert("Failed to delete pricing entry.");
+    }).finally(() => {
+        m.redraw();
+    });
+};
+
+const pricingPage = {
+    oninit(vnode) {
+        vnode.state.pricings = [];
+        vnode.state.categories = [];
+        vnode.state.categoryMap = {};
+        vnode.state.loading = true;
     },
-    
+
+    oncreate: loadData,
+
     view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" },
-            [
-                m("div", { "class": "card-header border-0 pt-7" },
-                    [
-                        m("h3", { "class": "card-title align-items-start flex-column" },
-                            [
-                                m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Available Pricings"
-                                ),
-                            ]
-                        ),
-                        m(addPricing)
-                    ]
-                ),
-                m("div", { "class": "card-body pt-0 pb-4" },
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                        [
-                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                m("div", { "class": "table-responsive" },
-                                    m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" })
-                                                    ]
-                                                )
-                                            ),
+        const { loading, pricings, categoryMap } = vnode.state;
+        const brandId = localStorage.getItem('brand');
 
-                                        ]
-                                    )
-                                )
-                            ),
+        // Pre-filter the pricings using the fast categoryMap
+        const filteredPricings = pricings.filter(pricing => {
+            const category = categoryMap[pricing.category];
+            return category && category.brand === brandId;
+        });
 
-                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                m("div", { "class": "table-responsive" },
-                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Category"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
-                                                    ]
-                                                )
-                                            ),
-                                            m("tbody",
-                                                [
-                                                    vnode.state.pricings
-                                                    .filter(pricing => {
-                                                        // console.log(pricing)
-                                                        // Find the category associated with the pricing
-                                                        const category = vnode.state.categories.find(category => category._id == pricing.category);
-                                                        // if(category?.brand)
-                                                        //     console.log(category, pricing )
-                                                        // console.log(category && category.brand == localStorage.getItem('brand'))
-                                                        // Check if the category's brand matches the brand stored in localStorage
-                                                        return category && category.brand == localStorage.getItem('brand');
-                                                        // return true
-                                                    })
-                                                    .map((item) => {
-                                                        // item.category ? console.log(item.category) : null
-                                                        // console.log(item, vnode.state.categories.find(c => c._id == item.category))
-                                                        return m("tr", {
-                                                            style: { "cursor": "pointer" }
-                                                        },
-                                                            [
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
-                                                                            "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                        }, vnode.state.categories.find(category => category._id == item.category)?.title)
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            formatCurrency(item.cost)
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                               
-                                                              
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.userTitle
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            item.createdAtFormatted
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                    m('div', { "class": "" },
-                                                                        [
-                                                                            m(editPricing, { "pricing": item }),
-                                                                            m('a', {
-                                                                                href: "javascript:void(0);",
-                                                                                "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                    const options = {
-                                                                                        method: 'DELETE',
-                                                                                        url: `${url}/pricings/${item._id}`,
-                                                                                        headers: {
-                                                                                            'Content-Type': 'application/json',
-                                                                                            'authorization': localStorage.getItem('token')
-                                                                                        },
-                                                                                    };
+        return m(".container-fluid", [
+            // First Card for Category Management
+            m(".card.card-custom.gutter-b", m(categories)),
 
-                                                                                    axios.request(options).then(function (response) {
-                                                                                        console.log(response.data);
-                                                                                        // window.location.reload()
-                                                                                        vnode.state.pricings = vnode.state.pricings.filter(p => p._id != item._id)
-                                                                                        m.redraw()
-                                                                                    }).catch(function (error) {
-                                                                                        console.error(error);
-                                                                                    });
-                                                                                }
-                                                                            },
-                                                                                m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                            )
-                                                                        ])
-                                                                )
-                                                            ]
-                                                        )
-                                                    })
-                                                ]
-                                            )
-                                        ]
-                                    ) : m(loader)
-                                )
-                            )
-                        ]
+            // Second Card for Pricing Management
+            m(".card.card-custom.gutter-b", [
+                m(".card-header.border-0.pt-7", [
+                    m("h3.card-title.align-items-start.flex-column",
+                        m("span.card-label.font-weight-bold.font-size-h4.text-dark-75", "Available Pricings")
+                    ),
+                    // Pass the onPricingAdded callback to the child component
+                    m(addPricing, {
+                        onPricingAdded: (newPricing) => {
+                            vnode.state.pricings.unshift(newPricing);
+                        }
+                    })
+                ]),
+                m(".card-body.pt-0.pb-4",
+                    m(".table-responsive",
+                        loading
+                            ? m(loader)
+                            : m("table.table.table-borderless.table-vertical-center", [
+                                m("thead", m("tr", [
+                                    m("th.p-0.min-w-200px.text-left", "Category"),
+                                    m("th.p-0.min-w-100px.text-left", "Title"),
+                                    m("th.p-0.min-w-50px.text-right", "Cost"),
+                                    m("th.p-0.min-w-50px.text-right", "Actions")
+                                ])),
+                                m("tbody", filteredPricings.map(item =>
+                                    m("tr", { key: item.id }, [
+                                        m("td.text-left",
+                                            // Fast O(1) lookup for category title
+                                            m("span.text-dark-75.font-weight-bolder", categoryMap[item.category]?.title || "Unknown Category")
+                                        ),
+                                        m("td.text-left",
+                                            m("span.text-dark-75", item.title)
+                                        ),
+                                        m("td.text-right",
+                                            m("span.text-dark-75.font-weight-bolder", formatCurrency(item.cost))
+                                        ),
+                                        m("td.text-right.pr-0", [
+                                            // Pass pricing data and the onPricingUpdated callback
+                                            m(editPricing, {
+                                                pricing: item,
+                                                onPricingUpdated: (updatedPricing) => {
+                                                    const index = vnode.state.pricings.findIndex(p => p.id === updatedPricing.id);
+                                                    if (index > -1) {
+                                                        vnode.state.pricings[index] = updatedPricing;
+                                                    }
+                                                }
+                                            }),
+                                            m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
+                                                onclick: () => deletePricing(vnode, item.id), // Use 'id'
+                                                title: "Delete Pricing"
+                                            }, m("i.flaticon2-rubbish-bin-delete-button"))
+                                        ])
+                                    ])
+                                ))
+                            ])
                     )
                 )
-            ]
-        )
+            ])
+        ]);
     }
-}
+};
 
-const pricingWrapper = {
-    oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.pricings = []
-        vnode.state.loading = true
-    },
-    view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" },[
-            m(categories),
-            m(pricing)
-        ])
-    }
-}
-
-export default pricingWrapper
+export default pricingPage;
