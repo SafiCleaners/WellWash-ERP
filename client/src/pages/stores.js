@@ -115,7 +115,11 @@ const stores = {
                 m("h3.card-title.align-items-start.flex-column",
                     m("span.card-label.font-weight-bold.font-size-h4.text-dark-75", "Available Stores")
                 ),
-                m(addStore)
+                m(addStore, {
+                    onStoreAdded: (newStore) => {
+                        vnode.state.stores.unshift(newStore);
+                    }
+                })
             ]),
             m(".card-body.pt-0.pb-4", [
                 m(".table-responsive",
@@ -128,17 +132,15 @@ const stores = {
                                 m("th.p-0.min-w-150px.text-left", "Brand"),
                                 m("th.p-0.min-w-100px.text-left", "Phone"),
                                 m("th.p-0.min-w-100px.text-left", "Email"),
-                                // Removed unused columns for clarity, you can add them back if needed
                                 m("th.p-0.min-w-50px.text-right", "Actions")
                             ])),
                             m("tbody", stores?.map(item =>
-                                m("tr", { key: item.id }, [ // Use item.id for the key
+                                m("tr", { key: item.id }, [
                                     m("td.text-left", m("span.text-dark-75.font-weight-bolder", item.title)),
                                     m("td.text-left", m("span.text-dark-75", item.address)),
                                     m("td.text-left",
                                         m(".dropdown", [
                                             m("button.btn.btn-secondary.dropdown-toggle", { "data-toggle": "dropdown" },
-                                                // Fast lookup from the brandMap
                                                 brandMap[item.brand] || "Select a Brand"
                                             ),
                                             m(".dropdown-menu", brands?.map(brand =>
@@ -151,7 +153,16 @@ const stores = {
                                     m("td.text-left", m("span.text-dark-75", item.phone)),
                                     m("td.text-left", m("span.text-dark-75", item.email)),
                                     m("td.text-right.pr-0", [
-                                        m(editStore, { brand: item }),
+                                        // <<< CORRECTED: Changed property name from 'brand' to 'store'
+                                        m(editStore, {
+                                            store: item,
+                                            onStoreUpdated: (updatedStore) => {
+                                                const index = vnode.state.stores.findIndex(s => s.id === updatedStore.id);
+                                                if (index > -1) {
+                                                    vnode.state.stores[index] = updatedStore;
+                                                }
+                                            }
+                                        }),
                                         m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
                                             onclick: () => deleteStore(vnode, item.id),
                                             title: "Delete Store"
