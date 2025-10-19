@@ -3,7 +3,7 @@
         "node": ">=20"
     },
     "scripts": {
-        "start": "npx nodemon function-v2.js"
+        "start": "npx nodemon function.js"
     },
     "dependencies": {
         "@bugsnag/js": "^7.25.0",
