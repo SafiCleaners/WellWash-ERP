@@ -3,10 +3,11 @@
   to = "/index.html"
   status = 200
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/proxy/:splat"
-  status = 200
-
 [build]
   functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/proxy"
+  status = 200
+  force = true
