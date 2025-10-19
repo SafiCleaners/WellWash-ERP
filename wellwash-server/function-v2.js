@@ -92,6 +92,31 @@ allModels.forEach(model => {
     waterline.registerModel(model);
 });
 
+/**
+ * Recursively transforms an object or array by renaming 'id' keys to '_id'.
+ * @param {any} data The data to transform.
+ * @returns {any} The transformed data.
+ */
+const convertIdToMongo = (data) => {
+    if (Array.isArray(data)) {
+        return data.map(item => convertIdToMongo(item));
+    }
+    if (data !== null && typeof data === 'object') {
+        // Handle special cases like Date objects if necessary, though we don't have them here
+        if (data.constructor !== Object) {
+            return data;
+        }
+
+        return Object.keys(data).reduce((acc, key) => {
+            const newKey = key === 'id' ? '_id' : key;
+            acc[newKey] = convertIdToMongo(data[key]);
+            return acc;
+        }, {});
+    }
+    return data;
+};
+
+
 const startServer = (ontology) => {
     const app = express();
     app.models = ontology.collections;
@@ -101,6 +126,22 @@ const startServer = (ontology) => {
     app.use(express.json());
     app.use(cors((req, callback) => callback(null, true) ));
     app.use(morgan(NODE_ENV === 'development' ? 'tiny' : 'combined'));
+
+    /**
+     * This middleware intercepts `res.json()` calls and transforms the outgoing
+     * data to use MongoDB-style '_id' fields, making the backend compatible
+     * with the legacy frontend.
+     */
+    const mongoIdAdapter = (req, res, next) => {
+        const originalJson = res.json;
+        res.json = function(data) {
+            const transformedData = convertIdToMongo(data);
+            // Call the original res.json with the transformed data
+            originalJson.call(this, transformedData);
+        };
+        next();
+    };
+    app.use(mongoIdAdapter);
 
     const logActivity = async (req, entity, action, before, after) => {
         try {
