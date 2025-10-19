@@ -13,7 +13,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const querystring = require('querystring');
 const YAML = require('json-to-pretty-yaml');
-const crypto = require('crypto'); // <<< CORRECT: Import crypto module
+const crypto = require('crypto');
 const functions = require('@google-cloud/functions-framework');
 const DeviceDetector = require("device-detector-js");
 const sailsPostgresAdapter = require('sails-postgresql');
@@ -37,38 +37,26 @@ if (!DB_URL) {
 // --- 1. WATERLINE MODEL DEFINITIONS
 // =================================================================
 
+// --- MODIFIED: Removed the beforeCreate lifecycle callback ---
 const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
     attributes: {
-        // --- CORRECTED ID ATTRIBUTE ---
-        // We remove 'defaultsTo'. The 'beforeCreate' callback will handle the value.
         id: {
             type: 'string',
             required: true,
-            columnName: 'id' // Explicitly define for clarity
+            columnName: 'id'
         },
-        // --------------------------------
         createdAt: { type: 'number', autoCreatedAt: true, },
         updatedAt: { type: 'number', autoUpdatedAt: true, },
         deleted: { type: 'boolean', defaultsTo: false },
         createdBy: { type: 'string' },
         updatedBy: { type: 'string' },
-    },
-
-    // --- NEW: LIFECYCLE CALLBACK ---
-    // This function will run automatically before any new record is created.
-    beforeCreate: (values, proceed) => {
-        // If an id is not already provided, generate a new UUID.
-        if (!values.id) {
-            values.id = crypto.randomUUID();
-        }
-        // Continue with the creation process.
-        return proceed();
     }
+    // No more beforeCreate hook here
 };
 
-const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...baseModel.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
+const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...base.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
 const Job = Waterline.Collection.extend({ ...baseModel, identity: 'job', attributes: { ...baseModel.attributes, clientName: { type: 'string' }, phone: { type: 'string' }, shortId: { type: 'string' }, orderUrl: { type: 'string' }, statusInfo: { type: 'json' } } });
 const Store = Waterline.Collection.extend({ ...baseModel, identity: 'store', attributes: { ...baseModel.attributes, title: { type: 'string', required: true }, phone: { type: 'string' }, email: { type: 'string' }, address: { type: 'string' } } });
 const Category = Waterline.Collection.extend({ ...baseModel, identity: 'category', attributes: { ...baseModel.attributes, title: { type: 'string' }, store: { type: 'json' }, storeId: { type: 'string' }, unit: { type: 'string' }, cost: { type: 'number' }, brand: { type: 'string' } } });
@@ -113,21 +101,19 @@ const startServer = (ontology) => {
 
     app.use(express.urlencoded({ extended: true, limit: '3mb' }));
     app.use(express.json());
-
-    app.use(cors((req, callback) => {
-        callback(null, true);
-    }));
-
+    app.use(cors((req, callback) => callback(null, true) ));
     app.use(morgan(NODE_ENV === 'development' ? 'tiny' : 'combined'));
 
     const logActivity = async (req, entity, action, before, after) => {
         try {
-            await app.models.activitylog.create({
+            const logData = { // <<< MODIFIED
+                id: crypto.randomUUID(),
                 entity, action, before, after,
                 userId: req.user.id,
                 userTitle: req.user.name,
                 createdBy: req.user.id
-            });
+            };
+            await app.models.activitylog.create(logData);
         } catch (error) {
             console.error("Failed to log activity:", error);
         }
@@ -193,7 +179,8 @@ const startServer = (ontology) => {
 
     app.post('/jobs', importantMiddleWares, async (req, res) => {
         try {
-            const newJob = await app.models.job.create({ ...req.body, createdBy: req.user.id }).fetch();
+            const newJobData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id }; // <<< MODIFIED
+            const newJob = await app.models.job.create(newJobData).fetch();
             res.status(201).json(newJob);
         } catch (e) { res.status(500).json({ error: e.message }); }
     });
@@ -209,6 +196,7 @@ const startServer = (ontology) => {
                 res.json(updatedJob);
             } else {
                 jobData.shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
+                jobData.id = crypto.randomUUID(); // <<< MODIFIED
                 const newJob = await app.models.job.create({ ...jobData, createdBy: req.user.id }).fetch();
                 res.status(201).json(newJob);
             }
@@ -231,7 +219,8 @@ const startServer = (ontology) => {
             if (user) {
                 user = await app.models.user.updateOne({ googleId }).set(req.body).fetch();
             } else {
-                user = await app.models.user.create(req.body).fetch();
+                const newUserData = { ...req.body, id: crypto.randomUUID() }; // <<< MODIFIED
+                user = await app.models.user.create(newUserData).fetch();
             }
             const token = jwt.sign(user.toJSON(), JWT_TOKEN, { expiresIn: '7d' });
             res.json({ user, token });
@@ -275,7 +264,8 @@ const startServer = (ontology) => {
 
         router.post('/', async (req, res) => {
             try {
-                const newItem = await model.create({ ...req.body, createdBy: req.user.id }).fetch();
+                const newItemData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id }; // <<< MODIFIED
+                const newItem = await model.create(newItemData).fetch();
                 await logActivity(req, entityName, "CREATE", {}, newItem.toJSON());
                 res.status(201).json(newItem);
             } catch (e) { res.status(500).json({ error: e.message }); }
@@ -332,6 +322,7 @@ const startServer = (ontology) => {
 
             const newOrderData = {
                 ...req.body,
+                id: crypto.randomUUID(), // <<< MODIFIED
                 totalCost: total,
                 clientId,
                 clientTitle: client ? client.name : 'N/A',
@@ -345,13 +336,15 @@ const startServer = (ontology) => {
 
             if (tasks && tasks.length > 0) {
                 const taskPromises = tasks.map(task => {
-                    return app.models.task.create({
+                    const newTaskData = { // <<< MODIFIED
                         ...task,
+                        id: crypto.randomUUID(),
                         orderId: newOrder.id,
                         clientId,
                         storeId,
                         createdBy: req.user.id
-                    }).fetch();
+                    };
+                    return app.models.task.create(newTaskData).fetch();
                 });
                 const createdTasks = await Promise.all(taskPromises);
                 for (const task of createdTasks) {
@@ -379,10 +372,11 @@ const startServer = (ontology) => {
             const deviceDetector = new DeviceDetector();
             const device = deviceDetector.parse(req.headers['user-agent']);
 
-            const newJobData = { ...req.body, shortId, device, deleted: false };
+            const newJobData = { ...req.body, id: crypto.randomUUID(), shortId, device, deleted: false }; // <<< MODIFIED
             const newJob = await app.models.job.create(newJobData).fetch();
 
             const trackData = {
+                id: crypto.randomUUID(), // <<< MODIFIED
                 shortId,
                 jobId: newJob.id,
                 REFFERAL_CODE: req.body.REFFERAL_CODE,
@@ -408,13 +402,9 @@ const startServer = (ontology) => {
 };
 
 // =================================================================
-// --- 5. ORM INITIALIZATION AND SERVER START
+// --- 5. ORM INITIALIZATION AND SERVER START (No changes needed here)
 // =================================================================
 
-/**
- * Checks if the database schema is initialized and creates tables if not.
- * @param {object} ontology - The Waterline ontology object.
- */
 async function initializeDatabase(ontology) {
     const datastore = ontology.datastores.default;
     const schemaVersionTable = '_schema_version';
@@ -428,14 +418,13 @@ async function initializeDatabase(ontology) {
         });
     };
 
-    // --- CORRECTED: mapTypeToPostgres handles UUID for the 'id' field ---
     const mapTypeToPostgres = (attr, attrName) => {
         if (attrName === 'id') {
             return 'UUID';
         }
         switch (attr.type) {
             case 'string': return 'VARCHAR(255)';
-            case 'number': return attr.autoIncrement ? 'SERIAL' : 'INTEGER';
+            case 'number': return 'INTEGER';
             case 'boolean': return 'BOOLEAN';
             case 'json': return 'JSON';
             default: return 'VARCHAR(255)';
@@ -443,32 +432,23 @@ async function initializeDatabase(ontology) {
     };
 
     try {
-        const checkResult = await runQuery(
-            `SELECT EXISTS (
-                SELECT FROM information_schema.tables 
-                WHERE table_schema = 'public' 
-                AND table_name = $1
-            )`, [schemaVersionTable]
-        );
-
+        const checkResult = await runQuery(`SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = $1)`, [schemaVersionTable]);
         if (checkResult.rows[0].exists) {
             console.log('Database schema already initialized. Skipping setup.');
             return;
         }
 
         console.log('Initial database setup required. Creating tables...');
-
-        await runQuery('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'); // Ensure UUID functions are available
+        await runQuery('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
         for (const model of allModels) {
             const tableName = model.identity;
             const attributes = model.attributes;
-            // --- CORRECTED: Pass attribute name to the mapping function ---
             const columns = Object.entries(attributes).map(([name, attr]) => {
                 let columnDef = `"${name}" ${mapTypeToPostgres(attr, name)}`;
                 if (name === 'id') columnDef += ' PRIMARY KEY';
                 if (attr.required) columnDef += ' NOT NULL';
-                if (attr.defaultsTo !== undefined && typeof attr.defaultsTo !== 'function') { // Can't set function as default in SQL
+                if (attr.defaultsTo !== undefined && typeof attr.defaultsTo !== 'function') {
                     const defaultValue = typeof attr.defaultsTo === 'string' ? `'${attr.defaultsTo}'` : attr.defaultsTo;
                     columnDef += ` DEFAULT ${defaultValue}`;
                 }
@@ -482,7 +462,6 @@ async function initializeDatabase(ontology) {
 
         await runQuery(`CREATE TABLE "${schemaVersionTable}" (version INT NOT NULL, "createdAt" BIGINT);`);
         await runQuery(`INSERT INTO "${schemaVersionTable}" (version, "createdAt") VALUES (1, $1);`, [Date.now()]);
-
         console.log('✅ Initial database setup complete.');
 
     } catch (error) {
@@ -500,8 +479,7 @@ waterline.initialize(config, async (err, ontology) => {
     }
     console.log('Waterline ORM initialized successfully.');
 
-    // --- UNCOMMENT THIS LINE TO ENABLE AUTO-DATABASE-SETUP ---
-    // await initializeDatabase(ontology);
+    // await initializeDatabase(ontology); // Keep this commented if you manage schema manually
 
     const app = startServer(ontology);
 
