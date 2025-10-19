@@ -13,8 +13,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const querystring = require('querystring');
 const YAML = require('json-to-pretty-yaml');
-// const { v4: uuidv4 } = require("uuid");
-const crypto = require('crypto');
+const crypto = require('crypto'); // <<< CORRECT: Import crypto module
 const functions = require('@google-cloud/functions-framework');
 const DeviceDetector = require("device-detector-js");
 const sailsPostgresAdapter = require('sails-postgresql');
@@ -42,7 +41,13 @@ const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
     attributes: {
-        id: { type: 'number', required: true },
+        // --- CORRECTED ID ATTRIBUTE FOR UUID ---
+        id: {
+            type: 'string',
+            required: true,
+            defaultsTo: () => crypto.randomUUID(), // Auto-generate a UUID
+        },
+        // -----------------------------------------
         createdAt: { type: 'number', autoCreatedAt: true, },
         updatedAt: { type: 'number', autoUpdatedAt: true, },
         deleted: { type: 'boolean', defaultsTo: false },
@@ -81,7 +86,7 @@ const sms = (options, callback) => {
 
 const config = {
     adapters: { 'sails-postgresql': sailsPostgresAdapter },
-    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL, migrate: 'safe' } }, // Changed migrate to 'safe'
+    datastores: { default: { adapter: 'sails-postgresql', url: DB_URL, migrate: 'safe' } },
     models: { schema: true }
 };
 
@@ -94,26 +99,12 @@ const startServer = (ontology) => {
     app.models = ontology.collections;
     app.connections = ontology.connections;
 
-    // ... (The rest of your express app setup, middleware, and routes go here as before)
     app.use(express.urlencoded({ extended: true, limit: '3mb' }));
     app.use(express.json());
 
-    // =================================================================
-    // --- START: CORS CONFIGURATION ---
-    // =================================================================
-    // REPLACE your old app.use(cors()); with this:
     app.use(cors((req, callback) => {
-        // const origin = req.header('Origin');
-        // if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow the request
-        // } else {
-        //     callback(new Error('Not allowed by CORS')); // Block the request
-        // }
+        callback(null, true);
     }));
-
-    // =================================================================
-    // --- END: CORS CONFIGURATION ---
-    // =================================================================
 
     app.use(morgan(NODE_ENV === 'development' ? 'tiny' : 'combined'));
 
@@ -425,7 +416,11 @@ async function initializeDatabase(ontology) {
         });
     };
 
-    const mapTypeToPostgres = (attr) => {
+    // --- CORRECTED: mapTypeToPostgres handles UUID for the 'id' field ---
+    const mapTypeToPostgres = (attr, attrName) => {
+        if (attrName === 'id') {
+            return 'UUID';
+        }
         switch (attr.type) {
             case 'string': return 'VARCHAR(255)';
             case 'number': return attr.autoIncrement ? 'SERIAL' : 'INTEGER';
@@ -451,14 +446,17 @@ async function initializeDatabase(ontology) {
 
         console.log('Initial database setup required. Creating tables...');
 
+        await runQuery('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'); // Ensure UUID functions are available
+
         for (const model of allModels) {
             const tableName = model.identity;
             const attributes = model.attributes;
+            // --- CORRECTED: Pass attribute name to the mapping function ---
             const columns = Object.entries(attributes).map(([name, attr]) => {
-                let columnDef = `"${name}" ${mapTypeToPostgres(attr)}`;
+                let columnDef = `"${name}" ${mapTypeToPostgres(attr, name)}`;
                 if (name === 'id') columnDef += ' PRIMARY KEY';
                 if (attr.required) columnDef += ' NOT NULL';
-                if (attr.defaultsTo !== undefined) {
+                if (attr.defaultsTo !== undefined && typeof attr.defaultsTo !== 'function') { // Can't set function as default in SQL
                     const defaultValue = typeof attr.defaultsTo === 'string' ? `'${attr.defaultsTo}'` : attr.defaultsTo;
                     columnDef += ` DEFAULT ${defaultValue}`;
                 }
@@ -490,7 +488,7 @@ waterline.initialize(config, async (err, ontology) => {
     }
     console.log('Waterline ORM initialized successfully.');
 
-    // Perform initial database setup if required
+    // --- UNCOMMENT THIS LINE TO ENABLE AUTO-DATABASE-SETUP ---
     // await initializeDatabase(ontology);
 
     const app = startServer(ontology);
