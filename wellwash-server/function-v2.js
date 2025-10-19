@@ -37,7 +37,6 @@ if (!DB_URL) {
 // --- 1. WATERLINE MODEL DEFINITIONS
 // =================================================================
 
-// --- MODIFIED: Removed the beforeCreate lifecycle callback ---
 const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
@@ -53,7 +52,6 @@ const baseModel = {
         createdBy: { type: 'string' },
         updatedBy: { type: 'string' },
     }
-    // No more beforeCreate hook here
 };
 
 const User = Waterline.Collection.extend({ ...baseModel, identity: 'user', attributes: { ...baseModel.attributes, googleId: { type: 'string', required: true, }, email: { type: 'string', required: true }, name: { type: 'string' }, role: { type: 'string', defaultsTo: 'CLIENT' } } });
@@ -106,7 +104,7 @@ const startServer = (ontology) => {
 
     const logActivity = async (req, entity, action, before, after) => {
         try {
-            const logData = { // <<< MODIFIED
+            const logData = {
                 id: crypto.randomUUID(),
                 entity, action, before, after,
                 userId: req.user.id,
@@ -179,7 +177,7 @@ const startServer = (ontology) => {
 
     app.post('/jobs', importantMiddleWares, async (req, res) => {
         try {
-            const newJobData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id }; // <<< MODIFIED
+            const newJobData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id };
             const newJob = await app.models.job.create(newJobData).fetch();
             res.status(201).json(newJob);
         } catch (e) { res.status(500).json({ error: e.message }); }
@@ -196,7 +194,7 @@ const startServer = (ontology) => {
                 res.json(updatedJob);
             } else {
                 jobData.shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
-                jobData.id = crypto.randomUUID(); // <<< MODIFIED
+                jobData.id = crypto.randomUUID();
                 const newJob = await app.models.job.create({ ...jobData, createdBy: req.user.id }).fetch();
                 res.status(201).json(newJob);
             }
@@ -219,10 +217,14 @@ const startServer = (ontology) => {
             if (user) {
                 user = await app.models.user.updateOne({ googleId }).set(req.body).fetch();
             } else {
-                const newUserData = { ...req.body, id: crypto.randomUUID() }; // <<< MODIFIED
+                const newUserData = { ...req.body, id: crypto.randomUUID() };
                 user = await app.models.user.create(newUserData).fetch();
             }
-            const token = jwt.sign(user.toJSON(), JWT_TOKEN, { expiresIn: '7d' });
+            
+            // <<< CORRECTED: Create a plain object payload for JWT
+            const payload = { ...user };
+            const token = jwt.sign(payload, JWT_TOKEN, { expiresIn: '7d' });
+
             res.json({ user, token });
         } catch (e) { res.status(500).json({ error: e.message }); }
     });
@@ -264,9 +266,9 @@ const startServer = (ontology) => {
 
         router.post('/', async (req, res) => {
             try {
-                const newItemData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id }; // <<< MODIFIED
+                const newItemData = { ...req.body, id: crypto.randomUUID(), createdBy: req.user.id };
                 const newItem = await model.create(newItemData).fetch();
-                await logActivity(req, entityName, "CREATE", {}, newItem.toJSON());
+                await logActivity(req, entityName, "CREATE", {}, newItem); // <<< CORRECTED: Removed .toJSON()
                 res.status(201).json(newItem);
             } catch (e) { res.status(500).json({ error: e.message }); }
         });
@@ -276,7 +278,7 @@ const startServer = (ontology) => {
                 const before = await model.findOne({ id: req.params.id });
                 const updatedItem = await model.updateOne({ id: req.params.id }).set({ ...req.body, updatedBy: req.user.id }).fetch();
                 if (!updatedItem) return res.status(404).json({ message: `${entityName} not found` });
-                await logActivity(req, entityName, "UPDATE", before.toJSON(), updatedItem.toJSON());
+                await logActivity(req, entityName, "UPDATE", before, updatedItem); // <<< CORRECTED: Removed .toJSON()
                 res.json(updatedItem);
             } catch (e) { res.status(500).json({ error: e.message }); }
         });
@@ -286,7 +288,7 @@ const startServer = (ontology) => {
                 const before = await model.findOne({ id: req.params.id });
                 if (!before) return res.status(404).json({ message: `${entityName} not found` });
                 await model.updateOne({ id: req.params.id }).set({ deleted: true, updatedBy: req.user.id });
-                await logActivity(req, entityName, "DELETE", before.toJSON(), { ...before.toJSON(), deleted: true });
+                await logActivity(req, entityName, "DELETE", before, { ...before, deleted: true }); // <<< CORRECTED: Removed .toJSON()
                 res.status(204).send();
             } catch (e) { res.status(500).json({ error: e.message }); }
         });
@@ -322,7 +324,7 @@ const startServer = (ontology) => {
 
             const newOrderData = {
                 ...req.body,
-                id: crypto.randomUUID(), // <<< MODIFIED
+                id: crypto.randomUUID(),
                 totalCost: total,
                 clientId,
                 clientTitle: client ? client.name : 'N/A',
@@ -332,11 +334,11 @@ const startServer = (ontology) => {
             };
 
             const newOrder = await app.models.order.create(newOrderData).fetch();
-            await logActivity(req, "Order", "CREATE", {}, newOrder.toJSON());
+            await logActivity(req, "Order", "CREATE", {}, newOrder); // <<< CORRECTED: Removed .toJSON()
 
             if (tasks && tasks.length > 0) {
                 const taskPromises = tasks.map(task => {
-                    const newTaskData = { // <<< MODIFIED
+                    const newTaskData = {
                         ...task,
                         id: crypto.randomUUID(),
                         orderId: newOrder.id,
@@ -348,7 +350,7 @@ const startServer = (ontology) => {
                 });
                 const createdTasks = await Promise.all(taskPromises);
                 for (const task of createdTasks) {
-                    await logActivity(req, "Task", "CREATE", {}, task.toJSON());
+                    await logActivity(req, "Task", "CREATE", {}, task); // <<< CORRECTED: Removed .toJSON()
                 }
             }
 
@@ -372,11 +374,11 @@ const startServer = (ontology) => {
             const deviceDetector = new DeviceDetector();
             const device = deviceDetector.parse(req.headers['user-agent']);
 
-            const newJobData = { ...req.body, id: crypto.randomUUID(), shortId, device, deleted: false }; // <<< MODIFIED
+            const newJobData = { ...req.body, id: crypto.randomUUID(), shortId, device, deleted: false };
             const newJob = await app.models.job.create(newJobData).fetch();
 
             const trackData = {
-                id: crypto.randomUUID(), // <<< MODIFIED
+                id: crypto.randomUUID(),
                 shortId,
                 jobId: newJob.id,
                 REFFERAL_CODE: req.body.REFFERAL_CODE,
@@ -402,7 +404,7 @@ const startServer = (ontology) => {
 };
 
 // =================================================================
-// --- 5. ORM INITIALIZATION AND SERVER START (No changes needed here)
+// --- 5. ORM INITIALIZATION AND SERVER START (No changes needed)
 // =================================================================
 
 async function initializeDatabase(ontology) {
@@ -479,7 +481,7 @@ waterline.initialize(config, async (err, ontology) => {
     }
     console.log('Waterline ORM initialized successfully.');
 
-    // await initializeDatabase(ontology); // Keep this commented if you manage schema manually
+    // await initializeDatabase(ontology);
 
     const app = startServer(ontology);
 
