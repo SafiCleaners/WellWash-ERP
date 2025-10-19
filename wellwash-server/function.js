@@ -23,7 +23,7 @@ const DeviceDetector = require("device-detector-js");
 
 var { MongoClient, ObjectId } = require('mongodb');
 const { error } = require('console');
-const { v4: uuidv4 } = require("uuid")
+// const { v4: uuidv4 } = require("uuid")
 const crypto = require('crypto');
 
 const functions = require('@google-cloud/functions-framework');
@@ -123,9 +123,9 @@ const routes = async (app) => {
             cookie: {
                 maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
             },
-            genid: function (req) {
-                return uuidv4() // use UUIDs for session IDs
-            },
+            // genid: function (req) {
+            //     return uuidv4() // use UUIDs for session IDs
+            // },
             store: store,
             // Boilerplate options, see:
             // * https://www.npmjs.com/package/express-session#resave
