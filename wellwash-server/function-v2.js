@@ -37,22 +37,37 @@ if (!DB_URL) {
 // --- 1. WATERLINE MODEL DEFINITIONS
 // =================================================================
 
+// Make sure crypto is imported at the top of your file
+const crypto = require('crypto');
+
 const baseModel = {
     datastore: 'default',
     primaryKey: 'id',
     attributes: {
-        // --- CORRECTED ID ATTRIBUTE FOR UUID ---
+        // --- CORRECTED ID ATTRIBUTE ---
+        // We remove 'defaultsTo'. The 'beforeCreate' callback will handle the value.
         id: {
             type: 'string',
             required: true,
-            defaultsTo: () => crypto.randomUUID(), // Auto-generate a UUID
+            columnName: 'id' // Explicitly define for clarity
         },
-        // -----------------------------------------
+        // --------------------------------
         createdAt: { type: 'number', autoCreatedAt: true, },
         updatedAt: { type: 'number', autoUpdatedAt: true, },
         deleted: { type: 'boolean', defaultsTo: false },
         createdBy: { type: 'string' },
         updatedBy: { type: 'string' },
+    },
+
+    // --- NEW: LIFECYCLE CALLBACK ---
+    // This function will run automatically before any new record is created.
+    beforeCreate: (values, proceed) => {
+        // If an id is not already provided, generate a new UUID.
+        if (!values.id) {
+            values.id = crypto.randomUUID();
+        }
+        // Continue with the creation process.
+        return proceed();
     }
 };
 
