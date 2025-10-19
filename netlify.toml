@@ -1,49 +1,33 @@
-
 # =============================================================================
 # NETLIFY PRODUCTION CONFIGURATION
 # Site: wellwash.netlify.app
-# Proxies /api/* requests to the backend API at wellwash-erp-rtsgo.sevalla.app and serves SPA
+# Proxies /api/* requests and serves the SPA.
+# RULE ORDER IS CRITICAL: More specific rules must come first.
 # =============================================================================
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 [build]
   functions = "netlify/functions"
 
-# This is the main proxy rule.
-# It rewrites any request made to /api/... on the Netlify site
-# to the corresponding endpoint on the backend server.
+
+# RULE 1: API PROXY (Most Specific)
+# This rule must be first. It intercepts any request for /api/...
+# and proxies it to the backend before the SPA rule can catch it.
 [[redirects]]
-  # The path on your Netlify site that will trigger the proxy.
-  # The asterisk (*) is a wildcard that matches any characters.
   from = "/api/*"
-
-  # The backend API endpoint to which the request will be proxied.
-  # The ":splat" placeholder contains whatever was matched by the asterisk (*).
-  # For example, a request to /api/stores will be proxied to
-  # https://wellwash-erp-rtsgo.sevalla.app/stores
   to = "https://wellwash-erp-rtsgo.sevalla.app/:splat"
-
-  # The HTTP status code 200 indicates that this is a "rewrite" or "proxy".
-  # The browser's URL will not change, making it seamless for the user.
   status = 200
-
-  # This is a critical production setting. It forces the rewrite to occur
-  # even if a file exists at the specified 'from' path.
-  # For example, it prevents conflicts if you have a folder named /api/ in your project.
-  force = true
-
-  # Optional but recommended headers for production-grade proxies.
-  # These headers help your backend server identify the original request source.
+  force = true # Important: Ensures this rule runs even if an /api folder exists
   [redirects.headers]
-    # Forwards the original host header from the client.
     X-Forwarded-Host = ":host"
-
-    # Forwards the original client's IP address. This is crucial for
-    # logging, rate-limiting, or region-based logic on your backend.
     X-Forwarded-For = ":ip"
-
-    # Ensures that your backend knows the original request was made over HTTPS.
     X-Forwarded-Proto = "https"
+
+
+# RULE 2: SINGLE-PAGE APP (SPA) FALLBACK (Least Specific)
+# This is the "catch-all" rule. It will only be applied if the request
+# does not match any static files in your build output AND did not match
+# any of the more specific rules defined above.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
