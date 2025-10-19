@@ -13,7 +13,7 @@ const AddPricingForm = {
     },
     oncreate(vnode) {
         const options = {
-            method: 'GET', url: url + "/stores-list",
+            method: 'GET', url: url + "/stores",
             headers: {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
