@@ -193,6 +193,7 @@ const routes = async (app) => {
             const userId = req.headers.authorization;
             // Extract other relevant information from the req object
             const { method, url, body, headers } = req;
+            console.log(db.collection)
             // Increment the count of access for the user
             db.collection('user-tracking').updateOne({ userId }, { $inc: { count: 1 } }, { upsert: true })
             // Insert the request information as a new document in the "user-tracking" collection
@@ -236,6 +237,16 @@ const routes = async (app) => {
         // Routes
         app.use('/health', (req, res) => {
             res.send({ status: "ok" })
+        });
+
+        app.get('/what-is-my-ip', async (req, res) => {
+            try {
+                // This service returns the IP of the server making the request
+                const response = await axios.get('https://api.ipify.org?format=json');
+                res.send(response.data);
+            } catch (error) {
+                res.status(500).send({ error: "Could not determine IP" });
+            }
         });
 
         // Endpoint to serve the configuration file
