@@ -29,7 +29,7 @@ const crypto = require('crypto');
 const functions = require('@google-cloud/functions-framework');
 
 const {
-    JWT_TOKEN = 'shhhhh', 
+    JWT_TOKEN = 'shhhhh',
     DB_URL,
     DB_NAME,
     FUNCTIONS_FRAMEWORK,
@@ -944,6 +944,53 @@ const routes = async (app) => {
                 }
             } catch (error) {
                 console.error(error);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        // FIXED: This route now correctly handles brand assignments from the frontend
+        app.patch('/stores/:id', importantMiddleWares, async (req, res) => {
+            const token = req.headers.authorization;
+            const decoded = jwt.verify(token, JWT_TOKEN);
+            const { _id: userId, name: userTitle } = decoded;
+
+            const { id } = req.params;
+            const updateData = req.body; // e.g., { brand: 'brand-id-123' }
+
+            // Add timestamping to the update
+            const dateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+            const timestamp = moment(dateTime).unix();
+            const formatted = moment(dateTime).format('MMM Do ddd h:mmA');
+
+            Object.assign(updateData, {
+                updatedAtDateTime: dateTime,
+                updatedAtTimestamp: timestamp,
+                updatedAtFormatted: formatted
+            });
+
+            try {
+                // Find the store *before* the update for logging purposes
+                const existingEntity = await db.collection('stores').findOne({ _id: new ObjectId(id) });
+                if (!existingEntity) {
+                    return res.status(404).json({ message: "Store not found" });
+                }
+
+                const result = await db.collection('stores').updateOne(
+                    { _id: new ObjectId(id) }, // Correctly use the 'id' from the URL
+                    { $set: updateData }       // Set the fields from the request body
+                    // NOTE: { upsert: true } has been removed as it's not safe for a PATCH
+                );
+
+                // Find the store *after* the update for logging
+                const updatedEntity = await db.collection('stores').findOne({ _id: new ObjectId(id) });
+
+                // Log the activity
+                logActivity(db, "Store", "UPDATE", existingEntity, updatedEntity, userId, userTitle, decoded, dateTime, timestamp, formatted);
+
+                res.status(200).json({ message: 'Store updated successfully', result });
+
+            } catch (error) {
+                console.error("Error updating store:", error);
                 res.status(500).json({ error: 'Internal server error' });
             }
         });

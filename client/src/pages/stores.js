@@ -23,9 +23,8 @@ const loadData = (vnode) => {
             vnode.state.stores = storesResponse.data;
             vnode.state.brands = brandsResponse.data;
 
-            // PERFORMANCE: Create a map for quick brand name lookups (O(1) instead of O(n))
             vnode.state.brandMap = vnode.state.brands.reduce((acc, brand) => {
-                acc[brand.id] = brand.title; // Use 'id'
+                acc[brand._id] = brand.title; // FIXED: Use brand._id
                 return acc;
             }, {});
 
@@ -44,18 +43,17 @@ const loadData = (vnode) => {
 const updateStoreBrand = (vnode, storeId, brandId) => {
     const options = {
         method: 'PATCH',
-        url: `${url}/stores/${storeId}`, // CORRECTED: Plural 'stores' and uses 'id'
+        url: `${url}/stores/${storeId}`, // This URL will now be correct
         headers: {
             'Content-Type': 'application/json',
             'authorization': localStorage.getItem('token')
         },
-        data: { brand: brandId }
+        data: { brand: brandId } // This data payload will now be correct
     };
 
     axios.request(options)
         .then(response => {
-            // UX IMPROVEMENT: Update state directly instead of reloading the page
-            const storeToUpdate = vnode.state.stores.find(s => s.id === storeId);
+            const storeToUpdate = vnode.state.stores.find(s => s._id === storeId); // FIXED: Use s._id
             if (storeToUpdate) {
                 storeToUpdate.brand = brandId;
             }
@@ -65,7 +63,7 @@ const updateStoreBrand = (vnode, storeId, brandId) => {
             alert("Failed to update brand.");
         })
         .finally(() => {
-            m.redraw(); // Redraw to reflect the change
+            m.redraw();
         });
 };
 
@@ -77,13 +75,13 @@ const deleteStore = (vnode, storeId) => {
 
     const options = {
         method: 'DELETE',
-        url: `${url}/stores/${storeId}`, // CORRECTED: Uses 'id'
+        url: `${url}/stores/${storeId}`, // This URL will now be correct
         headers: { authorization: localStorage.getItem('token') },
     };
 
     axios.request(options)
         .then(() => {
-            vnode.state.stores = vnode.state.stores.filter(s => s.id !== storeId);
+            vnode.state.stores = vnode.state.stores.filter(s => s._id !== storeId); // FIXED: Use s._id
         })
         .catch(error => {
             console.error("Error deleting store:", error);
@@ -99,7 +97,7 @@ const stores = {
     oninit(vnode) {
         vnode.state.stores = [];
         vnode.state.brands = [];
-        vnode.state.brandMap = {}; // Map for brand titles
+        vnode.state.brandMap = {};
         vnode.state.loading = true;
     },
 
@@ -135,7 +133,7 @@ const stores = {
                                 m("th.p-0.min-w-50px.text-right", "Actions")
                             ])),
                             m("tbody", stores?.map(item =>
-                                m("tr", { key: item.id }, [
+                                m("tr", { key: item._id }, [ // FIXED: Use item._id
                                     m("td.text-left", m("span.text-dark-75.font-weight-bolder", item.title)),
                                     m("td.text-left", m("span.text-dark-75", item.address)),
                                     m("td.text-left",
@@ -145,7 +143,7 @@ const stores = {
                                             ),
                                             m(".dropdown-menu", brands?.map(brand =>
                                                 m("a.dropdown-item", {
-                                                    onclick: () => updateStoreBrand(vnode, item.id, brand.id)
+                                                    onclick: () => updateStoreBrand(vnode, item._id, brand._id) // FIXED: Use item._id and brand._id
                                                 }, brand.title)
                                             ))
                                         ])
@@ -153,18 +151,17 @@ const stores = {
                                     m("td.text-left", m("span.text-dark-75", item.phone)),
                                     m("td.text-left", m("span.text-dark-75", item.email)),
                                     m("td.text-right.pr-0", [
-                                        // <<< CORRECTED: Changed property name from 'brand' to 'store'
                                         m(editStore, {
                                             store: item,
                                             onStoreUpdated: (updatedStore) => {
-                                                const index = vnode.state.stores.findIndex(s => s.id === updatedStore.id);
+                                                const index = vnode.state.stores.findIndex(s => s._id === updatedStore._id); // FIXED: Use s._id and updatedStore._id
                                                 if (index > -1) {
                                                     vnode.state.stores[index] = updatedStore;
                                                 }
                                             }
                                         }),
                                         m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
-                                            onclick: () => deleteStore(vnode, item.id),
+                                            onclick: () => deleteStore(vnode, item._id), // FIXED: Use item._id
                                             title: "Delete Store"
                                         }, m("i.flaticon2-rubbish-bin-delete-button"))
                                     ])

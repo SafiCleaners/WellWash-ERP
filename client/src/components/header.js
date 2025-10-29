@@ -114,6 +114,7 @@ const header = {
                              m("button.btn.btn-md.btn-secondary.dropdown-toggle[type=button][data-toggle=dropdown]",
                                 !storeId ? "All Stores" : (stores.find(s => s._id == storeId)?.title || "All Stores")
                             ),
+                            console.log(filteredStores),
                             m(".dropdown-menu", [
                                 m("a.dropdown-item", { onclick: e => handleStoreSelect(e, null) }, "All Stores"),
                                 ...filteredStores.map(store =>
