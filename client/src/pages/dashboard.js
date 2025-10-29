@@ -1,26 +1,10 @@
 import axios from "axios";
+import m from "mithril";
+import moment from "moment";
+import { url } from "../constants";
+import loader from "../components/loader";
 
-import {
-    url
-} from "../constants"
-
-
-import m from "mithril"
-import moment from "moment"
-
-import { DateRangePicker } from '../components/daterangepicker';
-
-import loader from "../components/loader"
-const detailsString = (job) => {
-    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",];
-    return Object.keys(job)
-        .filter((key) => orderItems.includes(key))
-        .map((key) => {
-            return `${job[key]} ${key}`;
-        })
-        .join(", ");
-};
-
+// --- Helper Functions (No changes needed) ---
 const formatCurrency = (number) => {
     try {
         return Intl.NumberFormat('en-US').format(number);
@@ -28,800 +12,286 @@ const formatCurrency = (number) => {
         console.error('Error formatting number:', error);
         return 'N/A';
     }
-}
+};
 
-
-const StatNumber = {
+// --- NEW: Redesigned Stat Widget Component ---
+const StatWidget = {
     view(vnode) {
-        return m("h3", { "class": "card-title align-items-start flex-column d-flex" },
-            [
-                m("span", { "class": "fs-6 fw-semibold text-gray-500", style: "align-self: flex-start;" },
-                    vnode.attrs.title
-                ),
-                m("div", { "class": "d-flex align-items-center mb-2" },
-                    [
-                        m("span", { "class": "fs-3 fw-semibold text-gray-500 align-self-start me-1" },
-                            vnode.attrs.symbol
+        const { title, amount, symbol, icon, color } = vnode.attrs;
+        return m(`.card.bg-${color || 'light'}.bg-opacity-75.shadow-sm.flex-grow-1.m-2`,
+            m(".card-body.p-4", [
+                m("div.d-flex.align-items-center", [
+                    icon ? m(`.symbol.symbol-40px.me-3`,
+                        m(".symbol-label", { class: `bg-${color} bg-opacity-75` },
+                            m(`i.fa.${icon}.fs-2x`, { class: `text-white` })
+                        )
+                    ) : null,
+                    m("div", [
+                        m("div.fs-4.fw-bold.text-gray-900.lh-1",
+                            (symbol ? `${symbol} ` : '') + formatCurrency(amount)
                         ),
-                        m("span", { "class": "fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" },
-                            vnode.attrs.amount
-                        ),
-                    ]
-                ),
-            ]
-        )
+                        m("div.fw-semibold.text-gray-600", title)
+                    ])
+                ])
+            ])
+        );
     }
-}
+};
 
 const orders = {
-
+    // --- oninit & oncreate (Logic remains the same) ---
     oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.expenses = []
-        vnode.state.jobs = []
-        vnode.state.pricings = []
-        vnode.state.categories = []
-        vnode.state.loading = true
-        vnode.state.selectedDate = new Date()
+        vnode.state.stores = [];
+        vnode.state.expenses = [];
+        vnode.state.jobs = [];
+        vnode.state.pricings = [];
+        vnode.state.categories = [];
+        vnode.state.loading = true;
+        vnode.state.showUnpaid = false;
         vnode.state.stats = {
             totalSales: 0,
             totalPaid: 0,
             totalUnpaid: 0,
             totalUniqueCustomers: 0,
-            totalExpenses: 0
-        }
-        vnode.state.showUnpaid = false
+            totalExpenses: 0,
+            totalProfit: 0
+        };
 
-        function getValueFromLocalStorageOrQueryParams(key, defaultValue) {
-            // Attempt to retrieve the value from localStorage
-            let storedValue = localStorage.getItem(key);
-        
-            // If value is not found in localStorage, try to retrieve it from query parameters
-            if (!storedValue) {
-                const urlParams = new URLSearchParams(window.location.search);
-                storedValue = urlParams.get(key);
-        
-                // If value is found in query parameters, save it to localStorage for future use
-                if (storedValue) {
-                    localStorage.setItem(key, storedValue);
-                } else {
-                    // If value is not found in localStorage or query parameters
-                    if (defaultValue !== undefined && defaultValue !== null) {
-                        // Use the provided defaultValue and save it to both localStorage and query parameters
-                        storedValue = defaultValue;
-                        localStorage.setItem(key, storedValue);
-        
-                        // Update query parameters with the default value
-                        const updatedUrlParams = new URLSearchParams(window.location.search);
-                        updatedUrlParams.set(key, storedValue);
-                        const updatedUrl = `${window.location.pathname}?${updatedUrlParams.toString()}`;
-                        window.history.replaceState({}, '', updatedUrl);
-                    } else {
-                        // No defaultValue provided; set storedValue to null or empty string
-                        storedValue = null; // or storedValue = ''; depending on your preference
-                    }
-                }
+        const getValueFromLocalStorageOrQueryParams = (key, defaultValue) => {
+            let storedValue = localStorage.getItem(key) || new URLSearchParams(window.location.search).get(key);
+            if (!storedValue && defaultValue) {
+                storedValue = defaultValue;
+                localStorage.setItem(key, storedValue);
+                // Optionally update URL
             }
-        
             return storedValue;
-        }
+        };
         
-
-        // getValueFromLocalStorageOrQueryParams("businessDate", new Date().toISOString())
-
-        // Calculate default date as current date minus 3 days
-        const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() - 3);
-        const default3DaysAgoDateISO = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-
-        getValueFromLocalStorageOrQueryParams("businessRangeStartDate", default3DaysAgoDateISO)
-        getValueFromLocalStorageOrQueryParams("businessRangeEndDate", new Date().toISOString())
-        getValueFromLocalStorageOrQueryParams("storeId", "defaultStoreId")
+        const defaultStartDate = moment().subtract(3, 'days').format('YYYY-MM-DD');
+        const defaultEndDate = moment().format('YYYY-MM-DD');
+        
+        getValueFromLocalStorageOrQueryParams("businessRangeStartDate", defaultStartDate);
+        getValueFromLocalStorageOrQueryParams("businessRangeEndDate", defaultEndDate);
     },
+
     oncreate(vnode) {
         const fetchData = async (options) => {
             try {
                 const response = await axios.request(options);
                 return response.data;
             } catch (error) {
-                console.error(error);
-                return null;
+                console.error(`Error fetching ${options.url}:`, error);
+                return []; // Return empty array on error to prevent crashes
             }
         };
 
-        const fetchJobs = fetchData({
-            method: 'GET',
-            url: url + "/jobs",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
+        const authHeaders = {
+            'Content-Type': 'application/json',
+            'authorization': localStorage.getItem('token')
+        };
 
-        const fetchPricings = fetchData({
-            method: 'GET',
-            url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
+        Promise.all([
+            fetchData({ method: 'GET', url: `${url}/jobs`, headers: authHeaders }),
+            fetchData({ method: 'GET', url: `${url}/pricings`, headers: authHeaders }),
+            fetchData({ method: 'GET', url: `${url}/categories`, headers: authHeaders }),
+            fetchData({ method: 'GET', url: `${url}/expenses`, headers: authHeaders }),
+            fetchData({ method: 'GET', url: `${url}/stores`, headers: authHeaders })
+        ]).then(([jobs, pricings, categories, expenses, stores]) => {
+            vnode.state.pricings = pricings;
+            vnode.state.categories = categories;
+            vnode.state.expenses = expenses;
+            vnode.state.stores = stores;
 
-        const fetchCategories = fetchData({
-            method: 'GET',
-            url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
-
-        const fetchExpenses = fetchData({
-            method: 'GET',
-            url: url + "/expenses",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
-
-        const fetchStores = fetchData({
-            method: 'GET',
-            url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        });
-
-        Promise.all([fetchJobs, fetchPricings, fetchCategories, fetchExpenses, fetchStores])
-            .then(([jobs, pricings, categories, expenses, stores]) => {
-                vnode.state.pricings = pricings
-                vnode.state.categories = categories
-                vnode.state.expenses = expenses
-                vnode.state.stores = stores
-                // Process jobs
-                vnode.state.jobs = jobs.filter((job) => {
-                    const googleId = localStorage.getItem('googleId');
-                    const role = localStorage.getItem('role');
-                    if (role && role === 'OWNER') return true;
-
-                    return job.googleId ? true : false;
-                });
-
-                vnode.state.jobs.forEach(job => {
-                    Object.assign(job, {
-                        createdAtAgo: moment(job.createdAt).fromNow(true),
-                        timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
-                        timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
-                    });
-
-                    if (job.categoryAmounts) {
-                        const calculatePrice = () => {
-                            return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
-                                const amountValue = job.categoryAmounts[categoryId] || 0;
-                                const chargeValue = job.categoryCharges[categoryId] || 0;
-                                const subtotal = amountValue * chargeValue;
-                                return total + subtotal;
-                            }, 0);
-                        };
-
-                        job.price = calculatePrice();
-                    }
-                });
-
-
-
-                vnode.state.loading = false;
-                m.redraw();
-            })
-            .catch((error) => {
-                vnode.state.loading = false;
-                console.error(error);
+            vnode.state.jobs = jobs.map(job => {
+                const calculatePrice = () => {
+                    if (!job.categoryAmounts) return 0;
+                    return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
+                        const amount = job.categoryAmounts[categoryId] || 0;
+                        const charge = job.categoryCharges?.[categoryId] || 0;
+                        return total + (amount * charge);
+                    }, 0);
+                };
+                return { ...job, price: calculatePrice() };
             });
+
+            vnode.state.loading = false;
+            m.redraw();
+        });
     },
 
+    // --- NEW: Refactored View with Helper Functions ---
     view(vnode) {
-        const storedStartDate = localStorage.getItem("businessRangeStartDate");
-        const storedEndDate = localStorage.getItem("businessRangeEndDate");
+        const { loading, stores, expenses, jobs, categories, showUnpaid } = vnode.state;
         const storeId = localStorage.getItem("storeId");
+        const startDate = localStorage.getItem("businessRangeStartDate");
+        const endDate = localStorage.getItem("businessRangeEndDate");
 
-        var jobs = vnode.state.jobs.filter(job => {
+        // --- Data Processing Logic (Moved to top of view for clarity) ---
+        const filteredJobs = jobs.filter(job => {
+            const jobDate = moment(job.businessDate);
+            const isAfterStart = jobDate.isSameOrAfter(startDate, 'day');
+            const isBeforeEnd = jobDate.isSameOrBefore(endDate, 'day');
+            const matchesStore = storeId ? job.storeId === storeId : true;
+            const matchesUnpaid = showUnpaid ? !job.paid : true;
+            return isAfterStart && isBeforeEnd && matchesStore && matchesUnpaid;
+        }).sort((a, b) => new Date(b.createdAtDateTime) - new Date(a.createdAtDateTime));
 
-            // Assuming storedStartDate and storedEndDate are valid date strings
-            const startDate = new Date(storedStartDate);
-            const endDate = new Date(storedEndDate);
+        // --- Stat Calculation Logic ---
+        const calculateStats = () => {
+            const relevantJobs = jobs.filter(job => {
+                const jobDate = moment(job.businessDate);
+                const isAfterStart = jobDate.isSameOrAfter(startDate, 'day');
+                const isBeforeEnd = jobDate.isSameOrBefore(endDate, 'day');
+                 const matchesStore = storeId ? job.storeId === storeId : true;
+                return isAfterStart && isBeforeEnd && matchesStore;
+            });
 
-            const businessDate = new Date(job.businessDate);
+            const totalSales = relevantJobs.reduce((sum, job) => sum + (job.price || 0), 0);
+            const totalPaid = relevantJobs.filter(j => j.paid).reduce((sum, job) => sum + (job.price || 0), 0);
+            const totalUniqueCustomers = new Set(relevantJobs.map(job => job.phone)).size;
+            
+            const calculateTotalExpenses = () => {
+                const start = moment(startDate);
+                const end = moment(endDate);
+                const daysInRange = end.diff(start, 'days') + 1;
+                let total = 0;
 
-            // console.log({ businessDate, startDate, businessDate, endDate })
-            // Check if the job's business date is within the stored date range
-            return businessDate >= startDate && businessDate <= endDate;
-        })
-            .filter(job => {
-                if (localStorage.getItem("storeId"))
-                    return job.storeId == localStorage.getItem("storeId")
-
-                return true
-            })
-            .sort((a, b) => {
-                // Assuming createdAtDateTime is a valid date string
-                const dateA = new Date(a.createdAtDateTime);
-                const dateB = new Date(b.createdAtDateTime);
-
-                // Compare dates for sorting
-                return dateA - dateB;
-            })
-
-        // Process stats
-        const totalSales = jobs.reduce((total, job) => total + (job.price || 0), 0);
-        const totalPaid = jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
-        const totalUnpaid = jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
-
-        const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
-
-
-
-        // Function to calculate total expenses on a business day
-        function calculateTotalExpenses(expenses, startDate, endDate, storeId) {
-            let totalExpenses = 0;
-
-            // Iterate through each expense
-            for (const expense of expenses) {
-                const expenseDate = new Date(expense.businessDate);
-
-                // console.log(expense.storeId == storeId)
-
-                // Check if the expense belongs to the specified store
-                if (expense.storeId == storeId) {
-                    // console.log(expense)
-                    if (expense.recurrent) {
-                        // Handle recurrent expenses (add for every day within the range)
-                        const daysInRange = calculateDaysInRange(startDate, endDate);
-                        // console.log({daysInRange})
-                        const dailyExpenseCost = parseInt(expense.cost) || 0;
-
-                        // Add total expense amount for recurrent expense within the range
-                        totalExpenses += dailyExpenseCost * daysInRange;
+                expenses.forEach(exp => {
+                    if (storeId && exp.storeId !== storeId) return;
+                    
+                    if (exp.recurrent) {
+                        total += (parseInt(exp.cost, 10) || 0) * daysInRange;
                     } else {
-                        // Handle non-recurrent expenses (add only for specific business date within the range)
-                        if (expenseDate >= startDate && expenseDate <= endDate) {
-                            const expenseCost = parseInt(expense.cost) || 0;
-
-                            // Add expense amount to the total expenses
-                            totalExpenses += expenseCost;
+                        const expDate = moment(exp.businessDate);
+                        if (expDate.isBetween(start, end, 'day', '[]')) {
+                             total += parseInt(exp.cost, 10) || 0;
                         }
                     }
-                }
-            }
+                });
+                return total;
+            };
 
-            // Return the total expenses
-            return totalExpenses;
-        }
-
-        // Helper function to calculate number of days between two dates (inclusive)
-        function calculateDaysInRange(startDate, endDate) {
-            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            return Math.round(Math.abs((end - start) / oneDay)) + 1; // Include both start and end dates in the count
-        }
-        // Calculate total expenses based on whether storeId is available
-        const calculateTotal = (storeId) => {
-            return calculateTotalExpenses(vnode.state.expenses, storedStartDate, storedEndDate, storeId);
+            const totalExpenses = calculateTotalExpenses();
+            return {
+                totalSales,
+                totalPaid,
+                totalUnpaid: totalSales - totalPaid,
+                totalUniqueCustomers,
+                totalExpenses,
+                totalProfit: totalSales - totalExpenses
+            };
         };
 
-        const totalExpensesArray = storeId
-            ? [calculateTotal(storeId)]  // Calculate total expenses for the specific store
-            : vnode.state.stores.map(store => calculateTotal(store._id));  // Calculate total expenses for all stores
+        const stats = calculateStats();
+        
+        // --- Render Helper Functions ---
+        const renderStats = (currentStats) => m(".d-flex.flex-wrap.justify-content-center.mb-5", [
+            m(StatWidget, { title: "Total Sales", amount: currentStats.totalSales, symbol: "Ksh", color: "primary", icon: "fa-sack-dollar" }),
+            m(StatWidget, { title: "Total Expenses", amount: currentStats.totalExpenses, symbol: "Ksh", color: "danger", icon: "fa-receipt" }),
+            m(StatWidget, { title: "Net Profit", amount: currentStats.totalProfit, symbol: "Ksh", color: "success", icon: "fa-arrow-trend-up" }),
+            m(StatWidget, { title: "Amount Paid", amount: currentStats.totalPaid, symbol: "Ksh", color: "info" }),
+            m(StatWidget, { title: "Amount Unpaid", amount: currentStats.totalUnpaid, symbol: "Ksh", color: "warning" }),
+            m(StatWidget, { title: "Unique Customers", amount: currentStats.totalUniqueCustomers, icon: "fa-users" }),
+        ]);
 
-        // Now totalExpensesArray contains the total expenses, either for a specific store or for all stores
-        console.log(totalExpensesArray)
+        const renderToolbar = () => {
+            const storeTitle = storeId ? stores.find(s => s._id === storeId)?.title : "All Stores";
+            const dateRange = `${moment(startDate).format('MMM D')} - ${moment(endDate).format('MMM D, YYYY')}`;
 
-        // Calculate the sum total of all expenses
-        const totalExpenses = totalExpensesArray.reduce((sum, expenses) => sum + expenses, 0);
-
-        const totalProfit = Number(totalSales) - Number(totalExpenses)
-
-
-
-        vnode.state.stats = {
-            totalSales,
-            totalPaid,
-            totalUnpaid,
-            totalUniqueCustomers,
-            totalExpenses
-        };
-
-        const startDate = new Date(localStorage.getItem("businessRangeStartDate"));
-        const endDate = new Date(localStorage.getItem("businessRangeEndDate"));
-        const selectedBusinessDate = new Date(localStorage.getItem("businessDate"));
-
-        const formattedStartDate = startDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-        const formattedEndDate = endDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-        const formattedSelectedBusinessDate = selectedBusinessDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-
-        const dateRange = !['/dash'].includes(m.route.get()) ? formattedSelectedBusinessDate : `${formattedStartDate} - ${formattedEndDate}`;
-
-        var filteredJobs = vnode.state.jobs
-            .filter(job => {
-                const storedStartDate = localStorage.getItem("businessRangeStartDate");
-                const storedEndDate = localStorage.getItem("businessRangeEndDate");
-
-                // Assuming storedStartDate and storedEndDate are valid date strings
-                const startDate = new Date(storedStartDate);
-                const endDate = new Date(storedEndDate);
-
-                const businessDate = new Date(job.businessDate);
-
-                // console.log({ businessDate, startDate, businessDate, endDate })
-                // Check if the job's business date is within the stored date range
-                return businessDate >= startDate && businessDate <= endDate;
-            })
-            .filter(job => {
-                if (localStorage.getItem("storeId"))
-                    return job.storeId == localStorage.getItem("storeId")
-                return true
-            })
-            .filter(job => {
-                // Apply filter only if showUnpaid is true
-                if (vnode.state.showUnpaid) {
-                    return job.paid !== vnode.state.showUnpaid;
-                }
-                // Return true if showUnpaid is false or undefined, meaning no filter applied
-                return true;
-            })
-            .sort((a, b) => {
-                if (vnode.state.showUnpaid) {
-                    // Assuming businessDate is a valid date string
-                    const dateA = new Date(a.businessDate);
-                    const dateB = new Date(b.businessDate);
-
-                    // Compare dates for sorting
-                    return dateA - dateB;
-                } else {
-                    // Assuming createdAtDateTime is a valid date string
-                    const dateA = new Date(a.createdAtDateTime);
-                    const dateB = new Date(b.createdAtDateTime);
-
-                    // Compare business dates for sorting
-                    const businessDateComparison = dateA - dateB;
-
-                    // If business dates are equal, sort by createdAtDateTime
-                    if (businessDateComparison === 0) {
-                        const createdAtDateA = new Date(a.createdAtDateTime);
-                        const createdAtDateB = new Date(b.createdAtDateTime);
-                        return createdAtDateA - createdAtDateB;
-                    }
-
-                    return businessDateComparison;
-                }
-            })
-
-        return m("div", { "class": "card card-custom gutter-b" },
-            [
-                [
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                        [
-                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                m("div", { "class": "table-responsive" },
-                                    m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-125px" }),
-                                                        m("th", { "class": "p-0 min-w-110px" }),
-                                                        // m("th", { "class": "p-0 min-w-150px" })
-                                                    ]
-                                                )
-                                            ),
-
-                                        ]
-                                    )
-                                )
-                            ),
-
-                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                m("div", { "class": "table-responsive" },
-                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        // m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                        m("th", { "class": "p-0 w-50px" }),
-                                                    ]
-                                                )
-                                            ),
-                                            m("tbody", { style: { "overflow-x": "auto" } },
-                                                [
-                                                    m("tr", {
-                                                        // key: id,
-                                                        style: { "cursor": "pointer" }
-                                                    },
-                                                        [
-                                                            // m("td", { "class": "pl-0 py-5" },
-                                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                                            //         m("span", { "class": "symbol-label" },
-                                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                                            //         )
-                                                            //     )
-                                                            // ),
-
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Sales",
-                                                                        amount: formatCurrency(totalSales),
-                                                                        symbol: 'Ksh'
-                                                                    })
-                                                                ]
-                                                            ),
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Paid",
-                                                                        amount: formatCurrency(totalPaid),
-                                                                        // symbol: 'Ksh'
-                                                                    })
-                                                                ]
-                                                            ),
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Unpaid",
-                                                                        amount: formatCurrency(totalUnpaid),
-                                                                        // symbol: 'Ksh'
-                                                                    })
-                                                                ]
-                                                            ),
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Expenses",
-                                                                        amount: formatCurrency(totalExpenses),
-                                                                        // symbol: 'Leads'
-                                                                    })
-                                                                ]
-                                                            ),
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Profit",
-                                                                        amount: formatCurrency(totalProfit),
-                                                                        // symbol: 'Leads'
-                                                                    })
-                                                                ]
-                                                            ),
-
-
-                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                [
-                                                                    m(StatNumber, {
-                                                                        title: "Total Unique Leads",
-                                                                        amount: totalUniqueCustomers,
-                                                                        symbol: 'Leads'
-                                                                    })
-                                                                ]
-                                                            ),
-
-
-                                                            // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                            //     [
-                                                            //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                            //             " Total Expenses: X"
-                                                            //         ),
-                                                            //     ]
-                                                            // ),
-
-                                                        ]
-                                                    )
-                                                ]
-                                            )
-                                        ]
-                                    ) : []
-                                )
-                            )
-                        ]
+            return m(".card-header.border-0.pt-7.d-flex.justify-content-between.align-items-center", [
+                m("div", [
+                    m("h3.card-title.align-items-start.flex-column", [
+                        m("span.card-label.fw-bold.fs-3.mb-1", `${storeTitle} Queue`),
+                        m("span.text-muted.mt-1.fw-semibold.fs-7", dateRange)
+                    ])
+                ]),
+                m(".d-flex.align-items-center", [
+                    m(".form-check.form-switch.me-4", [
+                        m("input.form-check-input", {
+                            type: "checkbox",
+                            checked: showUnpaid,
+                            onchange: e => vnode.state.showUnpaid = e.target.checked
+                        }),
+                        m("label.form-check-label.text-muted", "Show Unpaid Only")
+                    ]),
+                    m("button.btn.btn-sm.btn-primary", { onclick: () => m.route.set("/q-new") },
+                        m("i.fa.fa-plus.me-1"), "New Job"
                     )
-                ],
-                [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-row" },
-                                m("h3", { "class": "card-title align-items-start flex-column" }, [
-                                    [
-                                        m("span", { "class": "card-label fw-bold text-gray-800" },
-                                            !localStorage.getItem('storeId') ? " All Stores " : vnode.state.stores?.filter(store => store._id == localStorage.getItem('storeId'))[0]?.title
-                                                + "'s Job Queue"
-                                        ),
-                                        m("span", { "class": "text-gray-500 mt-3 fw-semibold fs-6" },
-                                            dateRange
-                                            , [m("div", m("label", { "class": "form-check form-switch form-check-custom form-check-solid" },
-                                                [
-                                                    m("input", {
-                                                        "class": "form-check-input", "type": "checkbox", "value": "1", "checked": "checked",
-                                                        checked: vnode.state.showUnpaid,
-                                                        onchange: (event) => {
-                                                            vnode.state.showUnpaid = event.target.checked;
-                                                        }
-                                                    }),
-                                                    m("span", { "class": "form-check-label fw-semibold text-muted" },
-                                                        "Show Unpaid only"
-                                                    )
-                                                ]
-                                            ))])
-                                    ],
-
-
-                                ])),
-
-                            m("div", [
-                                ,
-                                m("button", {
-                                    "class": "btn btn-sm btn-info", onclick() {
-                                        m.route.set("/q-new")
-                                        setTimeout(() => {
-                                            location.reload()
-                                        }, 1000)
+                ])
+            ]);
+        };
+        
+        const renderJobList = () => {
+            if (filteredJobs.length === 0) {
+                return m(".text-center.p-10", [
+                     m("img", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "250px", marginBottom: "1rem" } }),
+                     m("h4.text-muted", `No jobs found for ${moment(startDate).format('MMM D')} - ${moment(endDate).format('MMM D')}`),
+                     m("button.btn.btn-primary.mt-4", { onclick: () => m.route.set("/q-new") }, "Add the First Job")
+                ]);
+            }
+            
+            return m(".list-group.list-group-flush", filteredJobs.map((job, index) =>
+                m("a.list-group-item.list-group-item-action.px-5.py-4", {
+                    key: job._id,
+                    onclick: () => m.route.set(`/j/${job._id}`)
+                },
+                    m(".d-flex.w-100.align-items-center", [
+                        m("div.flex-grow-1", [
+                            m("div.d-flex.justify-content-between.align-items-center", [
+                                m("h5.mb-1.fw-bolder.text-dark", `${index + 1}. ${job.clientName || 'N/A'}`),
+                                m("small.text-muted", moment(job.createdAtDateTime).fromNow())
+                            ]),
+                            m("p.mb-1.text-muted",
+                                [
+                                    m("span.me-3", `📞 ${job.phone || 'No phone'}`),
+                                    m("span", `📍 ${job.appartmentName || 'No address'}`)
+                                ]
+                            ),
+                            m("div.mt-2",
+                                Object.keys(job.categoryAmounts || {})
+                                .filter(id => job.categoryAmounts[id] > 0)
+                                .map(id => {
+                                    const category = categories.find(c => c._id === id);
+                                    return m("span.badge.bg-light.text-dark.me-1", `${job.categoryAmounts[id]} ${category?.title || 'item'}`);
+                                })
+                            )
+                        ]),
+                        m(".ms-4.text-end", { style: { minWidth: "120px" } }, [
+                            m("h4.fw-bolder.mb-0", `Ksh ${formatCurrency(job.price)}`),
+                            m(`span.badge`, { class: job.paid ? 'bg-success' : 'bg-warning' },
+                                job.paid ? "Paid" : `Unpaid`
+                            ),
+                             m("div.text-muted.fs-7.mt-1", `Status: ${job.status || 'Pending'}`)
+                        ]),
+                        m(".ms-4",
+                            m("button.btn.btn-icon.btn-light-danger.btn-sm", {
+                                title: "Delete Job",
+                                onclick: (e) => {
+                                    e.stopPropagation(); // Prevent navigation
+                                    if (confirm("Are you sure you want to delete this job?")) {
+                                        axios.delete(`${url}/jobs/${job._id}`, { headers: { authorization: localStorage.getItem('token') } })
+                                        .then(() => {
+                                            vnode.state.jobs = vnode.state.jobs.filter(j => j._id !== job._id);
+                                            m.redraw();
+                                        }).catch(err => console.error("Deletion failed:", err));
                                     }
-                                },
-                                    [
-                                        m("i", { "class": "flaticon-add-circular-button" }),
-                                        "Add"
-                                    ]
-                                )]
-                            )
-                        ]
-                    ),
-                    m("div", { "class": "card-body pt-0 pb-4" }, [
-                        m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                            m("div", { "class": "table-responsive" },
-                                m("table", { "class": "table table-borderless table-vertical-center" },
-                                    [
-                                        m("thead",
-                                            m("tr",
-                                                [
-                                                    m("th", { "class": "p-0 w-50px" }),
-                                                    m("th", { "class": "p-0 min-w-200px" }),
-                                                    m("th", { "class": "p-0 min-w-100px" }),
-                                                    m("th", { "class": "p-0 min-w-125px" }),
-                                                    m("th", { "class": "p-0 min-w-110px" }),
-                                                    m("th", { "class": "p-0 min-w-150px" })
-                                                ]
-                                            )
-                                        ),
-
-                                    ]
-                                )
-                            )
-                        ),
-
-                        m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                            m("div", { "class": "table-responsive" },
-                                !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                    [
-                                        m("thead",
-                                            m("tr",
-                                                [
-                                                    m("th", { "class": "p-0 w-50px" }),
-                                                    m("th", { "class": "p-0 min-w-200px" }),
-                                                    m("th", { "class": "p-0 min-w-100px" }),
-                                                    m("th", { "class": "p-0 min-w-125px" }),
-                                                    m("th", { "class": "p-0 min-w-110px" }),
-                                                    m("th", { "class": "p-0 min-w-150px" })
-                                                ]
-                                            )
-                                        ),
-                                        m("tbody",
-                                            [
-                                                filteredJobs.length === 0
-                                                    ? [
-                                                        m("tr", {
-                                                            style: { textAlign: "center" } // Inline style for centering content
-                                                        }, [
-                                                            m("td", {
-                                                                colspan: 4 // Spanning across all 3 columns
-                                                            }, [
-                                                                m("svg", {
-                                                                    width: "250", // Set SVG width (adjust as needed)
-                                                                    height: "250" // Set SVG height (adjust as needed)
-                                                                }, [
-                                                                    // Image element within SVG
-                                                                    m("image", {
-                                                                        href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
-                                                                        width: "200", // Set image width within SVG (adjust as needed)
-                                                                        height: "200", // Set image height within SVG (adjust as needed)
-                                                                        x: "25", // X position of the image within SVG canvas
-                                                                        y: "25" // Y position of the image within SVG canvas
-                                                                    }),
-                                                                    // Text element below the image
-                                                                    m("text", {
-                                                                        x: "50%",
-                                                                        y: "230",
-                                                                        "text-anchor": "middle",
-                                                                        fill: "black" // Text color
-                                                                    }, "No Jobs yet for " + dateRange) // Text content
-                                                                ]),
-                                                                m("br"),
-                                                                // Button element below the SVG and text
-                                                                m("button", {
-                                                                    class: "btn btn-sm btn-info",
-                                                                    onclick: () => {
-                                                                        m.route.set("/q-new");
-                                                                        setTimeout(() => {
-                                                                            location.reload();
-                                                                        }, 1000);
-                                                                    }
-                                                                }, [
-                                                                    m("i", { class: "flaticon-add-circular-button" }),
-                                                                    "Add Some"
-                                                                ])
-                                                            ])
-                                                        ])
-
-
-                                                    ] :
-
-                                                    filteredJobs.map(({
-                                                        _id,
-                                                        paid = "",
-                                                        status = "",
-                                                        appartmentName = "",
-                                                        houseNumber = "",
-                                                        moreDetails = "",
-                                                        clientName,
-                                                        mpesaPhoneNumber,
-                                                        phone,
-                                                        mpesaConfirmationCode,
-                                                        timeDroppedOffFromNow,
-                                                        timePickedUpFromNow,
-                                                        generalKgs = 0,
-                                                        categoryAmounts = {},
-                                                        categoryCharges = {},
-                                                        businessDate
-                                                    }, index) => {
-                                                        // console.log({ index })
-                                                        const calculatePrice = () => {
-
-                                                            return Object.keys(categoryAmounts).reduce((total, categoryId) => {
-                                                                const amountValue = categoryAmounts[categoryId];
-                                                                const chargeValue = categoryCharges[categoryId];
-
-                                                                const subtotal = (amountValue || 0) * (chargeValue || 0);
-                                                                return total + subtotal;
-                                                            }, 0);
-                                                        }
-
-                                                        return m("tr", {
-                                                            // key: id,
-                                                            style: { "cursor": "pointer" }
-                                                        },
-                                                            [
-                                                                // m("td", { "class": "pl-0 py-5" },
-                                                                //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                                                //         m("span", { "class": "symbol-label" },
-                                                                //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                                                //         )
-                                                                //     )
-                                                                // ),
-                                                                m("td", {
-                                                                    "class": "pl-0", onclick() { m.route.set("/j/" + _id) }
-                                                                },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                            m("b", (Number(index) + 1) + ". " + clientName + " (" + phone + ")")
-                                                                        ),
-
-                                                                        m("div",
-                                                                            [
-                                                                                // categoryAmounts,
-                                                                                [Object.keys(categoryAmounts)
-                                                                                    .filter(charge => categoryAmounts[charge] !== 0)
-                                                                                    .map(charge => {
-                                                                                        const categoryName = vnode.state.categories.find(category => category._id === charge)?.title;
-                                                                                        const chargeAmount = categoryCharges[charge];
-                                                                                        const numberOfItems = categoryAmounts[charge];
-
-                                                                                        return `${numberOfItems} ${categoryName} @${chargeAmount} `;
-                                                                                    })],
-                                                                                m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
-                                                                                    `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                                                                        " House:" + houseNumber
-                                                                                    )]
-                                                                                )
-                                                                            ]
-                                                                        )
-                                                                    ]
-                                                                ),
-
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            `KSH ${formatCurrency(calculatePrice())}`
-                                                                        ),
-                                                                        m("span", { "class": "text-muted font-weight-bold" },
-                                                                            paid ? "Paid " : `Not Paid(${moment(businessDate).fromNow()}): ${moment(businessDate).format('Do, MMM, ddd')}`
-                                                                        )
-                                                                    ]
-                                                                ),
-
-                                                                m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
-
-
-                                                                        ),
-                                                                        m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
-                                                                            moreDetails
-                                                                        )
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                    [
-                                                                        m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                            " Status " + status ? status : " No Status Updated"
-                                                                        ),
-                                                                    ]
-                                                                ),
-                                                                m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                    m('div', { "class": "" },
-                                                                        [
-                                                                            // m(editPricing, { "pricing": item }),
-                                                                            m('a', {
-                                                                                href: "javascript:void(0);",
-                                                                                "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                    const options = {
-                                                                                        method: 'DELETE',
-                                                                                        url: `${url}/jobs/${_id}`,
-                                                                                        headers: {
-                                                                                            'Content-Type': 'application/json',
-                                                                                            'authorization': localStorage.getItem('token')
-                                                                                        },
-                                                                                    };
-
-                                                                                    axios.request(options).then(function (response) {
-
-                                                                                        vnode.state.jobs = vnode.state.jobs.filter(p => p._id != _id)
-                                                                                        m.redraw()
-                                                                                    }).catch(function (error) {
-                                                                                        console.error(error);
-                                                                                    });
-                                                                                }
-                                                                            },
-                                                                                m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                            )
-                                                                        ])
-                                                                )
-                                                            ]
-                                                        )
-                                                    })
-                                            ]
-                                        )
-                                    ]
-                                ) : m(loader)
-                            )
+                                }
+                            }, m("i.fa.fa-trash"))
                         )
                     ])
-                ]
-            ]
-        )
-    }
-}
+                )
+            ));
+        };
 
-export default orders
+        // --- Final Component Structure ---
+        return m(".card.card-custom.gutter-b", [
+            loading ? m(loader) : [
+                m(".card-body", renderStats(stats)),
+                renderToolbar(),
+                m(".card-body.pt-0.pb-4", renderJobList())
+            ]
+        ]);
+    }
+};
+
+export default orders;

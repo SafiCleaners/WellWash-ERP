@@ -1,716 +1,207 @@
 import axios from "axios";
+import m from "mithril";
+import moment from "moment";
+import { url } from "../constants";
+import loader from "../components/loader";
+import expensesList from "../pages/expenses";
+import stock_levels from "../pages/stock_levels";
 
-import {
-    url
-} from "../constants"
-
-
-import m from "mithril"
-import moment from "moment"
-
-import { DateRangePicker } from '../components/daterangepicker';
-
-import loader from "../components/loader"
-import expenses from "../pages/expenses"
-import stock_levels from "../pages/stock_levels"
-
-
-const detailsString = (job) => {
-    const orderItems = ["duvets", "blankets", "curtains", "generalKgs",];
-    return Object.keys(job)
-        .filter((key) => orderItems.includes(key))
-        .map((key) => {
-            return `${job[key]} ${key}`;
-        })
-        .join(", ");
+// --- Helper Functions ---
+const formatCurrency = (number) => {
+    return new Intl.NumberFormat('en-US').format(number || 0);
 };
 
-const formatCurrency = (number) => {
-    try {
-        return Intl.NumberFormat('en-US').format(number);
-    } catch (error) {
-        console.error('Error formatting number:', error);
-        return 'N/A';
-    }
-}
-
-
-
-
-const StatNumber = {
+// --- Reusable UI Components ---
+const StatWidget = {
     view(vnode) {
-        return m("h3", { "class": "card-title align-items-start flex-column d-flex mr-3", style: { whiteSpace: "nowrap" } },
-            [
-                m("span", { "class": "fs-6 fw-semibold text-gray-500", style: "align-self: flex-start;" },
-                    vnode.attrs.title
-                ),
-                m("div", { "class": "d-flex align-items-center mb-2" },
-                    [
-                        m("span", { "class": "fs-3 fw-semibold text-gray-500 align-self-start me-1" },
-                            vnode.attrs.symbol
+        const { title, amount, symbol, icon, color } = vnode.attrs;
+        return m(`.card.bg-light-${color}.shadow-sm.flex-grow-1.m-2`,
+            m(".card-body.p-4", [
+                m("div.d-flex.align-items-center", [
+                    m(`.symbol.symbol-40px.me-3`,
+                        m(".symbol-label", { class: `bg-${color}` },
+                            m(`i.fa.${icon}.fs-2x.text-white`)
+                        )
+                    ),
+                    m("div", [
+                        m("div.fs-4.fw-bold.text-gray-900.lh-1",
+                            (symbol ? `${symbol} ` : '') + formatCurrency(amount)
                         ),
-                        m("span", { "class": "fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2" },
-                            vnode.attrs.amount
-                        ),
-                    ]
-                ),
-
-            ]
-        )
+                        m("div.fw-semibold.text-gray-600", title)
+                    ])
+                ])
+            ])
+        );
     }
-}
+};
 
-
-const orders = {
-
+const DashboardPage = {
     oninit(vnode) {
-        vnode.state.jobs = []
-        vnode.state.pricings = []
-        vnode.state.stores = []
-        vnode.state.expenses = []
-        vnode.state.categories = []
-        vnode.state.loading = true
-        vnode.state.selectedDate = new Date()
+        vnode.state.loading = true;
+        vnode.state.jobs = [];
+        vnode.state.stores = [];
+        vnode.state.expenses = [];
+        vnode.state.categories = [];
 
-        // Retrieve businessDate from localStorage and convert it to a Date object
-        const storedBusinessDate = localStorage.getItem("businessDate");
-        let selectedDate;
+        const storedDate = localStorage.getItem("businessDate");
+        vnode.state.businessDate = storedDate ? moment(storedDate) : moment();
+        localStorage.setItem("businessDate", vnode.state.businessDate.toISOString());
 
-        if (storedBusinessDate) {
-            // If businessDate exists in localStorage, parse it as a Date
-            selectedDate = new Date(storedBusinessDate);
-        } else {
-            // If businessDate is not found in localStorage, set a default value (e.g., current date)
-            selectedDate = new Date(); // Default to current date/time
-            const storageFormattedDate = selectedDate.toISOString(); // Convert to ISO string for storage
-            localStorage.setItem("businessDate", storageFormattedDate); // Save to localStorage
-        }
-
+        vnode.state.onUpdate = () => {
+            // Set loading true and recall the data fetching
+            vnode.state.loading = true;
+            vnode.state.oncreate(vnode); // Re-run the oncreate logic to fetch all data
+        };
     },
+
     oncreate(vnode) {
-        const options = {
-            method: 'GET',
-            url: url + "/jobs",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
+        const authHeaders = { authorization: localStorage.getItem('token') };
+        const fetchData = (endpoint) => axios.get(`${url}/${endpoint}`, { headers: authHeaders });
 
-        axios.request(options).then(function (response) {
-            vnode.state.jobs = response.data.filter((job) => {
-                const googleId = localStorage.getItem('googleId')
-                const role = localStorage.getItem('role')
-                if (role && role === 'OWNER') return true
-
-                if (job.googleId)
-                    return true
-            })
-
-            vnode.state.jobs.map(job => {
-                Object.assign(job, {
-                    createdAtAgo: moment(job.createdAt).fromNow(true),
-                    timeDroppedOffFromNow: moment(job.dropOffDay).fromNow(true),
-                    timePickedUpFromNow: moment(job.pickupDay).fromNow(true),
-                })
-
-                if (job.categoryAmounts) {
-                    const calculatePrice = () => {
-                        return Object.keys(job.categoryAmounts).reduce((total, categoryId) => {
-                            const amountValue = job.categoryAmounts[categoryId] || 0;
-                            const chargeValue = job.categoryCharges[categoryId] || 0;
-                            const subtotal = amountValue * chargeValue;
-                            return total + subtotal;
-                        }, 0);
-                    };
-
-                    job.price = calculatePrice();
-                }
-            })
-
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            console.error(error);
-        });
-
-        const optionsPricing = {
-            method: 'GET', url: url + "/pricings",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsPricing).then(function (response) {
-            vnode.state.pricings = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsStores = {
-            method: 'GET', url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsStores).then(function (response) {
-            vnode.state.stores = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            // console.log(vnode.state.categories)
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsExpenses = {
-            method: 'GET', url: url + "/expenses",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsExpenses).then(function (response) {
-            vnode.state.expenses = response.data
-
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
+        Promise.all([
+            fetchData('jobs'),
+            fetchData('categories'),
+            fetchData('expenses'),
+            fetchData('stores')
+        ]).then(([jobsRes, categoriesRes, expensesRes, storesRes]) => {
+            vnode.state.jobs = jobsRes.data.map(job => {
+                const price = Object.keys(job.categoryAmounts || {}).reduce((total, id) => {
+                    const amount = job.categoryAmounts[id] || 0;
+                    const charge = job.categoryCharges?.[id] || 0;
+                    return total + (amount * charge);
+                }, 0);
+                return { ...job, price };
+            });
+            vnode.state.categories = categoriesRes.data;
+            vnode.state.expenses = expensesRes.data;
+            vnode.state.stores = storesRes.data;
+        }).catch(error => {
+            console.error("Failed to load dashboard data:", error);
+        }).finally(() => {
+            vnode.state.loading = false;
+            m.redraw();
         });
     },
+
     view(vnode) {
-        var jobs = vnode.state.jobs
-            .filter(job => {
-                const selectedDate = new Date(localStorage.getItem("businessDate"));
-
-                // Assuming job.businessDate is a valid date string
-                const businessDate = new Date(job.businessDate);
-                // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
-                return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
-            })
-            .filter(job => {
-                if (localStorage.getItem("storeId"))
-                    return job.storeId == localStorage.getItem("storeId")
-
-                return true
-            })
-            .sort((a, b) => {
-                // Assuming createdAtDateTime is a valid date string
-                const dateA = new Date(a.createdAtDateTime);
-                const dateB = new Date(b.createdAtDateTime);
-
-                // Compare dates for sorting
-                return dateA - dateB;
-            })
-
-        const selectedDate = new Date(localStorage.getItem("businessDate"));
+        const { loading, jobs, stores, expenses, categories, businessDate } = vnode.state;
         const storeId = localStorage.getItem("storeId");
 
-        // Process stats
-        const totalSales = jobs.reduce((total, job) => total + (job.price || 0), 0);
-        const totalPaid = jobs.reduce((total, job) => total + (job.paid ? (job.price || 0) : 0), 0);
-        const totalUnpaid = jobs.reduce((total, job) => total + (job.paid ? 0 : (job.price || 0)), 0);
+        // --- Perform all filtering and calculations once at the top ---
+        const filteredJobs = jobs.filter(job =>
+            moment(job.businessDate).isSame(businessDate, 'day') &&
+            (!storeId || job.storeId === storeId)
+        ).sort((a, b) => new Date(b.createdAtDateTime) - new Date(a.createdAtDateTime));
 
-        const totalUniqueCustomers = new Set(jobs.map(job => job.phone)).size;
-
-        // Function to calculate total expenses on a business day
-        function calculateTotalExpenses(expenses, businessDate, storeId) {
-            let totalExpenses = 0;
-            const targetDate = new Date(businessDate);
-        
-            // Object to store total expenses per store
-            const storeTotalExpenses = {};
-        
-            // Iterate through expenses
-            for (const expense of expenses) {
-                const expenseDate = new Date(expense.businessDate);
-                const currentStoreId = expense.storeId;
-        
-                if (expense.recurrent) {
-                    // Accumulate recurrent expenses for each store
-                    if (!storeTotalExpenses[currentStoreId]) {
-                        storeTotalExpenses[currentStoreId] = parseInt(expense.cost);
-                    } else {
-                        storeTotalExpenses[currentStoreId] += parseInt(expense.cost);
-                    }
-                } else {
-                    // Check if the expense falls on the specified business date
-                    if (storeId && currentStoreId === storeId && expenseDate.toISOString().split('T')[0] === targetDate.toISOString().split('T')[0]) {
-                        // Add the cost of non-recurrent expenses for the specified store and day
-                        totalExpenses += parseInt(expense.cost);
-                    }
+        const calculateStats = () => {
+            const totalSales = filteredJobs.reduce((sum, job) => sum + job.price, 0);
+            const totalExpenses = expenses.reduce((total, exp) => {
+                if ((storeId && exp.storeId !== storeId)) return total;
+                if (exp.recurrent || moment(exp.businessDate).isSame(businessDate, 'day')) {
+                    return total + (parseInt(exp.cost, 10) || 0);
                 }
-            }
-        
-            // If storeId is provided, return the total expenses for that store on the specified day
-            if (storeId) {
-                totalExpenses = storeTotalExpenses[storeId] || 0;
-            } else {
-                // If storeId is not provided, calculate cumulative total expenses across all stores
-                for (const storeId in storeTotalExpenses) {
-                    totalExpenses += storeTotalExpenses[storeId];
-                }
-            }
-        
-            return totalExpenses;
-        }
-        
+                return total;
+            }, 0);
 
-
-
-
-
-
-
-        const totalExpenses = calculateTotalExpenses(vnode.state.expenses, selectedDate, storeId);
-        const totalProfit = Number(totalSales) - Number(totalExpenses)
-
-        const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
-
-        vnode.state.stats = {
-            totalSales,
-            totalPaid,
-            totalUnpaid,
-            totalUniqueCustomers,
-            totalExpenses
+            return {
+                totalSales,
+                totalExpenses,
+                totalProfit: totalSales - totalExpenses,
+                totalJobs: filteredJobs.length
+            };
         };
 
+        const stats = calculateStats();
+        
+        // --- Render Helper for the Job List ---
+        const renderJobList = () => {
+             if (filteredJobs.length === 0) {
+                return m(".text-center.p-10", [
+                     m("img", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "250px", marginBottom: "1rem" } }),
+                     m("h4.text-muted", `No jobs found for ${businessDate.format('MMM D')}`),
+                ]);
+            }
+            return m(".list-group.list-group-flush", filteredJobs.map((job, index) =>
+                m("a.list-group-item.list-group-item-action.px-5.py-4", {
+                    key: job._id,
+                    onclick: () => m.route.set(`/j/${job._id}`)
+                },
+                    m(".d-flex.w-100.align-items-center", [
+                        m("div.flex-grow-1", [
+                            m("div.d-flex.justify-content-between.align-items-center", [
+                                m("h5.mb-1.fw-bolder.text-dark", `${index + 1}. ${job.clientName || 'N/A'}`),
+                                m("small.text-muted", moment(job.createdAtDateTime).fromNow())
+                            ]),
+                            m("p.mb-1.text-muted", `📞 ${job.phone || 'No phone'}`),
+                        ]),
+                        m(".ms-4.text-end", { style: { minWidth: "120px" } }, [
+                            m("h4.fw-bolder.mb-0", `Ksh ${formatCurrency(job.price)}`),
+                            m(`span.badge`, { class: job.paid ? 'bg-success' : 'bg-warning' }, job.paid ? "Paid" : "Unpaid")
+                        ])
+                    ])
+                )
+            ));
+        };
 
-        const formattedBusinessDate = selectedDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+        if (loading) {
+            return m(loader);
+        }
 
-        const date = `${formattedBusinessDate}`;
-
-        const filteredJobs = vnode.state.jobs
-        .filter(job => {
-            const selectedDate = new Date(localStorage.getItem("businessDate"));
-
-            // Assuming job.businessDate is a valid date string
-            const businessDate = new Date(job.businessDate);
-            // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
-            return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
-        })
-        .filter(job => {
-            if (localStorage.getItem("storeId"))
-                return job.storeId == localStorage.getItem("storeId")
-
-            return true
-        })
-        .sort((a, b) => {
-            // Assuming createdAtDateTime is a valid date string
-            const dateA = new Date(a.createdAtDateTime);
-            const dateB = new Date(b.createdAtDateTime);
-
-            // Compare dates for sorting
-            return dateA - dateB;
-        })
-
-        return [
-            m("div", { "class": "table-responsive" },
-                !vnode.state.loading ? m("table", { style: { "overflow-x": "auto", "class": "table table-borderless table-vertical-center" } },
-                    [
-                        m("thead",
-                            m("tr",
-                                [
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    // m("th", { "class": "p-0 min-w-200px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                    m("th", { "class": "p-0 w-50px" }),
-                                ]
-                            )
-                        ),
-                        m("tbody", [
-                            m("tr", {
-                                // key: id,
-                                style: { "cursor": "pointer" },
-                                // class: { "white- space": " nowrap; ", }
-                            },
-                                [
-                                    // m("td", { "class": "pl-0 py-5" },
-                                    //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                    //         m("span", { "class": "symbol-label" },
-                                    //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                    //         )
-                                    //     )
-                                    // ),
-
-
-                                    m("td", { "class": "text-right", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Total Sales",
-                                                amount: formatCurrency(totalSales),
-                                                symbol: 'Ksh'
-                                            })
-                                        ]
-                                    ),
-
-                                    m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Total Paid",
-                                                amount: formatCurrency(totalPaid),
-                                                // symbol: 'Ksh'
-                                            })
-                                        ]
-                                    ),
-
-                                    m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Total Unpaid",
-                                                amount: formatCurrency(totalUnpaid),
-                                                // symbol: 'Ksh'
-                                            })
-                                        ]
-                                    ),
-
-                                    m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Total Expenses",
-                                                amount: formatCurrency(totalExpenses),
-                                                // symbol: 'Ksh'
-                                            })
-                                        ]
-                                    ),
-
-                                    m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Profit",
-                                                amount: formatCurrency(totalProfit),
-                                                // symbol: 'Ksh'
-                                            })
-                                        ]
-                                    ),
-
-                                    m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                        [
-                                            m(StatNumber, {
-                                                title: "Total Unique Leads",
-                                                amount: totalUniqueCustomers,
-                                                symbol: 'Leads'
-                                            })
-                                        ]
-                                    ),
-
-                                    // m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                    //     [
-                                    //         m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                    //             " Total Expenses: X"
-                                    //         ),
-                                    //     ]
-                                    // ),
-
-                                ]
-                            )
-                        ]
-                        )
-                    ]
-                ) : []
-            ),
-            m("div", { "class": "card card-custom gutter-b" }, [
-                m("div", { "class": "card card-custom gutter-b" }, [
-                    m("div", { "class": "card-header border-0 pt-7" },
-                        [
-                            m("h3", { "class": "card-title align-items-start flex-column" },
-                                [
-                                    m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                        "Job Queue for " + date
-                                    ),
-                                    m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                        (storeName ? "in Store " + storeName : "Showing All Stores")
-                                    )
-                                ]
-                            ),
-                            m("div",
-                                m("button", {
-                                    "class": "btn btn-sm btn-info", onclick() {
-                                        m.route.set("/q-new")
-                                    }
-                                },
-                                    [
-                                        m("i", { "class": "flaticon-add-circular-button" }),
-                                        "Add Job"
-                                    ]
-                                )
-                            )
-                        ]
-                    ),
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" }, [
-
-                        m("div", { "class": "card-body pt-0 pb-4" },
-                            m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                                [
-                                    m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                        m("div", { "class": "table-responsive" },
-                                            m("table", { "class": "table table-borderless table-vertical-center" },
-                                                [
-                                                    m("thead",
-                                                        m("tr",
-                                                            [
-                                                                m("th", { "class": "p-0 w-50px" }),
-                                                                m("th", { "class": "p-0 min-w-200px" }),
-                                                                m("th", { "class": "p-0 min-w-100px" }),
-                                                                m("th", { "class": "p-0 min-w-125px" }),
-                                                                m("th", { "class": "p-0 min-w-110px" }),
-                                                                m("th", { "class": "p-0 min-w-150px" })
-                                                            ]
-                                                        )
-                                                    ),
-
-                                                ]
-                                            )
-                                        )
-                                    ),
-
-                                    m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                        m("div", { "class": "table-responsive" },
-                                            vnode.state.loading ? m(loader) : m("table", { "class": "table table-borderless table-vertical-center" },
-                                                [
-                                                    m("thead",
-                                                        m("tr",
-                                                            [
-                                                                m("th", { "class": "p-0 w-50px" }),
-                                                                m("th", { "class": "p-0 min-w-200px" }),
-                                                                m("th", { "class": "p-0 min-w-100px" }),
-                                                                m("th", { "class": "p-0 min-w-125px" }),
-                                                                m("th", { "class": "p-0 min-w-110px" }),
-                                                                m("th", { "class": "p-0 min-w-150px" })
-                                                            ]
-                                                        )
-                                                    ),
-                                                    m("tbody",
-                                                        [
-                                                            filteredJobs.length == 0 ? [
-                                                                m("tr", {
-                                                                    style: { textAlign: "center" } // Inline style for centering content
-                                                                }, [
-                                                                    m("td", {
-                                                                        colspan: 4 // Spanning across all 3 columns
-                                                                    }, [
-                                                                        m("svg", {
-                                                                            width: "250", // Set SVG width (adjust as needed)
-                                                                            height: "250" // Set SVG height (adjust as needed)
-                                                                        }, [
-                                                                            // Image element within SVG
-                                                                            m("image", {
-                                                                                href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
-                                                                                width: "200", // Set image width within SVG (adjust as needed)
-                                                                                height: "200", // Set image height within SVG (adjust as needed)
-                                                                                x: "25", // X position of the image within SVG canvas
-                                                                                y: "25" // Y position of the image within SVG canvas
-                                                                            }),
-                                                                            // Text element below the image
-                                                                            m("text", {
-                                                                                x: "50%",
-                                                                                y: "230",
-                                                                                "text-anchor": "middle", 
-                                                                                fill: "black" // Text color
-                                                                            }, "No Sales yet for " + storeName + " - " + date) // Text content
-                                                                        ]),
-                                                                        m("br"),
-                                                                        // Button element below the SVG and text
-                                                                        m("button", {
-                                                                            class: "btn btn-sm btn-info",
-                                                                            onclick: () => {
-                                                                                m.route.set("/q-new");
-                                                                                setTimeout(() => {
-                                                                                    location.reload();
-                                                                                }, 1000);
-                                                                            }
-                                                                        }, [
-                                                                            m("i", { class: "flaticon-add-circular-button" }), 
-                                                                            "Add Some" 
-                                                                        ])
-                                                                    ])
-                                                                ])
-                                                                
-                                                                
-                                                            ] :
-                                                            // console.log(vnode.state.selectedDate),
-                                                            filteredJobs
-                                                                .map(({
-                                                                    _id,
-                                                                    paid = "",
-                                                                    status = "",
-                                                                    appartmentName = "",
-                                                                    houseNumber = "",
-                                                                    moreDetails = "",
-                                                                    clientName,
-                                                                    mpesaPhoneNumber,
-                                                                    phone,
-                                                                    mpesaConfirmationCode,
-                                                                    timeDroppedOffFromNow,
-                                                                    timePickedUpFromNow,
-                                                                    generalKgs = 0,
-                                                                    categoryAmounts = {},
-                                                                    categoryCharges = {}
-                                                                }, index) => {
-                                                                    const calculatePrice = () => {
-
-                                                                        return Object.keys(categoryAmounts).reduce((total, categoryId) => {
-                                                                            const amountValue = categoryAmounts[categoryId];
-                                                                            const chargeValue = categoryCharges[categoryId];
-
-                                                                            const subtotal = (amountValue || 0) * (chargeValue || 0);
-                                                                            return total + subtotal;
-                                                                        }, 0);
-                                                                    }
-
-                                                                    return m("tr", {
-                                                                        // key: id,
-                                                                        style: { "cursor": "pointer" }
-                                                                    },
-                                                                        [
-                                                                            // m("td", { "class": "pl-0 py-5" },
-                                                                            //     m("div", { "class": "symbol symbol-45 symbol-light mr-2" },
-                                                                            //         m("span", { "class": "symbol-label" },
-                                                                            //             m("img", { "class": "h-50 align-self-center", "src": "assets/media/svg/misc/015-telegram.svg", "alt": "" })
-                                                                            //         )
-                                                                            //     )
-                                                                            // ),
-                                                                            m("td", {
-                                                                                "class": "pl-0", onclick() { m.route.set("/j/" + _id) }
-                                                                            },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg", style: "white-space: nowrap;" },
-                                                                                        m("b", (Number(index) + 1) + ". " + clientName + " (" + phone + ")")
-                                                                                    ),
-
-                                                                                    m("div",
-                                                                                        [
-                                                                                            // categoryAmounts,
-                                                                                            [Object.keys(categoryAmounts)
-                                                                                                .filter(charge => categoryAmounts[charge] !== 0)
-                                                                                                .map(charge => {
-                                                                                                    const categoryName = vnode.state.categories.find(category => category._id === charge)?.title;
-                                                                                                    const chargeAmount = categoryCharges[charge];
-                                                                                                    const numberOfItems = categoryAmounts[charge];
-
-                                                                                                    return `${numberOfItems} ${categoryName} @${chargeAmount} `;
-                                                                                                })],
-                                                                                            m("span", { "class": "font-weight-bolder text-dark-75", style: "white-space: nowrap;" },
-                                                                                                `${appartmentName}:`, [m("span", { "class": "text-muted font-weight-bold text-hover-primary", },
-                                                                                                    " House:" + houseNumber
-                                                                                                )]
-                                                                                            )
-                                                                                        ]
-                                                                                    )
-                                                                                ]
-                                                                            ),
-
-                                                                            m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                        `KSH ${calculatePrice()}`
-                                                                                    ),
-                                                                                    m("span", { "class": "text-muted font-weight-bold" },
-                                                                                        paid ? "Paid " : " Not Paid"
-                                                                                    )
-                                                                                ]
-                                                                            ),
-
-                                                                            m("td", { "class": "text-left", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg", style: "white-space: nowrap;", },
-
-
-                                                                                    ),
-                                                                                    m("span", { "class": "text-muted font-weight-bold", style: "white-space: nowrap;", },
-                                                                                        moreDetails
-                                                                                    )
-                                                                                ]
-                                                                            ),
-                                                                            m("td", { "class": "text-right", style: "white-space: nowrap;", onclick() { m.route.set("/j/" + _id) } },
-                                                                                [
-                                                                                    m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                        " Status " + status ? status : " No Status Updated"
-                                                                                    ),
-                                                                                ]
-                                                                            ),
-                                                                            m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                                m('div', { "class": "" },
-                                                                                    [
-                                                                                        // m(editPricing, { "pricing": item }),
-                                                                                        m('a', {
-                                                                                            href: "javascript:void(0);",
-                                                                                            "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                                const options = {
-                                                                                                    method: 'DELETE',
-                                                                                                    url: `${url}/jobs/${_id}`,
-                                                                                                    headers: {
-                                                                                                        'Content-Type': 'application/json',
-                                                                                                        'authorization': localStorage.getItem('token')
-                                                                                                    },
-                                                                                                };
-
-                                                                                                axios.request(options).then(function (response) {
-
-                                                                                                    vnode.state.jobs = vnode.state.jobs.filter(p => p._id != _id)
-                                                                                                    m.redraw()
-                                                                                                }).catch(function (error) {
-                                                                                                    console.error(error);
-                                                                                                });
-                                                                                            }
-                                                                                        },
-                                                                                            m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                                        )
-                                                                                    ])
-                                                                            )
-                                                                        ]
-                                                                    )
-                                                                })
-                                                        ]
-                                                    )
-                                                ])
-                                        )
-                                    )
-                                ]
-                            )
-                        )],
-                    )
+        // --- Main Page Layout ---
+        return m(".container-fluid.py-5", [
+            // Page Header
+            m(".d-flex.justify-content-between.align-items-center.mb-5", [
+                m("div", [
+                    m("h2.fw-bolder", "Daily Dashboard"),
+                    m("span.text-muted", `Showing data for ${businessDate.format('dddd, MMMM Do YYYY')}`)
                 ])
+                // Date picker could go here if needed in the future
             ]),
-            m(expenses),
-            m(stock_levels)
-        ]
-    }
-}
 
-export default orders
+            // Section 1: Daily Summary Stats
+            m(".card.shadow-sm.mb-5", [
+                // m(".card-header", m("h3.card-title.fw-bold", "Daily Summary")),
+                // m(".card-body", 
+                    m(".d-flex.flex-wrap.justify-content-center", [
+                        m(StatWidget, { title: "Total Sales", amount: stats.totalSales, symbol: "Ksh", color: "primary", icon: "fa-sack-dollar" }),
+                        m(StatWidget, { title: "Total Expenses", amount: stats.totalExpenses, symbol: "Ksh", color: "danger", icon: "fa-receipt" }),
+                        m(StatWidget, { title: "Net Profit", amount: stats.totalProfit, symbol: "Ksh", color: "success", icon: "fa-arrow-trend-up" }),
+                        m(StatWidget, { title: "Jobs Today", amount: stats.totalJobs, color: "info", icon: "fa-check-to-slot" })
+                    ])
+                // )
+            ]),
+
+            // Section 2: Job Queue
+            m(".card.shadow-sm.mb-5", [
+                m(".card-header.d-flex.justify-content-between.align-items-center", [
+                    m("h3.card-title.fw-bold", "Job Queue"),
+                    m("button.btn.btn-sm.btn-primary", { onclick: () => m.route.set("/q-new") }, 
+                        m("i.fa.fa-plus.me-1"), "New Job"
+                    )
+                ]),
+                m(".card-body.p-0", renderJobList())
+            ]),
+
+            // Section 3: Expenses
+            m(".card.shadow-sm.mb-5", [
+                m(".card-header", m("h3.card-title.fw-bold", "Expenses")),
+                console.log(expensesList),
+                m(".card-body",  m(expensesList, {
+                    expenses: vnode.state.expenses,
+                    stores: vnode.state.stores,
+                    brands: vnode.state.brands,
+                    businessDate: vnode.state.businessDate,
+                    onUpdate: vnode.state.onUpdate // Pass the callback here
+                }))
+            ]),
+
+            // // Section 4: Stock Levels
+            // m(".card.shadow-sm", [
+            //     m(".card-header", m("h3.card-title.fw-bold", "Stock Levels")),
+            //     m(".card-body", m(stock_levels))
+            // ]),
+        ]);
+    }
+};
+
+export default DashboardPage;
