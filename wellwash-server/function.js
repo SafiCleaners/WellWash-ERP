@@ -2144,39 +2144,86 @@ const routes = async (app) => {
         });
 
         // Clients
+        // In your main server file (e.g., index.js)
+
+        // REPLACE your old '/clients' route with this new one.
         app.get('/clients', importantMiddleWares, async (req, res) => {
             try {
-                // Fetch data from 'clients' and 'jobs' collections in parallel
-                const [clients, jobs] = await Promise.all([
-                    db.collection('clients').find({ deleted: false }).toArray(),
-                    db.collection('jobs').find({ deleted: false }).toArray()
-                ]);
-
-                // Combine and merge the data from 'clients' and 'jobs'
-                const mergedData = clients.concat(jobs
-                    .filter(job => {
-                        if (!job.phone) {
-                            return false
+                const aggregationPipeline = [
+                    // Stage 1: Filter for relevant jobs that have a phone number.
+                    {
+                        $match: {
+                            phone: { $exists: true, $ne: null, $ne: "" },
+                            deleted: false
                         }
-                        return true
-                    })
-                    .map(job => {
-                        return {
-                            name: job.clientName,
-                            phone: job.phone
-                        };
-                    }))
-                    .map(job => {
-                        // const maskedPhoneNumber = job.phone.substring(0, 2) + '**' + job.phone.substring(4);
-                        // job.phone = maskedPhoneNumber;
+                    },
 
-                        return job;
-                    });;
+                    // Stage 2: Group jobs by the client's phone number to calculate lifetime stats.
+                    {
+                        $group: {
+                            _id: "$phone", // Group by the unique phone number
+                            name: { $first: "$clientName" }, // Assume the name is consistent
+                            totalOrders: { $sum: 1 }, // Count the number of orders
+                            totalAmount: { $sum: "$price" }, // Sum the total price of all orders
+                            mostRecentBusinessDate: { $max: "$businessDate" }, // Get the most recent order date
 
-                res.send(mergedData);
+                            // Sum the total KGs and Duvets from all their jobs
+                            kgs: { $sum: { $ifNull: ["$generalKgs", 0] } },
+                            duvets: { $sum: { $ifNull: ["$duvetsAmount", 0] } },
+
+                            // Keep the _id of the very first job to find out who added them and when
+                            firstJobId: { $min: "$_id" }
+                        }
+                    },
+
+                    // Stage 3: Calculate the Average Order Value.
+                    {
+                        $addFields: {
+                            averageOrderValue: {
+                                $cond: [{ $eq: ["$totalOrders", 0] }, 0, { $divide: ["$totalAmount", "$totalOrders"] }]
+                            }
+                        }
+                    },
+
+                    // Stage 4: Look up the details of the first job to get creator info.
+                    {
+                        $lookup: {
+                            from: "jobs",
+                            localField: "firstJobId",
+                            foreignField: "_id",
+                            as: "firstJobDetails"
+                        }
+                    },
+
+                    // Stage 5: Deconstruct the lookup array to a single object.
+                    { $unwind: { path: "$firstJobDetails", preserveNullAndEmptyArrays: true } },
+
+                    // Stage 6: Project the final shape of the data to match the frontend table.
+                    {
+                        $project: {
+                            _id: "$firstJobId", // Use a real unique ID for keys
+                            name: "$name",
+                            phone: "$_id", // The phone number we grouped by
+                            totalOrders: "$totalOrders",
+                            totalAmount: "$totalAmount",
+                            averageOrderValue: "$averageOrderValue",
+                            mostRecentBusinessDate: "$mostRecentBusinessDate",
+                            kgs: "$kgs",
+                            duvets: "$duvets",
+                            userTitle: { $ifNull: ["$firstJobDetails.userTitle", "N/A"] },
+                            createdAtFormatted: { $ifNull: ["$firstJobDetails.createdAtFormatted", "N/A"] }
+                            // Note: 'groups' would require an additional lookup into the 'clients' collection if needed.
+                        }
+                    }
+                ];
+
+                const clientsData = await db.collection('jobs').aggregate(aggregationPipeline).toArray();
+
+                res.status(200).json(clientsData);
+
             } catch (error) {
-                console.error('Error occurred:', error);
-                res.status(500).send('Internal Server Error');
+                console.error('Error fetching aggregated client data:', error);
+                res.status(500).json({ error: 'Internal server error' });
             }
         });
 
