@@ -1,667 +1,253 @@
+import m from "mithril";
 import axios from "axios";
-var equal = require('deep-equal');
-import {
-    url,
-    operationTimes
-} from "../constants"
-import m from "mithril"
-import uploader from "../components/uploader"
-import map from "./map";
-import input from "./input";
+import moment from "moment";
+import { url, operationTimes } from "../constants";
 import dayRangeCalculator from "../dateCalculator";
-import moment from "moment"
-import _ from "underscore"
+import loader from "../components/loader";
+import incrementableInput from "../components/input"; // Assuming this is your pricing calculator component
 
+/**
+ * Reusable, responsive form field component with Font Awesome icons.
+ */
+const FormField = {
+    view: ({ attrs: { label, value, oninput, icon, placeholder, type = 'text' } }) => m(".col-12.col-md-6.mb-4", [
+        m("label.form-label.fw-bold", label),
+        m(".input-group", [
+            m("span.input-group-text", m(`i.fas.${icon}`)),
+            m("input.form-control", {
+                type,
+                placeholder: placeholder || `Enter ${label}...`,
+                value,
+                oninput: (e) => oninput(e.target.value)
+            })
+        ])
+    ])
+};
 
+/**
+ * Main Order Calculator Page Component
+ */
+const OrderCalculatorPage = () => {
+    // --- STATE MANAGEMENT ---
+    let loading = true;
+    let isSaving = false;
+    let errorMessage = null;
 
-const datepicker = {
-    oncreate(vnode) {
-        $('#kt_datepicker_1').datetimepicker({
-            pickerPosition: 'bottom-left',
-            todayHighlight: true,
-            autoclose: true
+    let order = {}; // All form data lives here
+    let pricings = [];
+    let categories = [];
+    let isInternalUser = ['OWNER', 'INTERNAL'].includes(localStorage.getItem('role'));
+
+    // --- LOGIC & DATA HANDLING ---
+
+    const handleInputChange = (field, value) => {
+        order[field] = value;
+    };
+
+    const calculateTotalCost = () => {
+        const { categoryAmounts = {}, categoryCharges = {} } = order;
+        return Object.keys(categoryAmounts).reduce((total, categoryId) => {
+            const amount = parseFloat(categoryAmounts[categoryId]) || 0;
+            const charge = parseFloat(categoryCharges[categoryId]) || 0;
+            return total + (amount * charge);
+        }, 0);
+    };
+
+    const loadInitialData = () => {
+        // Start with a clean default order structure, merged with any cached data
+        const cachedOrder = JSON.parse(localStorage.getItem("activeOrder")) || {};
+        const defaultOrder = {
+            pickupDay: moment().format('L'),
+            dropOffDay: moment().add(1, 'days').format('L'),
+            pickupTime: '10am-11am',
+            dropOffTime: '10am-11am',
+            statusInfo: [{ status: "LEAD", createdAt: new Date() }],
+        };
+        order = { ...defaultOrder, ...cachedOrder };
+        
+        const token = localStorage.getItem('token');
+        const headers = { 'Content-Type': 'application/json', 'authorization': token };
+
+        Promise.all([
+            axios.get(`${url}/pricings`, { headers }),
+            axios.get(`${url}/categories`, { headers })
+        ]).then(([pricingsResponse, categoriesResponse]) => {
+            pricings = pricingsResponse.data;
+            categories = categoriesResponse.data;
+        }).catch(err => {
+            console.error("Failed to load pricing/category data:", err);
+            errorMessage = "Could not load pricing data. Please refresh.";
+        }).finally(() => {
+            loading = false;
+            m.redraw();
         });
-    },
-    view(vnode) {
-        return m("div", { "class": "form-group row" },
-            [
-                m("label", { "class": "col-form-label text-right col-lg-3 col-sm-12" },
-                    "Drop off date"
-                ),
-                m("div", { "class": "col-lg-4 col-md-9 col-sm-12" },
-                    m("input", {
-                        "class": "form-control", "type": "text", "id": "kt_datepicker_1", "readonly": "readonly", "placeholder": "Select date",
-                        oninput: (e) => {
-                            vnode.state.dropOffDate = e.target.value
-                        },
-                    })
-                )
-            ]
-        )
-    }
-}
+    };
 
-var calculator = () => {
-    return {
-        oninit: function (vnode) {
-            var cost = 0
-            var price = 0
+    const saveOrder = () => {
+        isSaving = true;
+        errorMessage = null;
+        m.redraw();
 
-            vnode.state = Object.assign(vnode.state, {
-                // select today automatically
-                pickupDay: moment(new Date()).format('L'),
-                // select tommorow automatically
-                dropOffDay: moment(new Date()).add(1, 'days').format('L'),
-                pickupTime: '10am-11am',
-                dropOffTime: '10am-11am',
-                googleId: localStorage.getItem('googleId'),
-                clientName: '',
-                phone: '',
-                //appartmentName: '',
-                // houseNumber: '',
-                //moreDetails: '',
-                curtains: 0,
-                blankets: 0,
-                duvets: 0,
-                generalKgs: 0,
-                mpesaPhoneNumber: 0,
-                mpesaConfirmationCode: '',
-                calculatePrice() {
-                    return cost
-                },
-                statusInfo: vnode.state.statusInfo ? vnode.state.statusInfo : [{
-                    status: "LEAD",
-                    createdAt: new Date()
-                }],
-                startedAt: new Date(),
-                saved: false,
-                uploading: false,
-            }, JSON.parse(localStorage.getItem("activeOrder")))
+        const token = localStorage.getItem('token');
+        const method = order._id ? 'PATCH' : 'POST';
+        const endpoint = order._id ? `${url}/jobs/${order._id}` : `${url}/jobs`;
 
+        const payload = {
+            ...order,
+            googleId: localStorage.getItem('googleId'),
+            userId: localStorage.getItem('googleId'),
+            storeId: localStorage.getItem('storeId'),
+            name: order.name || localStorage.getItem("name"),
+        };
 
+        axios({ method, url: endpoint, headers: { 'Content-Type': 'application/json', authorization: token }, data: payload })
+            .then(response => {
+                console.log("Order saved successfully:", response.data);
+                
+                // Clear local cache and redirect
+                localStorage.removeItem("activeOrder");
+                localStorage.removeItem("activeOrderId");
 
-            // create an order if there was not one already running
-            // cache order in local storage even accross refreshes
-            let activeOrderId = localStorage.getItem("activeOrderId")
-
-            // if (!activeOrderId) {
-            //     activeOrderId = new ObjectId()
-            //     localStorage.setItem("activeOrderId", activeOrderId)
-            // }
-            vnode.state.id = activeOrderId
-            vnode.state.clearInternalActiveOrderId = () => { activeOrderId = null }
-
-            const role = localStorage.getItem('role')
-            if (role && ['OWNER', "INTERNAL"].includes(role)) {
-                vnode.state.isInternaluser = true
-            }
-
-            // function to update order on the server
-            const updateOrderOnServer = (cb) => {
-                if (!['/', ''].includes(m.route.get())) {
-                    return;
-                }
-
-                var {
-                    pickupDay,
-                    dropOffDay,
-                    pickupTime,
-                    dropOffTime,
-                    //appartmentName,
-                    // houseNumber,
-                    moreDetails,
-                    curtains,
-                    blankets,
-                    duvets,
-                    generalKgs,
-                    mpesaPhoneNumber,
-                    phone,
-                    mpesaConfirmationCode,
-                    name,
-                    clientName,
-                    statusInfo,
-                    saved
-                } = vnode.state
-
-                let order = Object.assign({
-                    pickupDay,
-                    dropOffDay,
-                    pickupTime,
-                    dropOffTime,
-                    //appartmentName,
-                    //houseNumber,
-                    moreDetails,
-                    curtains,
-                    blankets,
-                    duvets,
-                    generalKgs,
-                    mpesaPhoneNumber,
-                    phone,
-                    mpesaConfirmationCode,
-                    name,
-                    clientName,
-                    statusInfo,
-                    saved
-                }, {
-                    googleId: localStorage.getItem('googleId'),
-                    userId: localStorage.getItem('googleId'),
-                    storeId: localStorage.getItem('storeId'),
-                });
-
-                console.log(order)
-
-                if (!order.name && localStorage.getItem("authToken")) {
-                    order.name = localStorage.getItem("name")
-                }
-
-                let activeOrderId = localStorage.getItem("activeOrderId")
-
-                // check if the order has changed before sending it to the server
-                const orderString = JSON.parse(localStorage.getItem("activeOrder"));
-
-                // lets update localstorage here
-
-
-                // 
-                if (equal(order, orderString) && activeOrderId) {
-                    // console.log("Order has not changed. Not sending request to server.");  
-                    return;
+                if (isInternalUser) {
+                    // For internal users, go to the job details page
+                    m.route.set(`/j/${response.data._id || order._id}`);
                 } else {
-                    localStorage.setItem("activeOrder", JSON.stringify(order))
-                    console.log("Calc Order has changed, updating the backend", { orderSentToServer: order }, { orderStringFromLocalStorage: orderString })
+                    // For customers, go to a thank you page
+                    m.route.set("/thankyou", { orderId: response.data._id });
                 }
+            })
+            .catch(err => {
+                console.error("Failed to save order:", err);
+                errorMessage = "An error occurred while saving. Please try again.";
+            })
+            .finally(() => {
+                isSaving = false;
+                m.redraw();
+            });
+    };
 
-                const orderDetailsDiff = _.omit(order, function (v, k) { return orderString && orderString[k] === v; })
-                // console.log({ orderDetailsDiff })
+    // --- VIEW HELPERS ---
 
-                order.lastSubmittedAt = new Date()
-                // send request to server
-                const options = {
-                    method: 'PATCH',
-                    url: url + "/jobs/" + activeOrderId,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authorization': localStorage.getItem('token')
+    const viewCustomerDetails = () => m(".p-4.border-bottom", [
+        m("h5.mb-4", [m("i.fas.fa-user-circle.me-2"), "Your Details"]),
+        m(".row", [
+            !localStorage.getItem('authToken') && m(FormField, { label: "Your Name", value: order.name, oninput: v => handleInputChange('name', v), icon: "fa-user" }),
+            isInternalUser && m(FormField, { label: "Client's Name", value: order.clientName, oninput: v => handleInputChange('clientName', v), icon: "fa-user-tag" }),
+            m(FormField, { label: "Contact Phone", value: order.phone, oninput: v => handleInputChange('phone', v), icon: "fa-phone", type: "tel" }),
+        ])
+    ]);
+
+    const viewSchedulePicker = () => m(".p-4.border-bottom", [
+        m("h5.mb-4", [m("i.fas.fa-calendar-alt.me-2"), "Schedule Pickup & Drop-off"]),
+        m(".row", [
+            // Pickup
+            m(".col-12.col-lg-6.mb-4", [
+                m("label.form-label.fw-bold", "Pickup Date"),
+                m(".btn-group.flex-wrap", dayRangeCalculator().map(({ dayName, day, nth, date }) =>
+                    m("button.btn", {
+                        class: order.pickupDay === date.format('L') ? "btn-primary" : "btn-outline-secondary",
+                        disabled: date.day() === 0,
+                        onclick: () => {
+                            handleInputChange('pickupDay', date.format('L'));
+                            // Auto-adjust drop-off date
+                            const newDropOff = moment(date).add(1, 'days');
+                            if (newDropOff.day() === 0) newDropOff.add(1, 'days');
+                            handleInputChange('dropOffDay', newDropOff.format('L'));
+                        }
+                    }, `${dayName} ${day}${nth}`)
+                )),
+                m("label.form-label.fw-bold.mt-3", "Pickup Time"),
+                m("select.form-select", { onchange: (e) => handleInputChange('pickupTime', e.target.value) },
+                    operationTimes.map(time => m("option", { selected: order.pickupTime === time }, time))
+                )
+            ]),
+            // Drop-off
+            m(".col-12.col-lg-6.mb-4", [
+                m("label.form-label.fw-bold", "Drop-off Date"),
+                m(".btn-group.flex-wrap", dayRangeCalculator(order.pickupDay).map(({ dayName, day, nth, date }) =>
+                     m("button.btn", {
+                        class: order.dropOffDay === date.format('L') ? "btn-primary" : "btn-outline-secondary",
+                        disabled: date.day() === 0,
+                        onclick: () => handleInputChange('dropOffDay', date.format('L'))
+                    }, `${dayName} ${day}${nth}`)
+                )),
+                m("label.form-label.fw-bold.mt-3", "Drop-off Time"),
+                m("select.form-select", { onchange: (e) => handleInputChange('dropOffTime', e.target.value) },
+                     operationTimes.map(time => m("option", { selected: order.dropOffTime === time }, time))
+                )
+            ]),
+        ])
+    ]);
+    
+    const viewPricingCalculator = () => m(".p-4.border-bottom", [
+        m("h5.mb-4", [m("i.fas.fa-tshirt.me-2"), "Laundry Items"]),
+        m(".row",
+            categories.filter(cat => cat.brand === localStorage.getItem('brand')).map(category =>
+                m(incrementableInput, {
+                    key: category._id,
+                    name: category.title,
+                    charge: order.categoryCharges?.[category._id] || 0,
+                    amount: order.categoryAmounts?.[category._id] || 0,
+                    pricing: pricings
+                        .filter(p => p.category === category._id)
+                        .map(p => ({ amount: p.cost, label: p.cost })),
+                    onChange: ({ amountValue, chargeValue }) => {
+                        if (!order.categoryCharges) order.categoryCharges = {};
+                        if (!order.categoryAmounts) order.categoryAmounts = {};
+                        order.categoryCharges[category._id] = chargeValue;
+                        order.categoryAmounts[category._id] = amountValue;
                     },
-                    data: order
-                };
-
-                console.log(options)
-                vnode.state.uploading = true
-                axios.request(options).then(function (response) {
-                    //save orderId from server response to local storage
-                    const orderIdFromServer = response.data.id;
-                    localStorage.setItem("activeOrderId", orderIdFromServer);
-                    console.log("Order ID from server:", response.data);
-
-
-                    // to ensure order stays the same but we know when it was last submitted
-                    order.lastSubmittedAt = undefined;
-                    localStorage.setItem("activeOrder", JSON.stringify(order))
-                    vnode.state.uploading = false
-                    // Check if the order is saved successfully
-                    order.jobUrl = response.data.jobUrl
-                    // Internal routing using m.route.set
-
-                    if (!vnode.state.isInternaluser) {
-                        m.route.set("/thankyou", {
-                            order: order
-                        });
-                    } else {
-                        m.location.reload()
-                    }
-
-
-                    cb()
-
-                }).catch(function (error) {
-                    order.id = null
-                    order.retry_innitial_send = true
-                    // vnode.state.activeOrder = order
-                    vnode.state.uploading = false
-                    vnode.state.saved = false
-                    // m.route.set("/order2", {
-                    //     order
-                    // })
-                    console.log("Error while saving order:", error);
-
-                    // External redirection using window.location
-
-
-                    cb()
-                });
-            }
-
-            vnode.state.updateOrderOnServer = updateOrderOnServer
-
-
-
-
-        },
-        view(vnode) {
-            console.log({ vnode })
-            var {
-                pickupDay,
-                dropOffDay,
-                pickupTime,
-                dropOffTime,
-                // appartmentName,
-                // houseNumber,
-                moreDetails,
-                curtains,
-                blankets,
-                duvets,
-                generalKgs,
-                mpesaPhoneNumber,
-                phone,
-                mpesaConfirmationCode,
-                name,
-                clientName
-            } = vnode.state
-
-            return m("div", { "class": "card-body" },
-
-                m("form",
-                    [
-                        m("div", { "class": "form-group row" },
-                            [
-                                m("div", { "class": "bs-stepper" },
-                                    [
-                                        m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                            [
-                                                m("div", { "class": "step", "data-target": "#logins-part" },
-                                                    m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                        [
-                                                            m("span", { "class": "bs-stepper-circle" },
-                                                                "1"
-                                                            ),
-                                                            m("span", { "class": "bs-stepper-label" },
-                                                                "Your Details"
-                                                            )
-                                                        ]
-                                                    )
-                                                )]
-                                        )]
-                                ),
-
-                                localStorage.getItem('authToken') ? [] : m("div", { "class": "col-lg-6" },
-                                    [
-                                        m("label",
-                                            "What is your name"
-                                        ),
-                                        m("div", { "class": "input-group" },
-                                            [
-                                                m("input", {
-                                                    oninput: (e) => {
-                                                        vnode.state.name = e.target.value
-                                                    },
-                                                    value: name,
-                                                    "class": "form-control",
-                                                    "type": "text",
-                                                    "placeholder": "What name is used to refer to you?"
-                                                }),
-                                                m("div", { "class": "input-group-append" },
-                                                    m("span", { "class": "input-group-text" },
-                                                        m("i", { "class": "la la-align-center" })
-                                                    )
-                                                )
-                                            ]
-                                        ),
-                                        // m("span", { "class": "form-text text-muted" },
-                                        //     "The Name that will be used to refer to you during messaging"
-                                        // )
-                                    ]
-                                ),
-
-
-
-                                m("div", { "class": "col-xl-4 col-lg-8 col-md-8 col-sm-12" },
-                                    [
-                                        m("label",
-                                            "When would you like your Pickup? "
-                                        ),
-                                        m("br"),
-
-                                        m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
-                                            [
-                                                dayRangeCalculator()
-                                                    .map((time) => {
-                                                        const { dayName, day, nth, date } = time
-
-                                                        return m("label", { "class": `btn btn-info ${pickupDay === date.format('L') ? "focus active" : ""}` },
-                                                            [
-                                                                m("input", {
-                                                                    "type": "radio",
-                                                                    "name": "pickupDay",
-                                                                    "id": pickupDay,
-                                                                    disabled: date.day() === 0,
-                                                                    "checked": pickupDay === date.format('L') ? true : false,
-                                                                    onchange: () => {
-                                                                        vnode.state.pickupDay = date.format('L')
-
-                                                                        let daysToAdd = 1
-                                                                        // increment time here to set drop off
-                                                                        if (moment(vnode.state.pickupDay).add(daysToAdd, 'days').day() == 0) {
-                                                                            daysToAdd = 2
-                                                                        }
-
-                                                                        vnode.state.dropOffDay = moment(vnode.state.pickupDay).add(daysToAdd, 'days').format('L')
-                                                                    }
-                                                                }),
-                                                                dayName + " " + day + nth
-                                                            ]
-                                                        )
-                                                    }),
-                                            ]
-                                        )
-                                    ]
-                                ),
-                                m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
-                                    [
-                                        m("label",
-                                            "Time of pickup:"
-                                        ),
-                                        m("div", { "class": "dropdown" },
-                                            [
-                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                    pickupTime
-                                                ),
-                                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                                    [
-                                                        operationTimes.map(time => {
-                                                            return m("a", {
-                                                                style: { "z-index": 10000 },
-                                                                onclick(e) {
-                                                                    vnode.state.pickupTime = time
-                                                                    e.preventDefault()
-                                                                },
-                                                                "class": "dropdown-item",
-                                                            },
-                                                                time
-                                                            )
-                                                        })
-                                                    ]
-                                                )
-                                            ]
-                                        )
-                                    ]),
-                                m("div", { "class": "col-xl-4 col-lg-8 col-md-8 col-sm-12" },
-                                    [
-                                        m("label",
-                                            "When would you like your DropOff?"
-                                        ),
-                                        m("br"),
-
-                                        m("div", {
-                                            "class": "btn-group btn-group-toggle",
-                                            "data-toggle": "buttons"
-                                        },
-                                            [
-                                                dayRangeCalculator(vnode.state.pickupDay)
-                                                    .map((time) => {
-                                                        const { dayName, day, nth, date } = time
-                                                        return m("label", { "class": `btn btn-info ${dropOffDay === date.format('L') ? "focus active" : ""}` },
-                                                            [
-                                                                m("input", {
-                                                                    "type": "radio",
-                                                                    "name": "dropOffDay",
-                                                                    "id": dropOffDay,
-                                                                    "checked": dropOffDay === date.format('L') ? true : false,
-                                                                    disabled: moment(vnode.state.pickupDay).day() == 0,
-                                                                    onchange: () => {
-                                                                        vnode.state.dropOffDay = date.format('L')
-                                                                    }
-                                                                }),
-                                                                dayName + " " + day + nth
-                                                            ]
-                                                        )
-                                                    }),
-                                            ]
-                                        )
-                                    ]
-                                ),
-                                m("div", { "class": "col-lg-2 col-md-4 col-sm-4" },
-                                    [
-                                        m("label",
-                                            "Time of DropOff:"
-                                        ),
-                                        m("div", { "class": "dropdown" },
-                                            [
-                                                m("button", { "class": "btn btn-secondary dropdown-toggle", "type": "button", "id": "dropdownMenuButton", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" },
-                                                    dropOffTime
-                                                ),
-                                                m("div", { "class": "dropdown-menu", "aria-labelledby": "dropdownMenuButton" },
-                                                    [
-                                                        operationTimes.map(time => {
-                                                            return m("a", {
-                                                                style: { "z-index": 10000 },
-                                                                onclick(e) {
-                                                                    vnode.state.dropOffTime = time
-                                                                    e.preventDefault()
-                                                                },
-                                                                "class": "dropdown-item",
-                                                            },
-                                                                time
-                                                            )
-                                                        })
-                                                    ]
-                                                )
-                                            ]
-                                        )
-                                    ]),
-
-                                !vnode.state.isInternaluser ? [] : m("div", { "class": "col-lg-6" },
-                                    [
-                                        m("label",
-                                            "What the name of the client?"
-                                        ),
-                                        m("div", { "class": "input-group" },
-                                            [
-                                                m("input", {
-                                                    oninput: (e) => {
-                                                        vnode.state.clientName = e.target.value
-                                                    },
-                                                    value: clientName,
-                                                    "class": "form-control",
-                                                    "type": "text",
-                                                    "placeholder": "ie Jane Doe"
-                                                }),
-                                                m("div", { "class": "input-group-append" },
-                                                    m("span", { "class": "input-group-text" },
-                                                        m("i", { "class": "la la-align-center" })
-                                                    )
-                                                )
-                                            ]
-                                        ),
-                                        m("span", { "class": "form-text text-muted" },
-                                            "The name will be used for messaging"
-                                        )
-                                    ]
-                                ),
-
-                                m("div", { "class": "col-lg-6" },
-                                    [
-                                        m("label",
-                                            "What phone number can we reach you on?"
-                                        ),
-                                        m("div", { "class": "input-group" },
-                                            [
-                                                m("input", {
-                                                    oninput: (e) => {
-                                                        vnode.state.phone = e.target.value
-                                                    },
-                                                    value: phone,
-                                                    "class": "form-control",
-                                                    "type": "text",
-                                                    "placeholder": "ie 07...."
-                                                }),
-                                                m("div", { "class": "input-group-append" },
-                                                    m("span", { "class": "input-group-text" },
-                                                        m("i", { "class": "la la-align-center" })
-                                                    )
-                                                )
-                                            ]
-                                        ),
-                                        // m("span", { "class": "form-text text-muted" },
-                                        //     "The phone number that will be used for messaging"
-                                        // )
-                                    ]
-                                ),
-
-                                m("div", { "class": "col-lg-12" },
-                                    m("div", { "class": "form-group mb-1" },
-                                        [
-                                            m("label", { "for": "exampleTextarea" },
-                                                "Any more details you would like us to know about the pickup and dropoff?"
-                                            ),
-                                            m("textarea", {
-                                                oninput: (e) => {
-                                                    vnode.state.moreDetails = e.target.value
-                                                },
-                                                value: moreDetails,
-                                                "class": "form-control",
-                                                "id": "exampleTextarea",
-                                                "rows": "12",
-                                                "spellcheck": "true"
-                                            })
-                                        ]
-                                    )
-                                ),
-                                m("br"),
-                                m("br"),
-                            ]
-                        ),
-
-
-
-                        m("div", { "class": "bs-stepper" },
-                            [
-                                m("div", { "class": "bs-stepper-header", "role": "tablist" },
-                                    [
-                                        m("div", { "class": "step", "data-target": "#logins-part" },
-                                            m("button", { "class": "step-trigger", "type": "button", "role": "tab", "aria-controls": "logins-part", "id": "logins-part-trigger" },
-                                                [
-                                                    m("span", { "class": "bs-stepper-circle" },
-                                                        "2"
-                                                    ),
-                                                    m("span", { "class": "bs-stepper-label" },
-                                                        "Laundry service Status"
-                                                    )
-                                                ]
-                                            )
-                                        )]
-                                )]
-                        ),
-
-
-                        m("div", { "class": "alert alert-custom alert-default", "role": "alert" },
-                            [
-                                m("div", { "class": "alert-icon" },
-                                    m("span", { "class": "svg-icon svg-icon-primary svg-icon-xl" },
-                                        m("svg", { "xmlns": "http://www.w3.org/2000/svg", "xmlns:xlink": "http://www.w3.org/1999/xlink", "width": "24px", "height": "24px", "viewBox": "0 0 24 24", "version": "1.1" },
-                                            m("g", { "stroke": "none", "stroke-width": "1", "fill": "none", "fill-rule": "evenodd" },
-                                                [
-                                                    m("rect", { "x": "0", "y": "0", "width": "24", "height": "24" }),
-                                                    m("path", { "d": "M7.07744993,12.3040451 C7.72444571,13.0716094 8.54044565,13.6920474 9.46808594,14.1079953 L5,23 L4.5,18 L7.07744993,12.3040451 Z M14.5865511,14.2597864 C15.5319561,13.9019016 16.375416,13.3366121 17.0614026,12.6194459 L19.5,18 L19,23 L14.5865511,14.2597864 Z M12,3.55271368e-14 C12.8284271,3.53749572e-14 13.5,0.671572875 13.5,1.5 L13.5,4 L10.5,4 L10.5,1.5 C10.5,0.671572875 11.1715729,3.56793164e-14 12,3.55271368e-14 Z", "fill": "#000000", "opacity": "0.3" }),
-                                                    m("path", { "d": "M12,10 C13.1045695,10 14,9.1045695 14,8 C14,6.8954305 13.1045695,6 12,6 C10.8954305,6 10,6.8954305 10,8 C10,9.1045695 10.8954305,10 12,10 Z M12,13 C9.23857625,13 7,10.7614237 7,8 C7,5.23857625 9.23857625,3 12,3 C14.7614237,3 17,5.23857625 17,8 C17,10.7614237 14.7614237,13 12,13 Z", "fill": "#000000", "fill-rule": "nonzero" })
-                                                ]
-                                            )
-                                        )
-                                    )
-                                ),
-                                m("div", { "class": "alert-text" },
-                                    [
-                                        "AWAITING PICKUP...,",
-                                        m("code",
-                                            "Please wait... you might recieve a call from our team member")
-                                    ]
-                                )
-                            ]
-                        ),
-
-                        m("div", { "class": "form-group row", style: { "padding": "10px" } },
-                            [
-
-                                // m("div", { "class": "col-lg-12" },
-                                //     [
-
-                                m("div", {
-                                    class: "float-right",
-                                    // style: {
-                                    //     "padding": "30px"
-                                    // }
-                                }, [
-                                    m("button", {
-                                        type: "button",
-                                        "class": "btn btn-sm btn-info",
-                                        onclick() {
-
-                                            // alert("saving order")
-
-
-                                            vnode.state.saved = true
-                                            vnode.state.updateOrderOnServer(() => {
-                                                vnode.state.activeOrderId = null
-
-
-                                                var {
-                                                    //    appartmentName,
-                                                    //   houseNumber,
-                                                    moreDetails,
-                                                    phone,
-                                                    name,
-                                                    clientName
-                                                } = vnode.state
-
-                                                let order = Object.assign({
-                                                    //  appartmentName,
-                                                    // houseNumber,
-                                                    moreDetails,
-                                                    phone,
-                                                    name,
-                                                    clientName
-                                                }, {
-                                                    googleId: localStorage.getItem('googleId'),
-                                                    userId: localStorage.getItem('googleId'),
-                                                });
-
-                                                localStorage.removeItem("activeOrderId")
-                                                localStorage.setItem("activeOrder", JSON.stringify(order))
-                                                vnode.state.clearInternalActiveOrderId()
-                                                location.reload()
-
-                                            });
-
-                                        }
-                                    }, [
-                                        m("i", { "class": "flaticon2-mail-1" }),
-                                        m("span", "Save My order"
-                                        )
-
-                                    ]),
-                                ]),
-                                // ])
-
-
-                            ]),
-
-                        m(map),
-
-
-                    ]
-                ),
-
-
-
-
-
-                // order ends here 
-
+                    pickerSize: 12, pickerSizeMD: 6, pickerSizeLG: 4 // Responsive columns
+                })
             )
+        ),
+         m(".text-end.mt-4.pe-3", [
+            m("h3.display-4", `Estimate: KSH ${calculateTotalCost().toLocaleString()}`)
+        ])
+    ]);
+
+    const viewActions = () => m(".p-4.bg-light", [
+         m(".row.align-items-center", [
+            m(".col-12.col-md-8.mb-3.mb-md-0", [
+                m("label.form-label.fw-bold", "Additional Details or Instructions"),
+                m("textarea.form-control", {
+                    rows: 3,
+                    placeholder: "e.g., Please call upon arrival, gate code is 1234...",
+                    value: order.moreDetails,
+                    oninput: (e) => handleInputChange('moreDetails', e.target.value)
+                })
+            ]),
+            m(".col-12.col-md-4.text-md-end", [
+                 m("button.btn.btn-primary.btn-lg.w-100", { 
+                    onclick: saveOrder,
+                    disabled: isSaving
+                 }, [
+                    isSaving ? m("span.spinner-border.spinner-border-sm.me-2") : m("i.fas.fa-paper-plane.me-2"),
+                    isSaving ? "Submitting..." : "Submit Order"
+                ])
+            ])
+         ]),
+         errorMessage && m(".alert.alert-danger.mt-4", errorMessage)
+    ]);
+
+
+    // --- MAIN RENDER FUNCTION ---
+    return {
+        oninit: loadInitialData,
+        view: () => {
+            if (loading) return m(loader);
+            
+            return m(".card.card-custom.shadow-sm.m-2.m-md-4", [
+                m(".card-header.bg-light", m("h2.card-title.p-3", "Create a New Laundry Order")),
+                m(".card-body.p-0", [
+                    viewCustomerDetails(),
+                    viewSchedulePicker(),
+                    viewPricingCalculator(),
+                    viewActions()
+                ])
+            ]);
         }
-    }
-}
+    };
+};
 
-
-
-export default calculator
+export default OrderCalculatorPage;

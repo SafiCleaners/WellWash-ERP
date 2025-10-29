@@ -3,7 +3,7 @@ var client_id = "857253574802-n690pf89nhrda0n6sf686ndaqagjfsc2.apps.googleuserco
 let url = "https://wellwash.netlify.app/api";
 
 if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
-  url = "http://localhost:8002";
+  // url = "http://localhost:8002";
 }
 
 const operationTimes = [

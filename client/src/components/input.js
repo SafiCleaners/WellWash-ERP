@@ -1,144 +1,88 @@
-import m from "mithril"
+import m from "mithril";
 
-const dynamicPicker = {
-    oninit(vnode) {
-        if (!vnode.attrs.options[0])
-            return;
+const incrementableInput = () => {
+    let localAmount = 0;
+    let localCharge = 0;
 
-        const sortedOptions = vnode.attrs.options.slice(); // Make a shallow copy to avoid modifying the original array
-
-        sortedOptions.sort((a, b) => Number(b.amount) - Number(a.amount));
-
-        vnode.state.sortedOptions = sortedOptions
-
-        console.log(vnode.attrs)
-        if (!vnode.state.selectedCharge && vnode.attrs.charge) {
-            vnode.state = Object.assign(vnode.state, {
-                selectedCharge: vnode.attrs.charge
-            })
-            vnode.attrs.onChange(vnode.state.selectedCharge)
+    const callOnChange = (vnode) => {
+        if (vnode.attrs.onChange) {
+            vnode.attrs.onChange({ amountValue: localAmount, chargeValue: localCharge });
         }
-        // if (!vnode.state.selectedCharge)
-        //     vnode.state.sortedOptions[0]?.amount)
+    };
 
-    },
-    view(vnode) {
+    const setAmount = (vnode, value) => {
+        const newAmount = parseInt(value, 10);
+        if (!isNaN(newAmount) && newAmount >= 0) {
+            localAmount = newAmount;
+            callOnChange(vnode);
+        }
+    };
 
-        console.log({ state: vnode.attrs.amount })
-        return [
-            m("label", m("b", `Pricing ~/` + vnode.attrs.amount + " ,each at " + vnode.state.selectedCharge + " = " + (Number(vnode.state.selectedCharge) * Number(vnode.attrs.amount)))),
-            m("br"),
-            m("div", { "class": "btn-group btn-group-toggle", "data-toggle": "buttons" },
-                vnode.state.sortedOptions?.map((statusInfo) => {
-                    const { amount: charge, label, selectedCharge } = statusInfo
-                    return m("label", { "class": `btn btn-info ${selectedCharge ? "active" : (charge == vnode.state.selectedCharge ? "active" : "")}` },
-                        [
-                            m("input", {
-                                "type": "radio",
-                                "name": "price" + vnode.attrs.name,
-                                onchange: () => {
-                                    console.log("selected price;", charge)
-                                    vnode.attrs.charge = charge
-                                    vnode.state.selectedCharge = charge
-                                    vnode.attrs.onChange(charge)
-                                }
-                            }),
-                            label
-                        ]
-                    )
-                })
-            )
-        ]
-    }
-}
+    const setCharge = (vnode, value) => {
+        const newCharge = parseFloat(value);
+        if (!isNaN(newCharge)) {
+            localCharge = newCharge;
+            callOnChange(vnode);
+        }
+    };
 
-const input = {
-    oninit(vnode) {
-        console.log(vnode.state, vnode.attrs)
-        vnode.state = Object.assign(vnode.state, {
-            amount: vnode.attrs.amount,
-            value: vnode.attrs.amount
-        })
-        // console.log(vnode.state, vnode.attrs)
-    },
-    view(vnode) {
+    return {
+        oninit: (vnode) => {
+            localAmount = parseInt(vnode.attrs.amount, 10) || 0;
+            localCharge = parseFloat(vnode.attrs.charge) || 0;
+        },
+        // This ensures the component updates if the parent's data changes
+        onbeforeupdate: (vnode) => {
+            localAmount = parseInt(vnode.attrs.amount, 10) || 0;
+            localCharge = parseFloat(vnode.attrs.charge) || 0;
+        },
+        view: (vnode) => {
+            const { name, pricing = [], pickerSize = 12, pickerSizeMD = 6, pickerSizeLG = 4 } = vnode.attrs;
+            const subtotal = localAmount * localCharge;
 
-        return [
+            return m(`.col-${pickerSize}.col-md-${pickerSizeMD}.col-lg-${pickerSizeLG}.mb-4`, [
+                m("label.form-label.fw-bold", name),
 
-            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize}` },
-                [
-                    m("label", m("b", vnode.attrs.name)),
-                    m("div", { "class": "form-group" }, [
-                        m("div", { "class": "input-group mb-3" },
-                            [
-                                m("div", { "class": "input-group-prepend" },
-                                    m("button", {
-                                        "class": "btn btn-outline-secondary", "type": "button", "id": "button-addon1",
-                                        onclick() {
-                                            if (Number(vnode.state.value) - 1 >= 0) {
-                                                vnode.state.value = Number(vnode.state.value) - 1
-                                                vnode.attrs.onChange({
-                                                    amountValue: vnode.state.value,
-                                                    chargeValue: vnode.state.chargeValue
-                                                })
-                                                m.redraw()
-                                            }
-                                        }
-                                    },
-                                        "-"
-                                    )
-                                ),
-                                m("input", {
-                                    "class": "form-control", "type": "number", "aria-describedby": "button-addon1",
-                                    value: vnode.state.value,
-                                    oninput(e) {
-                                        if (Math.sign(Number(e.target.value)) === 1) {
-                                            vnode.state.value = Number(e.target.value)
-                                            vnode.attrs.onChange({
-                                                amountValue: vnode.state.value,
-                                                chargeValue: vnode.state.chargeValue
-                                            })
-                                        }
-                                    }
-                                }),
-                                m("div", { "class": "input-group-append" },
-                                    m("button", {
-                                        "class": "btn btn-outline-secondary", "type": "button", "id": "button-addon1",
-                                        onclick() {
-                                            vnode.state.value = Number(vnode.state.value) + 1
-                                            vnode.attrs.onChange({
-                                                amountValue: vnode.state.value,
-                                                chargeValue: vnode.state.chargeValue
-                                            })
-                                        }
-                                    },
-                                        "+"
-                                    )
-                                )
-                            ]
-                        )
-                    ])
-                ]
-            ),
-            m("div", { "class": `col-lg-${vnode.attrs.pickerSizeLG} col-md-${vnode.attrs.pickerSizeMD} col-sm-${vnode.attrs.pickerSize} d-md-block ${!vnode.attrs.amount ? "d-none" : ""}`, style: { "overflow-x": "auto" } }, [
-                m(dynamicPicker, {
-                    options: vnode.attrs.pricing,
-                    charge: vnode.state.chargeValue || vnode.attrs.charge,
-                    amount: vnode.attrs.amount,
-                    name: vnode.attrs.name,
-                    onChange(charge) {
-                        // console.log(charge)
-                        vnode.state.chargeValue = charge
+                // --- Amount Input Group ---
+                m(".input-group.mb-2", [
+                    m("button.btn.btn-outline-secondary", {
+                        onclick: () => setAmount(vnode, localAmount - 1)
+                    }, m("i.fas.fa-minus")),
+                    
+                    m("input.form-control.text-center.fw-bold", {
+                        type: "number",
+                        value: localAmount,
+                        oninput: (e) => setAmount(vnode, e.target.value),
+                        min: 0
+                    }),
 
-                        vnode.attrs.onChange({
-                            amountValue: vnode.state.value,
-                            chargeValue: vnode.state.chargeValue
-                        })
-                    }
-                })
-            ]),
-        ]
-    }
-}
+                    m("button.btn.btn-outline-secondary", {
+                        onclick: () => setAmount(vnode, localAmount + 1)
+                    }, m("i.fas.fa-plus")),
+                ]),
 
-export default input;
+                // --- Price Point Selection ---
+                m(".d-flex.flex-wrap.align-items-center", [
+                    m("span.me-2.text-muted", "Price:"),
+                    pricing.length > 0 ?
+                        m(".btn-group", pricing.map(priceOption =>
+                            m("button.btn.btn-sm", {
+                                // Visually indicate the active price
+                                class: localCharge === priceOption.amount ? "btn-primary" : "btn-outline-primary",
+                                onclick: () => setCharge(vnode, priceOption.amount)
+                            }, `KSH ${priceOption.label}`)
+                        ))
+                        : m("span.text-danger.fst-italic", "No prices available")
+                ]),
+                
+                // --- Subtotal Display (FIXED) ---
+                // Only show the subtotal if a valid calculation can be made
+                (subtotal > 0) && m(".mt-2.text-end.pe-2",
+                    m("span.fw-bold.fs-5.text-success", `Subtotal: KSH ${subtotal.toLocaleString()}`)
+                )
+            ]);
+        }
+    };
+};
+
+export default incrementableInput;

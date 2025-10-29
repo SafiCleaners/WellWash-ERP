@@ -5,11 +5,12 @@ import { url } from "../constants";
 import loader from "../components/loader";
 import addPricing from "../components/add_pricing";
 import editPricing from "../components/edit_pricing";
-import categories from "../pages/categories"; // For displaying the category management view
+import categories from "../pages/categories";
 
 // Helper function to format currency safely
 const formatCurrency = (number) => {
-    if (typeof number !== 'number') return 'N/A';
+    // CHANGED: Added check for null to be more robust
+    if (typeof number !== 'number' || number === null) return 'N/A';
     return new Intl.NumberFormat('en-US').format(number);
 };
 
@@ -31,9 +32,8 @@ const loadData = (vnode) => {
             vnode.state.pricings = pricingsResponse.data;
             vnode.state.categories = categoriesResponse.data;
 
-            // PERFORMANCE: Create a map for instantaneous category lookups
             vnode.state.categoryMap = vnode.state.categories.reduce((acc, category) => {
-                acc[category.id] = category; // Store the whole category object
+                acc[category._id] = category;
                 return acc;
             }, {});
         })
@@ -54,7 +54,7 @@ const deletePricing = (vnode, pricingId) => {
     axios.delete(`${url}/pricings/${pricingId}`, {
         headers: { authorization: localStorage.getItem('token') }
     }).then(() => {
-        vnode.state.pricings = vnode.state.pricings.filter(p => p.id !== pricingId);
+        vnode.state.pricings = vnode.state.pricings.filter(p => p._id !== pricingId);
     }).catch(error => {
         console.error("Error deleting pricing:", error);
         alert("Failed to delete pricing entry.");
@@ -77,23 +77,19 @@ const pricingPage = {
         const { loading, pricings, categoryMap } = vnode.state;
         const brandId = localStorage.getItem('brand');
 
-        // Pre-filter the pricings using the fast categoryMap
         const filteredPricings = pricings.filter(pricing => {
             const category = categoryMap[pricing.category];
             return category && category.brand === brandId;
         });
 
         return m(".container-fluid", [
-            // First Card for Category Management
             m(".card.card-custom.gutter-b", m(categories)),
 
-            // Second Card for Pricing Management
             m(".card.card-custom.gutter-b", [
                 m(".card-header.border-0.pt-7", [
                     m("h3.card-title.align-items-start.flex-column",
                         m("span.card-label.font-weight-bold.font-size-h4.text-dark-75", "Available Pricings")
                     ),
-                    // Pass the onPricingAdded callback to the child component
                     m(addPricing, {
                         onPricingAdded: (newPricing) => {
                             vnode.state.pricings.unshift(newPricing);
@@ -106,36 +102,32 @@ const pricingPage = {
                             ? m(loader)
                             : m("table.table.table-borderless.table-vertical-center", [
                                 m("thead", m("tr", [
+                                    // CHANGED: Removed the 'Title' header
                                     m("th.p-0.min-w-200px.text-left", "Category"),
-                                    m("th.p-0.min-w-100px.text-left", "Title"),
                                     m("th.p-0.min-w-50px.text-right", "Cost"),
                                     m("th.p-0.min-w-50px.text-right", "Actions")
                                 ])),
                                 m("tbody", filteredPricings.map(item =>
-                                    m("tr", { key: item.id }, [
+                                    m("tr", { key: item._id }, [
                                         m("td.text-left",
-                                            // Fast O(1) lookup for category title
                                             m("span.text-dark-75.font-weight-bolder", categoryMap[item.category]?.title || "Unknown Category")
                                         ),
-                                        m("td.text-left",
-                                            m("span.text-dark-75", item.title)
-                                        ),
+                                        // CHANGED: Removed the 'Title' data cell
                                         m("td.text-right",
                                             m("span.text-dark-75.font-weight-bolder", formatCurrency(item.cost))
                                         ),
                                         m("td.text-right.pr-0", [
-                                            // Pass pricing data and the onPricingUpdated callback
                                             m(editPricing, {
                                                 pricing: item,
                                                 onPricingUpdated: (updatedPricing) => {
-                                                    const index = vnode.state.pricings.findIndex(p => p.id === updatedPricing.id);
+                                                    const index = vnode.state.pricings.findIndex(p => p._id === updatedPricing._id);
                                                     if (index > -1) {
                                                         vnode.state.pricings[index] = updatedPricing;
                                                     }
                                                 }
                                             }),
                                             m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
-                                                onclick: () => deletePricing(vnode, item.id), // Use 'id'
+                                                onclick: () => deletePricing(vnode, item._id),
                                                 title: "Delete Pricing"
                                             }, m("i.flaticon2-rubbish-bin-delete-button"))
                                         ])

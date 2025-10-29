@@ -1,75 +1,81 @@
 import axios from "axios";
+import m from "mithril";
+import { url } from "../constants";
 
-import {
-    url,
-} from "../constants"
-
-import m from "mithril"
-
-
-const AddPricingForm = {
-    oninit(vnode) {
-        vnode.state.stores = []
-    },
-    oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(options).then(function (response) {
-            vnode.state.stores = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-    },
-    showModal: false,
-    unitType: '',
-    formData: {
+const AddPricingForm = () => {
+    // --- State Variables ---
+    let showModal = false;
+    let loading = true;
+    let submitting = false;
+    let categories = [];
+    let formData = {
         category: '',
         cost: ''
-    },
+    };
+    let errorMessage = '';
 
-    openModal: function () {
-        this.showModal = true;
-    },
+    // --- Lifecycle Hook: oninit ---
+    // Fetches categories when the component is initialized.
+    const oninit = () => {
+        const token = localStorage.getItem('token');
+        const brandId = localStorage.getItem('brand');
 
-    closeModal: function () {
-        this.showModal = false;
-    },
+        const options = {
+            headers: { 'authorization': token }
+        };
 
-    handleInputChange: function (field, value) {
-        this.formData[field] = value;
-    },
+        axios.get(`${url}/categories?brand=${brandId}`, options)
+            .then((response) => {
+                categories = response.data;
+                // Set a default category in the form if categories exist
+                if (categories.length > 0) {
+                    formData.category = categories[0]._id;
+                }
+            })
+            .catch((error) => {
+                console.error("Failed to fetch categories:", error);
+                errorMessage = "Could not load categories. Please try again.";
+            })
+            .finally(() => {
+                loading = false;
+                m.redraw();
+            });
+    };
 
-    handleSubmit: function () {
-        // Handle form submission logic here
-        console.log('Form Submitted:', this.formData);
+    // --- Helper Functions ---
+    const openModal = () => {
+        showModal = true;
+        errorMessage = ''; // Clear any previous errors
+    };
+
+    const closeModal = () => {
+        showModal = false;
+    };
+
+    const handleInputChange = (field, value) => {
+        formData[field] = value;
+        errorMessage = ''; // Clear error on new input
+    };
+
+    const handleSubmit = () => {
+        submitting = true;
+        
+        // CHANGED: Convert cost to a number for validation and submission
+        const costAsNumber = parseFloat(formData.cost);
+
+        // CHANGED: Added validation for the form data
+        if (!formData.category || isNaN(costAsNumber) || costAsNumber <= 0) {
+            errorMessage = "Please select a category and enter a valid price.";
+            submitting = false; // Stop submission
+            m.redraw();
+            return;
+        }
+
+        const payload = {
+            ...formData,
+            cost: costAsNumber, // Use the converted number
+            brand: localStorage.getItem('brand')
+        };
 
         const options = {
             method: 'POST',
@@ -78,70 +84,85 @@ const AddPricingForm = {
                 'Content-Type': 'application/json',
                 'authorization': localStorage.getItem('token')
             },
-            data: this.formData,
+            data: payload, // Send the payload with the correct data type
         };
 
-        axios.request(options).then(function (response) {
-            console.log(response.data);
-            location.reload()
-        }).catch(function (error) {
-            console.error(error);
+        axios.request(options).then(() => {
+            // Success: reload the page to show the new data
+            location.reload();
+        }).catch((error) => {
+            console.error("Form submission error:", error);
+            errorMessage = "Failed to save pricing. Please try again.";
+        }).finally(() => {
+            submitting = false;
+            m.redraw();
         });
+    };
 
-        // Close the modal after submission
-        // this.closeModal();
-    },
+    // --- View ---
+    return {
+        oninit: oninit,
+        view: (vnode) => {
+            // The addPricing component now accepts a callback to update the parent
+            const { onPricingAdded } = vnode.attrs;
 
-    view: function (vnode) {
-        return m('div', [
-            // Open Modal Button
-            m('button', { "class": "btn btn-sm btn-info", onclick: () => this.openModal() }, [
-                m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Pricing"
-            ]),
+            return m('div', [
+                m('button.btn.btn-sm.btn-info', {
+                    onclick: openModal,
+                    disabled: loading
+                }, [
+                    m("i.flaticon-add-circular-button"),
+                    loading ? " Loading..." : " Add Pricing"
+                ]),
 
-            // Modal
-            this.showModal && m('.modal', [
-                m('.modal-content', [
-                    m("div", { "class": "row" }, [
-                        m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Pricing'),
-                        ]),
-                        m("div", { "class": "col-1" }, [
-                            m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
-                        ]),
-                        m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Select Category:'),
-                            m('select', {
-                                "class": "form-control form-control-solid",
-                                value: this.formData.category,
-                                onchange: (e) => this.handleInputChange('category', e.target.value),
-                            }, [
-                                vnode.state.categories
-                                    .filter(c => c.brand == localStorage.getItem('brand'))
-                                    .map((c) => { return m('option', { value: c._id }, c.title) }),
+                showModal && m('.modal', [
+                    m('.modal-content', [
+                        m(".row", [
+                            m(".col-11", m('h4', 'Add Pricing')),
+                            m(".col-1", m('span.close', { onclick: closeModal }, '×')),
+                            
+                            m("span.border-bottom.mb-4"),
+
+                            m(".col-6.my-2", [
+                                m('label', 'Select Category:'),
+                                m('select.form-control.form-control-solid', {
+                                    value: formData.category,
+                                    onchange: (e) => handleInputChange('category', e.target.value),
+                                    disabled: categories.length === 0
+                                }, [
+                                    categories.length === 0
+                                        ? m('option', 'Loading categories...')
+                                        : categories.map((c) => m('option', { value: c._id }, c.title))
+                                ]),
                             ]),
+
+                            m(".col-6.my-2", [
+                                m('label', 'Price (Cost):'),
+                                // CHANGED: Input type is now 'number'
+                                m('input[type=number].form-control.form-control-solid', {
+                                    placeholder: "Enter Price in KSH",
+                                    value: formData.cost,
+                                    oninput: (e) => handleInputChange('cost', e.target.value),
+                                }),
+                            ]),
+
+                            errorMessage && m(".col-12.mt-2.text-danger", errorMessage),
+
+                            m("span.border-top.mt-4"),
+
+                            m(".pt-2.align-right", [
+                                m('button.btn.btn-danger.font-weight-bolder.font-size-sm.px-6.mr-3', { onclick: closeModal }, 'Close'),
+                                m('button.btn.btn-info.font-weight-bolder.font-size-sm.px-6', {
+                                    onclick: handleSubmit,
+                                    disabled: submitting
+                                }, submitting ? 'Saving...' : 'Save'),
+                            ])
                         ]),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Price Point:'),
-                            m('input[type=text]', {
-                                "class": "form-control form-control-solid",
-                                "placeholder": "Enter Price in KSH",
-                                value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('cost', e.target.value),
-                            }),
-                        ]),
-                        m("span", { "class": "border-top mt-4" }),
-                        m("div", { "class": "pt-2 align-right" }, [
-                            m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
-                        ])
                     ]),
                 ]),
-            ]),
-        ]);
-    },
+            ]);
+        },
+    };
 };
 
 export default AddPricingForm;

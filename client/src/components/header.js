@@ -35,7 +35,7 @@ const header = {
             vnode.state.stores = response.data
             vnode.state.loading = false
             
-            // m.redraw()
+            m.redraw()
         }).catch(function (error) {
             vnode.state.loading = false
             // m.redraw()
