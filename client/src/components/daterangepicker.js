@@ -7,20 +7,20 @@ const DISPLAY_FORMAT_RANGE = 'Do MMM';
 const STORAGE_FORMAT = 'YYYY-MM-DD';
 
 // --- Helper function to update URL and localStorage ---
+// This function is now also used for recovering from invalid states.
 const updateUrlAndStorage = (params) => {
     const urlSearchParams = new URLSearchParams(window.location.search);
-
-    // Preserve existing storeId if it exists
     const storeId = urlSearchParams.get('storeId');
 
-    // Update params
+    // Clear old date params to handle switching modes or correcting errors
+    urlSearchParams.delete('businessDate');
+    urlSearchParams.delete('businessRangeStartDate');
+    urlSearchParams.delete('businessRangeEndDate');
+
     Object.keys(params).forEach(key => {
         if (params[key]) {
             urlSearchParams.set(key, params[key]);
             localStorage.setItem(key, params[key]);
-        } else {
-            urlSearchParams.delete(key);
-            localStorage.removeItem(key);
         }
     });
     
@@ -37,33 +37,59 @@ export const DateRangePicker = {
     oninit: (vnode) => {
         vnode.state.isRange = window.location.href.includes('dash');
         const queryParams = m.parseQueryString(window.location.search);
+
+        // --- NEW RECOVERY LOGIC ---
+        // Helper to safely parse and validate a date string.
+        const getValidDate = (dateStr) => {
+            if (!dateStr) return null; // Return null if the string is empty
+            const d = moment(dateStr, STORAGE_FORMAT);
+            // Return the moment object only if it's valid, otherwise return null.
+            return d.isValid() ? d : null;
+        };
         
-        // --- Simplified State Initialization ---
-        // Priority: URL Query -> localStorage -> Default
         if (vnode.state.isRange) {
             const startDateStr = queryParams.businessRangeStartDate || localStorage.getItem('businessRangeStartDate');
             const endDateStr = queryParams.businessRangeEndDate || localStorage.getItem('businessRangeEndDate');
+
+            let validStartDate = getValidDate(startDateStr);
+            let validEndDate = getValidDate(endDateStr);
+
+            // RECOVERY STEP: If either date is invalid, default BOTH to today and fix the URL/storage.
+            if (!validStartDate || !validEndDate) {
+                console.warn("Invalid date range detected. Defaulting to today.");
+                validStartDate = moment();
+                validEndDate = moment();
+                // Overwrite the bad data in the URL and localStorage.
+                updateUrlAndStorage({
+                    businessRangeStartDate: validStartDate.format(STORAGE_FORMAT),
+                    businessRangeEndDate: validEndDate.format(STORAGE_FORMAT)
+                });
+            }
+            vnode.state.selectedStartDate = validStartDate;
+            vnode.state.selectedEndDate = validEndDate;
             
-            // Set state for the input's display value
-            vnode.state.selectedStartDate = startDateStr ? moment(startDateStr, STORAGE_FORMAT) : moment();
-            vnode.state.selectedEndDate = endDateStr ? moment(endDateStr, STORAGE_FORMAT) : moment();
-        } else {
+        } else { // Single date mode
             const dateStr = queryParams.businessDate || localStorage.getItem('businessDate');
-            
-            // Set state for the input's display value
-            vnode.state.selectedDate = dateStr ? moment(dateStr, STORAGE_FORMAT) : moment();
+            let validDate = getValidDate(dateStr);
+
+            // RECOVERY STEP: If the date is invalid, default to today and fix the URL/storage.
+            if (!validDate) {
+                console.warn("Invalid date detected. Defaulting to today.");
+                validDate = moment();
+                // Overwrite the bad data in the URL and localStorage.
+                updateUrlAndStorage({ businessDate: validDate.format(STORAGE_FORMAT) });
+            }
+            vnode.state.selectedDate = validDate;
         }
     },
 
     onremove: () => {
-        // Use a more specific selector to avoid conflicts
         jQuery(`#date-picker-input`).daterangepicker('remove');
     },
     
-    // --- Render function for the single date picker ---
+    // --- Render function for the single date picker (No changes needed here) ---
     renderSinglePicker(vnode) {
         const { attrs } = vnode;
-
         const datepickerOptions = {
             singleDatePicker: true,
             showDropdowns: true,
@@ -71,82 +97,59 @@ export const DateRangePicker = {
             maxYear: moment().add(1, 'day').year(),
             locale: { format: DISPLAY_FORMAT_SINGLE },
             opens: 'left',
-            startDate: vnode.state.selectedDate, // FIX: Set the initial date
+            startDate: vnode.state.selectedDate,
         };
-
-        return m('input#date-picker-input', {
+        return m('input#date-picker-input.form-control', {
             ...attrs,
             placeholder: "Select Business Date:",
-            // FIX: Display the formatted initial date
             value: vnode.state.selectedDate.format(DISPLAY_FORMAT_SINGLE),
             oncreate: (el_vnode) => {
                 jQuery(el_vnode.dom).daterangepicker(datepickerOptions, (start) => {
                     const storageFormattedDate = start.format(STORAGE_FORMAT);
-                    
                     updateUrlAndStorage({ businessDate: storageFormattedDate });
-                    
-                    // Manually update state and trigger redraw for Mithril
                     vnode.state.selectedDate = start;
                     m.redraw(); 
-
-                    if (attrs.onChange) {
-                        attrs.onChange(storageFormattedDate);
-                    }
+                    if (attrs.onChange) attrs.onChange(storageFormattedDate);
                 });
             },
         });
     },
     
-    // --- Render function for the date range picker ---
+    // --- Render function for the date range picker (No changes needed here) ---
     renderRangePicker(vnode) {
         const { attrs } = vnode;
-
         const datepickerOptions = {
             showDropdowns: true,
             minYear: 2022,
             maxYear: moment().add(1, 'month').year(),
             locale: { format: DISPLAY_FORMAT_RANGE },
             opens: 'left',
-            // FIX: Set the initial date range
             startDate: vnode.state.selectedStartDate,
             endDate: vnode.state.selectedEndDate,
-            // IMPROVEMENT: Disable ranges UI via option, not timeout hack
             ranges: {} 
         };
-
-        return m('input#date-picker-input', {
+        return m('input#date-picker-input.form-control', {
             ...attrs,
             placeholder: "Select Business Date Range:",
-            // FIX: Display the formatted initial range
             value: `${vnode.state.selectedStartDate.format(DISPLAY_FORMAT_RANGE)} - ${vnode.state.selectedEndDate.format(DISPLAY_FORMAT_RANGE)}`,
             oncreate: (el_vnode) => {
                 jQuery(el_vnode.dom).daterangepicker(datepickerOptions, (start, end) => {
                     const storageFormattedStartDate = start.format(STORAGE_FORMAT);
                     const storageFormattedEndDate = end.format(STORAGE_FORMAT);
-                    
                     updateUrlAndStorage({
                         businessRangeStartDate: storageFormattedStartDate,
                         businessRangeEndDate: storageFormattedEndDate
                     });
-
-                    // Manually update state and trigger redraw for Mithril
                     vnode.state.selectedStartDate = start;
                     vnode.state.selectedEndDate = end;
                     m.redraw();
-                    
-                    if (attrs.onChange) {
-                        attrs.onChange({ 
-                            start: storageFormattedStartDate, 
-                            end: storageFormattedEndDate 
-                        });
-                    }
+                    if (attrs.onChange) attrs.onChange({ start: storageFormattedStartDate, end: storageFormattedEndDate });
                 });
             },
         });
     },
 
     view(vnode) {
-        // Delegate rendering to the appropriate function
         if (vnode.state.isRange) {
             return this.renderRangePicker(vnode);
         }
