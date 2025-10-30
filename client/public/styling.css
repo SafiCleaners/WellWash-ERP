@@ -12456,3 +12456,17 @@ fieldset:disabled .btn {
 .timeline-item:hover .timeline-actions {
     opacity: 1;
 }
+
+/*
+ * Daterangepicker Text Color Fix
+ *
+ * This rule specifically targets the list items inside the daterangepicker's
+ * 'ranges' section to override conflicting theme styles that make the text white.
+*/
+div.daterangepicker .ranges li {
+    color: #3f4254 !important; /* A dark grey color, adjust as needed */
+}
+
+div.daterangepicker .ranges li:hover {
+    color: #ffffff !important; /* Ensure text is white on hover when background changes */
+}
