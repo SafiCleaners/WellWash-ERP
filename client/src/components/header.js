@@ -6,7 +6,18 @@ import google_login from "./google_login";
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    localStorage.setItem("businessDate", datePicked)
+    // 1. Save the date to localStorage for persistence
+    localStorage.setItem("businessDate", datePicked);
+
+    // 2. Get the current path of the URL (e.g., "/j")
+    const currentPath = window.location.pathname;
+
+    // 3. Construct the new URL with the date as a query parameter
+    const newUrl = `${currentPath}?businessDate=${datePicked}`;
+
+    // 4. Update the browser's URL without a page reload.
+    // This adds a new entry to the browser's history.
+    history.pushState({ businessDate: datePicked }, '', newUrl);
     window.location.reload();
 };
 
