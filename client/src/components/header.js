@@ -23,22 +23,47 @@ const onDatePickerChange = (datePicked) => {
 
 // --- Navigation items defined as data to keep the view clean ---
 const navItems = {
-    create: { href: "/", icon: "fa-plus", text: "Create" },
+    // A clearer icon for 'adding' or 'creating' a new item/order.
+    create: { href: "/", icon: "fa-plus-circle", text: "Create" },
+
     public: [
-        { href: "/discounts", icon: "fa-money", text: "Get Discounts" },
-        { href: "/about", icon: "fa-building", text: "About Us" },
-        { href: "/guarantees", icon: "fa-book", text: "Guarantees" },
-        { href: "/services", icon: "fa-bars", text: "Services" },
-        { href: "/FAQ", icon: "fa-comment", text: "FAQ" },
+        // 'fa-tag' is universally recognized for discounts, sales, and offers.
+        { href: "/discounts", icon: "fa-tag", text: "Get Discounts" },
+
+        // 'fa-info-circle' is the standard, intuitive icon for "information" or "about".
+        { href: "/about", icon: "fa-info-circle", text: "About Us" },
+
+        // A shield represents trust, protection, and guarantees.
+        { href: "/guarantees", icon: "fa-shield-alt", text: "Guarantees" },
+
+        // A concierge bell elegantly represents providing a variety of services.
+        { href: "/services", icon: "fa-concierge-bell", text: "Services" },
+
+        // 'fa-question-circle' is the most common and recognizable icon for FAQs.
+        { href: "/FAQ", icon: "fa-question-circle", text: "FAQ" },
     ],
+
     authenticated: [
-        { href: "/dash", icon: "fa-area-chart", text: "Dashboard", isRouteLink: false },
-        { href: "/j", icon: "fa-bath", text: "Queue", isRouteLink: false },
-        { href: "/users", icon: "fa-users", text: "Users" },
-        { href: "/brands", icon: "fa-microchip", text: "Brands" },
-        { href: "/stores", icon: "fa-street-view", text: "Stores" },
-        { href: "/pricing", icon: "fa-credit-card", text: "Pricing" },
-        { href: "/clients", icon: "fa-users", text: "Clients" },
+        // 'fa-tachometer-alt' (a speedometer) is the classic and widely used icon for a dashboard.
+        { href: "/dash", icon: "fa-tachometer-alt", text: "Dashboard", isRouteLink: false },
+
+        // 'fa-list-ol' (ordered list) perfectly represents a numbered queue of jobs.
+        { href: "/j", icon: "fa-list-ol", text: "Queue", isRouteLink: false },
+
+        // 'fa-users-cog' clearly distinguishes staff/admin users from general clients.
+        { href: "/users", icon: "fa-users-cog", text: "Users" },
+
+        // A gem icon ('fa-gem') suggests a premium, distinct identity, which is what a brand is.
+        { href: "/brands", icon: "fa-gem", text: "Brands" },
+
+        // 'fa-store' is the direct and literal icon for physical store locations.
+        { href: "/stores", icon: "fa-store", text: "Stores" },
+
+        // 'fa-tags' is more specific to pricing and price lists than a credit card.
+        { href: "/pricing", icon: "fa-tags", text: "Pricing" },
+
+        // An address book icon is perfect for a list of clients or contacts.
+        { href: "/clients", icon: "fa-address-book", text: "Clients" },
     ]
 };
 
@@ -78,7 +103,7 @@ const header = {
             return m("li.menu-item" + (isActive || isHomeActive ? ".menu-item-active" : ""),
                 m(linkTag, { class: "menu-link", href }, [
                     m(`span.svg-icon.svg-icon-xl.menu-icon`, m(`i.fa.${icon}`)),
-                    m("span.menu-text", text),
+                    // m("span.menu-text", text),
                     m("span.menu-desc")
                 ])
             );

@@ -1,142 +1,145 @@
 import axios from "axios";
 import m from "mithril";
-
 import { url } from "../constants";
 import loader from "../components/loader";
 import addPricing from "../components/add_pricing";
 import editPricing from "../components/edit_pricing";
-import categories from "../pages/categories";
+import addCategory from "../components/add_category";
+import editCategory from "../components/edit_category";
 
-// Helper function to format currency safely
+// --- Helper Functions ---
 const formatCurrency = (number) => {
-    // CHANGED: Added check for null to be more robust
-    if (typeof number !== 'number' || number === null) return 'N/A';
-    return new Intl.NumberFormat('en-US').format(number);
+    return new Intl.NumberFormat('en-US').format(number || 0);
 };
 
-// Helper function to handle all initial data loading
-const loadData = (vnode) => {
+const fetchData = (vnode) => {
     vnode.state.loading = true;
-    const brandId = localStorage.getItem('brand');
-    if (!brandId) {
-        console.warn("No brand selected in localStorage.");
-        vnode.state.loading = false;
-        return;
-    }
+    const headers = { authorization: localStorage.getItem('token') };
+    const get = (endpoint) => axios.get(`${url}/${endpoint}`, { headers });
 
-    const pricingsRequest = axios.get(`${url}/pricings`, { headers: { authorization: localStorage.getItem('token') } });
-    const categoriesRequest = axios.get(`${url}/categories`, { headers: { authorization: localStorage.getItem('token') } });
+    Promise.all([
+        get('categories'),
+        get('pricings')
+    ]).then(([categoriesRes, pricingsRes]) => {
+        const brandId = localStorage.getItem('brand');
+        const categories = categoriesRes.data.filter(c => c.brand === brandId);
+        const pricings = pricingsRes.data;
 
-    Promise.all([pricingsRequest, categoriesRequest])
-        .then(([pricingsResponse, categoriesResponse]) => {
-            vnode.state.pricings = pricingsResponse.data;
-            vnode.state.categories = categoriesResponse.data;
+        vnode.state.categoriesWithPricings = categories.map(category => ({
+            ...category,
+            pricings: pricings.filter(p => p.category === category._id)
+        }));
 
-            vnode.state.categoryMap = vnode.state.categories.reduce((acc, category) => {
-                acc[category._id] = category;
-                return acc;
-            }, {});
-        })
-        .catch(error => {
-            console.error("Error fetching data:", error);
-            alert("Failed to load pricing data. Please check the console.");
-        })
-        .finally(() => {
-            vnode.state.loading = false;
-            m.redraw();
-        });
-};
-
-// Helper function to handle deleting a pricing item
-const deletePricing = (vnode, pricingId) => {
-    if (!confirm("Are you sure you want to delete this pricing entry?")) return;
-
-    axios.delete(`${url}/pricings/${pricingId}`, {
-        headers: { authorization: localStorage.getItem('token') }
-    }).then(() => {
-        vnode.state.pricings = vnode.state.pricings.filter(p => p._id !== pricingId);
     }).catch(error => {
-        console.error("Error deleting pricing:", error);
-        alert("Failed to delete pricing entry.");
+        console.error("Error fetching pricing data:", error);
     }).finally(() => {
+        vnode.state.loading = false;
         m.redraw();
     });
 };
 
 const pricingPage = {
     oninit(vnode) {
-        vnode.state.pricings = [];
-        vnode.state.categories = [];
-        vnode.state.categoryMap = {};
+        vnode.state.categoriesWithPricings = [];
         vnode.state.loading = true;
+        vnode.state.expandedCategoryId = null;
+        vnode.state.onUpdate = () => fetchData(vnode);
     },
 
-    oncreate: loadData,
+    oncreate: fetchData,
 
-    view(vnode) {
-        const { loading, pricings, categoryMap } = vnode.state;
-        const brandId = localStorage.getItem('brand');
-
-        const filteredPricings = pricings.filter(pricing => {
-            const category = categoryMap[pricing.category];
-            return category && category.brand === brandId;
-        });
-
-        return m(".container-fluid", [
-            m(".card.card-custom.gutter-b", m(categories)),
-
-            m(".card.card-custom.gutter-b", [
-                m(".card-header.border-0.pt-7", [
-                    m("h3.card-title.align-items-start.flex-column",
-                        m("span.card-label.font-weight-bold.font-size-h4.text-dark-75", "Available Pricings")
-                    ),
-                    m(addPricing, {
-                        onPricingAdded: (newPricing) => {
-                            vnode.state.pricings.unshift(newPricing);
-                        }
-                    })
-                ]),
-                m(".card-body.pt-0.pb-4",
-                    m(".table-responsive",
-                        loading
-                            ? m(loader)
-                            : m("table.table.table-borderless.table-vertical-center", [
-                                m("thead", m("tr", [
-                                    // CHANGED: Removed the 'Title' header
-                                    m("th.p-0.min-w-200px.text-left", "Category"),
-                                    m("th.p-0.min-w-50px.text-right", "Cost"),
-                                    m("th.p-0.min-w-50px.text-right", "Actions")
-                                ])),
-                                m("tbody", filteredPricings.map(item =>
-                                    m("tr", { key: item._id }, [
-                                        m("td.text-left",
-                                            m("span.text-dark-75.font-weight-bolder", categoryMap[item.category]?.title || "Unknown Category")
-                                        ),
-                                        // CHANGED: Removed the 'Title' data cell
-                                        m("td.text-right",
-                                            m("span.text-dark-75.font-weight-bolder", formatCurrency(item.cost))
-                                        ),
-                                        m("td.text-right.pr-0", [
-                                            m(editPricing, {
-                                                pricing: item,
-                                                onPricingUpdated: (updatedPricing) => {
-                                                    const index = vnode.state.pricings.findIndex(p => p._id === updatedPricing._id);
-                                                    if (index > -1) {
-                                                        vnode.state.pricings[index] = updatedPricing;
-                                                    }
-                                                }
-                                            }),
-                                            m("a.btn.btn-icon.btn-light.btn-hover-danger.btn-sm", {
-                                                onclick: () => deletePricing(vnode, item._id),
-                                                title: "Delete Pricing"
-                                            }, m("i.flaticon2-rubbish-bin-delete-button"))
-                                        ])
-                                    ])
-                                ))
-                            ])
-                    )
-                )
+    // --- Render Helper for the Timeline ---
+    renderPricingTimeline(vnode, pricings, categoryId) {
+        const { onUpdate } = vnode.state;
+        return m(".timeline",
+            pricings.map(item =>
+                m(".timeline-item", [
+                    m(".timeline-bullet"),
+                    m(".timeline-content", [
+                        m("div", [
+                            m("span.fw-bold.text-gray-800.fs-6", item.title || `Price Point`),
+                            m("div.text-muted", `Ksh ${formatCurrency(item.cost)}`)
+                        ]),
+                        m(".timeline-actions", [
+                            m(editPricing, { pricing: item, onUpdate }),
+                            m("a.btn.btn-icon.btn-light-danger.btn-sm.ms-2", {
+                                onclick: () => {
+                                    if (confirm("Are you sure?")) {
+                                        axios.delete(`${url}/pricings/${item._id}`, { headers: { authorization: localStorage.getItem('token') } })
+                                            .then(onUpdate).catch(err => console.error(err));
+                                    }
+                                }
+                            }, m("i.fa.fa-trash"))
+                        ])
+                    ])
+                ])
+            ),
+            m(".timeline-item", [
+                m(".timeline-bullet.bg-primary"),
+                m(".timeline-content", m(addPricing, { categoryId, onUpdate }))
             ])
+        );
+    },
+
+    // --- Render Helper for each Category Row (Final Polished Design) ---
+    renderCategoryRow(vnode, category) {
+        const { expandedCategoryId, onUpdate } = vnode.state;
+        const isExpanded = expandedCategoryId === category._id;
+
+        return m(".pricing-category", [
+            m(".category-header", {
+                onclick: () => vnode.state.expandedCategoryId = isExpanded ? null : category._id
+            }, [
+                m(".category-title", [
+                    m("i.category-chevron.fa", { class: isExpanded ? 'fa-chevron-down' : 'fa-chevron-right' }),
+                    m("span.fw-bolder.fs-5", category.title),
+                    m("span.text-muted.fs-7.ms-3", `(${category.unit})`)
+                ]),
+                m(".category-toolbar", [
+                    m(editCategory, { category, onUpdate }),
+                    m("a.btn.btn-icon.btn-light-danger.btn-sm.ms-2", {
+                        onclick: (e) => {
+                            e.stopPropagation();
+                            if (confirm(`Delete category "${category.title}" and ALL its prices? This cannot be undone.`)) {
+                                axios.delete(`${url}/categories/${category._id}`, { headers: { authorization: localStorage.getItem('token') } })
+                                    .then(onUpdate).catch(err => console.error(err));
+                            }
+                        }
+                    }, m("i.fa.fa-trash"))
+                ])
+            ]),
+
+            isExpanded && m(".category-body",
+                this.renderPricingTimeline(vnode, category.pricings, category._id)
+            )
+        ]);
+    },
+
+    // --- Main View ---
+    view(vnode) {
+        if (vnode.state.loading) {
+            return m(loader);
+        }
+
+        const { categoriesWithPricings, onUpdate } = vnode.state;
+
+        return m(".container-xxl.py-5", [
+            m(".d-flex.justify-content-between.align-items-center.mb-5", [
+                m("h1.fw-bolder", "Pricing Management"),
+                m(addCategory, { onUpdate })
+            ]),
+
+            m(".card.shadow-sm",
+                m(".card-body", 
+                    categoriesWithPricings.length === 0
+                        ? m(".text-center.p-10", [
+                            m("img.img-fluid.mx-auto.mb-4", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "250px" } }),
+                            m("h4.fw-bold.text-gray-700", "No Categories Found for this Brand"),
+                            m("p.text-muted", "Start by adding a new product category above.")
+                          ])
+                        : categoriesWithPricings.map(category => this.renderCategoryRow(vnode, category))
+                )
+            )
         ]);
     }
 };

@@ -12328,3 +12328,131 @@ fieldset:disabled .btn {
 .align-right {
     text-align: right;
 }
+/* === Final Polished Pricing Category Styles === */
+.pricing-category {
+    border-bottom: 1px solid #eff2f5;
+}
+.pricing-category:last-child {
+    border-bottom: none;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+.category-header:hover {
+    background-color: #f9f9f9;
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+}
+
+.category-chevron {
+    transition: transform 0.2s ease-in-out;
+    width: 20px;
+    text-align: center;
+    color: var(--bs-primary);
+    margin-right: 1.25rem;
+}
+.fa-chevron-down {
+    transform: rotate(90deg);
+}
+
+.category-toolbar {
+    opacity: 0.2;
+    transition: opacity 0.2s ease-in-out;
+}
+.category-header:hover .category-toolbar {
+    opacity: 1;
+}
+
+.category-body {
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    background-color: #fdfdfd;
+}
+/* === Final Pricing Page Styles === */
+.pricing-group {
+    border-bottom: 1px solid #eff2f5; /* Light separator between groups */
+}
+.pricing-group:last-child {
+    border-bottom: none;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+}
+
+.group-title {
+    display: flex;
+    align-items: center;
+}
+
+.group-toolbar {
+    opacity: 0.2;
+    transition: opacity 0.2s ease-in-out;
+}
+.group-header:hover .group-toolbar {
+    opacity: 1; /* Show toolbar on hover for a cleaner look */
+}
+
+.group-body {
+    padding: 1.5rem 1.5rem 1.5rem 2rem; /* Indent the timeline */
+    background-color: #fdfdfd; /* Slightly different background to show nesting */
+}
+
+/* === Timeline Styles === */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #eff2f5;
+}
+.timeline-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+.timeline-bullet {
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    height: 1rem;
+    width: 1rem;
+    border-radius: 50%;
+    background-color: #e4e6ef;
+    border: 3px solid #fdfdfd; /* Match the group-body background */
+}
+.timeline-content {
+    padding-left: 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.timeline-actions {
+    opacity: 0.2;
+    transition: opacity 0.2s ease-in-out;
+}
+.timeline-item:hover .timeline-actions {
+    opacity: 1;
+}
