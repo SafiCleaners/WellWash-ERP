@@ -6,8 +6,8 @@ import google_login from "./google_login";
 import { DateRangePicker } from "./daterangepicker";
 
 const onDatePickerChange = (datePicked) => {
-    // localStorage.setItem("businessDate", datePicked)
-    m.redraw();
+    localStorage.setItem("businessDate", datePicked)
+    window.location.reload();
 };
 
 // --- Navigation items defined as data to keep the view clean ---
@@ -85,7 +85,8 @@ const header = {
             }
             const query = params.toString();
             window.history.replaceState({}, '', `${window.location.pathname}${query ? '?' + query : ''}`);
-            m.redraw();
+            // m.redraw();
+            window.location.reload();
         };
 
         const handleSignOut = () => {
