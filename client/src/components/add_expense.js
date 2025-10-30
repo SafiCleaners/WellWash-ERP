@@ -1,205 +1,130 @@
 import axios from "axios";
+import m from "mithril";
+import { url } from "../constants";
 
-import {
-    url,
-} from "../constants"
+const getInitialFormData = () => ({
+    title: '',
+    cost: '',
+    recurrent: false,
+    moreDetails: ''
+});
 
-import m from "mithril"
-
-
-const AddPricingForm = {
+const addExpense = {
     oninit(vnode) {
-        vnode.state.stores = []
+        vnode.state.showModal = false;
+        vnode.state.isLoading = false;
+        vnode.state.error = null;
+        vnode.state.formData = getInitialFormData();
     },
-    oncreate(vnode) {
-        const options = {
-            method: 'GET', url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
+
+    openModal(vnode) {
+        vnode.state.showModal = true;
+        vnode.state.error = null; // Clear previous errors
+    },
+
+    closeModal(vnode) {
+        vnode.state.showModal = false;
+    },
+
+    handleInputChange(vnode, field, value) {
+        vnode.state.formData[field] = value;
+    },
+
+    handleSubmit(vnode) {
+        vnode.state.isLoading = true;
+        vnode.state.error = null;
+
+        const dataToSubmit = {
+            ...vnode.state.formData,
+            businessDate: localStorage.getItem('businessDate'),
+            storeId: localStorage.getItem('storeId') || undefined // Ensure storeId is not an empty string
         };
-
-        axios.request(options).then(function (response) {
-            vnode.state.stores = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
-        });
-
-        const optionsCategories = {
-            method: 'GET', url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-        };
-
-        axios.request(optionsCategories).then(function (response) {
-            vnode.state.categories = response.data
-            vnode.state.loading = false
-            m.redraw()
-        }).catch(function (error) {
-            vnode.state.loading = false
-            m.redraw()
-            console.error(error);
+        
+        axios.post(`${url}/expenses`, dataToSubmit, {
+            headers: { 'authorization': localStorage.getItem('token') }
+        })
+        .then(() => {
+            // SUCCESS: Tell the parent page to refresh its data
+            if (vnode.attrs.onUpdate) {
+                vnode.attrs.onUpdate();
+            }
+            // Reset form for the next time
+            vnode.state.formData = getInitialFormData();
+            this.closeModal(vnode);
+        })
+        .catch(error => {
+            console.error("Failed to add expense:", error);
+            vnode.state.error = "Could not save expense. Please try again.";
+        })
+        .finally(() => {
+            vnode.state.isLoading = false;
+            m.redraw();
         });
     },
-    showModal: false,
-    unitType: '',
-    formData: {
-        category: '',
-        cost: ''
-    },
 
-    openModal: function () {
-        this.showModal = true;
-    },
+    view(vnode) {
+        const { showModal, isLoading, error, formData } = vnode.state;
 
-    closeModal: function () {
-        this.showModal = false;
-    },
-
-    handleInputChange: function (field, value) {
-        this.formData[field] = value;
-    },
-
-    handleSubmit: function () {
-        // Handle form submission logic here
-        console.log('Form Submitted:', this.formData);
-
-        const options = {
-            method: 'POST',
-            url: `${url}/expenses/`,
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            },
-            data: Object.assign(this.formData, {
-                businessDate: localStorage.getItem('businessDate'),
-                storeId: localStorage.getItem('storeId')
-            }),
-        };
-
-        axios.request(options).then(function (response) {
-            console.log(response.data);
-            location.reload()
-        }).catch(function (error) {
-            console.error(error);
-        });
-
-        // Close the modal after submission
-        // this.closeModal();
-    },
-
-    view: function (vnode) {
-       
         return m('div', [
-            // Open Modal Button
-            m('button', { "class": "btn btn-sm btn-info", onclick: () => this.openModal() }, [
-                m("i", { "class": "flaticon-add-circular-button" }),
-                "Add Expense"
+            m('button.btn.btn-primary.btn-sm', { onclick: () => this.openModal(vnode) }, [
+                m("i.fa.fa-plus.me-2"), "Add Expense"
             ]),
 
-            // Modal
-            this.showModal && m('.modal', [
-                m('.modal-content', [
-                    m("div", { "class": "row" }, [
-                        m("div", { "class": "col-11" }, [
-                            m('h4', 'Add Expense'),
+            showModal && m('.modal.fade.show[style=display:block]', { onclick: () => this.closeModal(vnode) },
+                m('.modal-dialog.modal-dialog-centered.modal-lg', { onclick: e => e.stopPropagation() },
+                    m('.modal-content', [
+                        m('.modal-header', [
+                            m('h5.modal-title', 'Add New Expense'),
+                            m('button.btn-close', { onclick: () => this.closeModal(vnode) })
                         ]),
-                        m("div", { "class": "col-1" }, [
-                            m('span', { onclick: () => this.closeModal(), class: 'close' }, 'x'),
+                        m('.modal-body', [
+                            m('.mb-3', [
+                                m('label.form-label', 'Expense Reason'),
+                                m('input.form-control', {
+                                    placeholder: "e.g., Cleaning Supplies",
+                                    value: formData.title,
+                                    oninput: (e) => this.handleInputChange(vnode, 'title', e.target.value),
+                                }),
+                            ]),
+                            m('.mb-3', [
+                                m('label.form-label', 'Expense Cost (Ksh)'),
+                                m('input.form-control[type=number]', {
+                                    placeholder: "e.g., 1500",
+                                    value: formData.cost,
+                                    oninput: (e) => this.handleInputChange(vnode, 'cost', e.target.value),
+                                }),
+                            ]),
+                            m('.mb-3', [
+                                m('label.form-label', 'Additional Details'),
+                                m('textarea.form-control', {
+                                    rows: 3,
+                                    placeholder: "Optional notes about the expense",
+                                    value: formData.moreDetails,
+                                    oninput: (e) => this.handleInputChange(vnode, 'moreDetails', e.target.value),
+                                })
+                            ]),
+                            m('.form-check.form-switch', [
+                                m('input.form-check-input', {
+                                    type: 'checkbox',
+                                    id: 'recurrentSwitchAdd',
+                                    checked: formData.recurrent,
+                                    onchange: (e) => this.handleInputChange(vnode, 'recurrent', e.target.checked)
+                                }),
+                                m('label.form-check-label[for=recurrentSwitchAdd]', 'This is a recurrent expense')
+                            ]),
+                            error && m('.alert.alert-danger.mt-3', error)
                         ]),
-                        m("span", { "class": "border-bottom mb-4" }),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Expense Reason:'),
-                            m('input[type=text]', {
-                                "class": "form-control form-control-solid",
-                                "placeholder": "What did we spend money on",
-                                value: this.formData.title,
-                                oninput: (e) => this.handleInputChange('title', e.target.value),
-                            }),
-                        ]),
-                        m("div", { "class": "col-6 my-2" }, [
-                            m('label', 'Expense Cost:'),
-                            m('input[type=text]', {
-                                "class": "form-control form-control-solid",
-                                "placeholder": "Enter Cost in KSH",
-                                value: this.formData.cost,
-                                oninput: (e) => this.handleInputChange('cost', e.target.value),
-                            }),
-                        ]),
-                        
-                        m("div", { class: "form-group row", style: { padding: "10px" } }, [
-                            m("div", { "class": "d-flex flex-stack" },
-                                [
-                                    [
-                                        m("label", { "class": "d-flex flex-stack mb-5 cursor-pointer" },
-                                            [
-                                                m("span", { "class": "form-check form-check-custom form-check-solid mr-15" },
-                                                    m("input", {
-                                                        "class": "form-check-input w-45px h-30px",
-                                                        "type": "checkbox",
-                                                        "id": "payswitch",
-                                                        checked: this.formData.recurrent,
-                                                        onchange: (e) => {
-                                                            this.handleInputChange('recurrent', e.target.checked)
-                                                        }
-                                                    }),
-                                                ),
-                                                m("span", { "class": "d-flex align-items-center me-2" },
-                                                    [
-                                                        m("span", { "class": "d-flex flex-column" },
-                                                            [
-                                                                m("span", { "class": "fw-bold fs-6" },
-                                                                    "Recurrent Expense"
-                                                                ),
-                                                                m("span", { "class": "fs-7 text-muted" },
-                                                                    "This Expense is incurred everyday"
-                                                                )
-                                                            ]
-                                                        )
-                                                    ]
-                                                )
-                                            ]
-                                        ),
-                                    ]
-                                ]
+                        m('.modal-footer', [
+                            m('button.btn.btn-secondary', { onclick: () => this.closeModal(vnode) }, 'Cancel'),
+                            m('button.btn.btn-primary', { onclick: () => this.handleSubmit(vnode), disabled: isLoading },
+                                isLoading ? [m('span.spinner-border.spinner-border-sm.me-2'), 'Saving...'] : 'Save Expense'
                             )
-                        ]),
-                        m(".row", [
-                            m("div", { "class": "card-body" }, [
-                                m("div", { "class": "form-group mb-1" },
-                                    [
-                                        m("label", { "for": "exampleTextarea" },
-                                            "A message to help verify "
-                                        ),
-                                        m("textarea", {
-                                            oninput: (e) => this.handleInputChange('moreDetails', e.target.value),
-                                            value: this.formData.moreDetails,
-                                            "class": "form-control",
-                                            "id": "exampleTextarea",
-                                            "rows": "4",
-                                            "spellcheck": "true"
-                                        })
-                                    ]
-                                )
-                            ])
-                        ]),
-                        m("span", { "class": "border-top mt-4" }),
-                        m("div", { "class": "pt-2 align-right" }, [
-                            m('button', { "class": "btn btn-danger font-weight-bolder font-size-sm px-6 mr-3", onclick: () => this.closeModal() }, 'Close'),
-                            m('button', { "class": "btn btn-info font-weight-bolder font-size-sm px-6", onclick: () => this.handleSubmit() }, 'Save'),
                         ])
-                    ]),
-                ]),
-            ]),
+                    ])
+                )
+            ),
         ]);
     },
 };
 
-export default AddPricingForm;
+export default addExpense;

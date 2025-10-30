@@ -50,7 +50,7 @@ const DashboardPage = {
         ]).then(([jobsRes, categoriesRes, expensesRes, storesRes]) => {
             // Pre-process jobs to calculate price and create a category map for quick lookups
             const categoryMap = new Map(categoriesRes.data.map(cat => [cat._id, cat.title]));
-            
+
             vnode.state.jobs = jobsRes.data.map(job => {
                 const price = Object.keys(job.categoryAmounts || {}).reduce((total, id) => {
                     const amount = job.categoryAmounts[id] || 0;
@@ -59,7 +59,7 @@ const DashboardPage = {
                 }, 0);
                 return { ...job, price, categoryMap }; // Attach map for later use
             });
-            
+
             vnode.state.categories = categoriesRes.data;
             vnode.state.expenses = expensesRes.data;
             vnode.state.stores = storesRes.data;
@@ -85,16 +85,16 @@ const DashboardPage = {
         const queryParams = m.parseQueryString(window.location.search);
         const dateFromURL = queryParams.businessDate;
         const dateFromStorage = localStorage.getItem("businessDate");
-        
+
         const initialDate = dateFromURL || dateFromStorage || moment().format('YYYY-MM-DD');
         vnode.state.businessDate = moment(initialDate);
 
         // Ensure localStorage is in sync with the determined date
         localStorage.setItem("businessDate", vnode.state.businessDate.format('YYYY-MM-DD'));
-        
+
         // This function will be passed down to child components like expensesList
         vnode.state.onUpdate = () => DashboardPage.fetchData(vnode);
-        
+
         // Initial data load
         DashboardPage.fetchData(vnode);
     },
@@ -116,7 +116,7 @@ const DashboardPage = {
             )
             .sort((a, b) => new Date(b.createdAtDateTime) - new Date(a.createdAtDateTime));
 
-        const filteredExpenses = expenses.filter(exp => 
+        const filteredExpenses = expenses.filter(exp =>
             (!storeId || exp.storeId === storeId) &&
             (exp.recurrent || moment(exp.businessDate).isSame(businessDate, 'day'))
         );
@@ -133,14 +133,14 @@ const DashboardPage = {
         };
 
         const stats = calculateStats();
-        
+
         // --- Render Helper for the NEW Job List Design ---
         const renderJobList = () => {
-             if (filteredJobs.length === 0) {
+            if (filteredJobs.length === 0) {
                 return m(".text-center.p-10", [
-                     m("img.img-fluid.mb-4", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "250px" } }),
-                     m("h4.fw-bold.text-gray-700", `No Jobs Found`),
-                     m("p.text-muted", `There are no jobs recorded for ${businessDate.format('MMM D, YYYY')}`)
+                    m("img.img-fluid.mb-4", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "250px" } }),
+                    m("h4.fw-bold.text-gray-700", `No Jobs Found`),
+                    m("p.text-muted", `There are no jobs recorded for ${businessDate.format('MMM D, YYYY')}`)
                 ]);
             }
             return filteredJobs.map((job, index) =>
@@ -154,7 +154,7 @@ const DashboardPage = {
                             m("div.fw-bolder.fs-2.text-primary", index + 1),
                             m("div.text-muted.small", "JOB")
                         ]),
-                        
+
                         // Column 2: Job Details (takes up most space)
                         m(".flex-grow-1", [
                             m(".d-flex.justify-content-between.align-items-start", [
@@ -169,7 +169,7 @@ const DashboardPage = {
                             ]),
                             m("hr.my-2"),
                             // Job Items Breakdown
-                            m("div.small", Object.keys(job.categoryAmounts).map(catId => 
+                            m("div.small", Object.keys(job.categoryAmounts).map(catId =>
                                 m(".d-flex.justify-content-between.py-1", [
                                     m("span.text-gray-700", `${job.categoryAmounts[catId]} x ${job.categoryMap.get(catId) || 'Unknown Item'}`),
                                     m("span.fw-semibold.text-gray-600", `Ksh ${formatCurrency(job.categoryAmounts[catId] * (job.categoryCharges?.[catId] || 0))}`)
@@ -212,7 +212,7 @@ const DashboardPage = {
                         m("span.card-label.fw-bolder.text-dark", "Job Queue"),
                         m("span.text-muted.mt-1.fw-semibold.fs-7", `${stats.totalJobs} jobs for today`)
                     ]),
-                    m("button.btn.btn-primary", { onclick: () => m.route.set("/q-new") }, 
+                    m("button.btn.btn-primary", { onclick: () => m.route.set("/q-new") },
                         m("i.fa.fa-plus.me-1"), "New Job"
                     )
                 ]),
@@ -220,14 +220,11 @@ const DashboardPage = {
             ]),
 
             // Section 3: Expenses
-            m(".card.shadow-sm.mb-5", [
-                m(".card-header.border-0.pt-4", m("h3.card-title.fw-bolder.text-dark", "Expenses Summary")),
-                m(".card-body.pt-2",  m(expensesList, {
-                    expenses: filteredExpenses, // Pass pre-filtered expenses
-                    stores: vnode.state.stores,
-                    onUpdate: vnode.state.onUpdate
-                }))
-            ]),
+            m(expensesList, {
+                expenses: filteredExpenses, // Pass pre-filtered expenses
+                stores: vnode.state.stores,
+                onUpdate: vnode.state.onUpdate
+            })
         ]);
     }
 };

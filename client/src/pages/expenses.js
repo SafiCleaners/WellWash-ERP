@@ -1,511 +1,150 @@
 import axios from "axios";
+import m from "mithril";
+import moment from "moment";
+import { url } from "../constants";
+import loader from "../components/loader";
+import addExpense from "../components/add_expense";
+import editExpense from "../components/edit_expense";
 
-
-import {
-    url
-} from "../constants"
-
-import m from "mithril"
-import loader from "../components/loader"
-import addExpense from "../components/add_expense"
-import editExpense from "../components/edit_expense"
-import categories from "./categories"
-
+// --- Helper Functions ---
 const formatCurrency = (number) => {
-    try {
-        return Intl.NumberFormat('en-US').format(number);
-    } catch (error) {
-        console.error('Error formatting number:', error);
-        return 'N/A';
-    }
-}
+    return new Intl.NumberFormat('en-US').format(number || 0);
+};
 
-const pricing = {
+// --- Data Fetching Logic (Moved outside the component) ---
+// By making this a standalone function, we solve the ReferenceError.
+const fetchData = (vnode) => {
+    vnode.state.loading = true;
+    const headers = { 'authorization': localStorage.getItem('token') };
+    const get = (endpoint) => axios.get(`${url}/${endpoint}`, { headers });
+
+    Promise.all([
+        get('expenses'),
+        get('stores'),
+        get('brands')
+    ]).then(([expensesRes, storesRes, brandsRes]) => {
+        vnode.state.expenses = expensesRes.data;
+        vnode.state.stores = storesRes.data;
+        vnode.state.brands = brandsRes.data;
+    }).catch(error => {
+        console.error("Error fetching data:", error);
+    }).finally(() => {
+        vnode.state.loading = false;
+        m.redraw();
+    });
+};
+
+
+const expensesPage = {
     oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.categories = []
-        vnode.state.expenses = []
-        vnode.state.loading = true
-    },
-    oncreate(vnode) {
-        // Define the URLs and headers for each API request
-        const expensesOptions = {
-            method: 'GET',
-            url: url + "/expenses",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-
-        const categoriesOptions = {
-            method: 'GET',
-            url: url + "/categories",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-
-        const storesOptions = {
-            method: 'GET',
-            url: url + "/stores",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-
-        const brandsOptions = {
-            method: 'GET',
-            url: url + "/brands",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        };
-
-        // Use axios.all to make parallel requests
-        axios.all([
-            axios.request(expensesOptions),
-            axios.request(categoriesOptions),
-            axios.request(storesOptions),
-            axios.request(brandsOptions)
-        ])
-            .then(axios.spread((expensesResponse, categoriesResponse, storesResponse, brandsResponse) => {
-                // Handle successful responses for both requests
-                vnode.state.expenses = expensesResponse.data;
-                vnode.state.categories = categoriesResponse.data;
-                vnode.state.stores = storesResponse.data;
-                vnode.state.brands = brandsResponse.data;
-                vnode.state.loading = false;
-                m.redraw(); // Trigger redraw to reflect updated state
-            }))
-            .catch(error => {
-                // Handle any errors from either request
-                vnode.state.loading = false;
-                m.redraw(); // Trigger redraw to reflect loading state or error
-                console.error("Error fetching data:", error);
-            });
+        vnode.state.stores = [];
+        vnode.state.brands = [];
+        vnode.state.expenses = [];
+        vnode.state.loading = true;
+        
+        // FIX: Now we can safely reference the standalone fetchData function.
+        vnode.state.onUpdate = () => fetchData(vnode);
     },
 
-    view(vnode) {
-        const storeId = localStorage.getItem("storeId")
-        const storeName = vnode.state.stores.find(s => s._id == storeId)?.title
-        const getStoreName = (storeId) => vnode.state.stores.find(s => s._id == storeId)?.title
+    // FIX: Assign the standalone function directly to the oncreate hook.
+    oncreate: fetchData,
 
-        const filteredExpenses = vnode.state.expenses
-            .filter(item => item.recurrent)
-            .filter(item => {
-                const store = vnode.state.stores.find(store => store._id == item.storeId);
-                const storeBrand = vnode.state.brands.find(brand => brand._id == store.brand);
+    // --- Render Helper Functions ---
+    renderEmptyState(vnode, dateStr) {
+        return m("tr",
+            m("td.text-center.p-5", { colspan: 6 }, [ // Increased colspan to 6 to match header
+                m("img.img-fluid.mb-4", { src: "./undraw_add_information_j2wg.svg", style: { maxWidth: "200px" } }),
+                m("h5.fw-bold.text-gray-700", `No Expenses Found`),
+                m("p.text-muted", `There are no expenses recorded for ${dateStr}`),
+            ])
+        );
+    },
 
-                if(storeBrand._id != localStorage.getItem("brand"))
-                    return false
-
-                if (localStorage.getItem("storeId"))
-                    return item.storeId == localStorage.getItem("storeId")
-
-                return true
-            })
-
-        const filteredEmmergentExpenses = vnode.state.expenses
-            .filter(expense => {
-                // Find the brand corresponding to the expense's storeId
-                const storeBrand = vnode.state.brands.find(brand => brand._id == expense.storeId);
-
-                // console.log({storeBrand})
-                // Check if the storeBrand matches the desired brand ID from localStorage
-                return storeBrand && storeBrand._id == localStorage.getItem("brand");
-            })
-            .filter(item => !item.recurrent)
-            .filter(job => {
-                const selectedDate = new Date(localStorage.getItem("businessDate"));
-
-                // Assuming job.businessDate is a valid date string
-                const businessDate = new Date(job.businessDate);
-                // console.log(businessDate.toLocaleDateString(), selectedDate.toLocaleDateString())
-                return businessDate.toLocaleDateString() == selectedDate.toLocaleDateString();
-            })
-            .filter(job => {
-                if (localStorage.getItem("storeId"))
-                    return job.storeId == localStorage.getItem("storeId")
-
-                return true
-            })
-
-        const selectedDate = new Date(localStorage.getItem("businessDate"));
-        const formattedBusinessDate = selectedDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-
-
-        return m("div", { "class": "card card-custom gutter-b" },
-            [
-                m("div", { "class": "card-header border-0 pt-7" },
-                    [
-                        m("h3", { "class": "card-title align-items-start flex-column" },
-                            [
-                                m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Recurrent Expenses"
-                                ),
-                            ]
-                        ),
-                        m(addExpense)
-                    ]
-                ),
-                m("div", { "class": "card-body pt-0 pb-4" },
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                        [
-                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                m("div", { "class": "table-responsive" },
-                                    m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" })
-                                                    ]
-                                                )
-                                            ),
-
-                                        ]
-                                    )
-                                )
-                            ),
-
-                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                m("div", { "class": "table-responsive" },
-                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        !storeId ? m("th", { "class": "p-0 min-w-200px text-left" }, "Store") : "",
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Expense Reason"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
-                                                    ]
-                                                )
-                                            ),
-                                            m("tbody",
-                                                [
-                                                    filteredExpenses.length == 0 ? [
-                                                        m("tr", {
-                                                            style: { textAlign: "center" } // Inline style for centering content
-                                                        }, [
-                                                            m("td", {
-                                                                colspan: 4 // Spanning across all 3 columns
-                                                            }, [
-                                                                m("svg", {
-                                                                    width: "250", // Set SVG width (adjust as needed)
-                                                                    height: "250" // Set SVG height (adjust as needed)
-                                                                }, [
-                                                                    // Image element within SVG
-                                                                    m("image", {
-                                                                        href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
-                                                                        width: "200", // Set image width within SVG (adjust as needed)
-                                                                        height: "200", // Set image height within SVG (adjust as needed)
-                                                                        x: "25", // X position of the image within SVG canvas
-                                                                        y: "25" // Y position of the image within SVG canvas
-                                                                    }),
-                                                                    // Text element below the image
-                                                                    m("text", {
-                                                                        x: "50%",
-                                                                        y: "230",
-                                                                        "text-anchor": "middle",
-                                                                        fill: "black" // Text color
-                                                                    }, "No Expenses recorded yet for " + formattedBusinessDate) // Text content
-                                                                ]),
-                                                                m("br"),
-                                                                // Button element below the SVG and text
-                                                                m(addExpense)
-                                                            ])
-                                                        ])
-
-
-                                                    ] :
-
-                                                        filteredExpenses.map((item) => {
-                                                            // console.log(item)
-                                                            return m("tr", {
-                                                                style: { "cursor": "pointer" }
-                                                            },
-                                                                [
-                                                                    !storeId ?
-                                                                        m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                            [
-                                                                                m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
-                                                                                    "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                                }, getStoreName(item.storeId))
-                                                                            ]
-                                                                        ) : "",
-                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
-                                                                                "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                            }, item.title)
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                formatCurrency(item.cost)
-                                                                            )
-                                                                        ]
-                                                                    ),
-
-
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.userTitle
-                                                                            )
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.createdAtFormatted
-                                                                            )
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                        m('div', { "class": "" },
-                                                                            [
-                                                                                m(editExpense, { "pricing": item }),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/expenses/${item._id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
-
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            // window.location.reload()
-                                                                                            vnode.state.expenses = vnode.state.expenses.filter(p => p._id != item._id)
-                                                                                            m.redraw()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                                )
-                                                                            ])
-                                                                    )
-                                                                ]
-                                                            )
-                                                        })
-                                                ]
-                                            )
-                                        ]
-                                    ) : m(loader)
-                                )
-                            )
-                        ]
+    renderTable(vnode, title, expenses, isRecurrent = false) {
+        const { stores, onUpdate } = vnode.state;
+        const storeId = localStorage.getItem("storeId");
+        const getStoreName = (id) => stores.find(s => s._id === id)?.title || 'N/A';
+        const businessDate = moment(localStorage.getItem("businessDate")).format('MMM D');
+        
+        return m(".card.shadow-sm.mb-5", [
+            m(".card-header.border-0.pt-7.d-flex.justify-content-between.align-items-center", [
+                m("h3.card-title.align-items-start.flex-column", [
+                    m("span.card-label.fw-bolder.text-dark", title),
+                    m("span.text-muted.mt-1.fw-semibold.fs-7", 
+                        isRecurrent ? "Expenses that occur regularly" : `One-time expenses for ${businessDate}`
                     )
-                ),
-
-
-                m("div", { "class": "card-header border-0 pt-7" },
-                    [
-                        m("h3", { "class": "card-title align-items-start flex-column" },
-                            [
-                                m("span", { "class": "card-label font-weight-bold font-size-h4 text-dark-75" },
-                                    "Emergent Expenses"
-                                ),
-                            ]
+                ]),
+                m(addExpense, { onUpdate }) // "Add Expense" is now on both tables for better UX
+            ]),
+            m(".card-body.pt-2.pb-4", 
+                m(".table-responsive",
+                    m("table.table.table-row-dashed.align-middle.gs-0.gy-4", [
+                        m("thead",
+                            m("tr.fw-bolder.text-muted.bg-light", [
+                                !storeId && m("th.ps-4.rounded-start", "Store"),
+                                m(`th.${storeId ? 'ps-4 rounded-start' : ''}`, "Expense Reason"),
+                                m("th.text-end", "Cost"),
+                                m("th.text-end", "Added By"),
+                                m("th.text-end", "Date Added"),
+                                m("th.text-end.rounded-end", "Actions")
+                            ])
                         ),
-                        // m(addExpense)
-                    ]
-                ),
-                m("div", { "class": "card-body pt-0 pb-4" },
-                    m("div", { "class": "tab-content mt-2", "id": "myTabTable5" },
-                        [
-                            m("div", { "class": "tab-pane fade", "id": "kt_tab_table_5_1", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_1" },
-                                m("div", { "class": "table-responsive" },
-                                    m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-200px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-100px" }),
-                                                        m("th", { "class": "p-0 min-w-50px" })
-                                                    ]
-                                                )
-                                            ),
-
-                                        ]
-                                    )
-                                )
-                            ),
-
-                            m("div", { "class": "tab-pane fade show active", "id": "kt_tab_table_5_3", "role": "tabpanel", "aria-labelledby": "kt_tab_table_5_3" },
-                                m("div", { "class": "table-responsive" },
-                                    !vnode.state.loading ? m("table", { "class": "table table-borderless table-vertical-center" },
-                                        [
-                                            m("thead",
-                                                m("tr",
-                                                    [
-                                                        m("th", { "class": "p-0 min-w-200px text-left" }, "Expense Reason"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Cost"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Added By"),
-                                                        m("th", { "class": "p-0 min-w-100px text-right" }, "Date Added"),
-                                                        m("th", { "class": "p-0 min-w-50px text-right" }, "Actions")
-                                                    ]
-                                                )
-                                            ),
-                                            m("tbody",
-                                                [
-                                                    filteredEmmergentExpenses.length == 0 ? [
-                                                        m("tr", {
-                                                            style: { textAlign: "center" } // Inline style for centering content
-                                                        }, [
-                                                            m("td", {
-                                                                colspan: 4 // Spanning across all 3 columns
-                                                            }, [
-                                                                m("svg", {
-                                                                    width: "250", // Set SVG width (adjust as needed)
-                                                                    height: "250" // Set SVG height (adjust as needed)
-                                                                }, [
-                                                                    // Image element within SVG
-                                                                    m("image", {
-                                                                        href: "./undraw_add_information_j2wg.svg", // URL of the SVG image
-                                                                        width: "200", // Set image width within SVG (adjust as needed)
-                                                                        height: "200", // Set image height within SVG (adjust as needed)
-                                                                        x: "25", // X position of the image within SVG canvas
-                                                                        y: "25" // Y position of the image within SVG canvas
-                                                                    }),
-                                                                    // Text element below the image
-                                                                    m("text", {
-                                                                        x: "50%",
-                                                                        y: "230",
-                                                                        "text-anchor": "middle",
-                                                                        fill: "black" // Text color
-                                                                    }, "No Expenses recorded yet for " + formattedBusinessDate) // Text content
-                                                                ]),
-                                                                m("br"),
-                                                                // Button element below the SVG and text
-                                                                m(addExpense)
-                                                            ])
-                                                        ])
-
-
-                                                    ] :
-                                                        filteredEmmergentExpenses.map((item) => {
-                                                            console.log(item)
-                                                            return m("tr", {
-                                                                style: { "cursor": "pointer" }
-                                                            },
-                                                                [
-                                                                    m("td", { "class": "text-left", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span.text-dark-75.font-weight-bolder.d-block.font-size-lg", {
-                                                                                "class": "text-dark-75 font-weight-bolder d-block font-size-lg"
-                                                                            }, item.title)
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                formatCurrency(item.cost)
-                                                                            )
-                                                                        ]
-                                                                    ),
-
-
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.userTitle
-                                                                            )
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right", style: "white-space: nowrap;" },
-                                                                        [
-                                                                            m("span", { "class": "text-dark-75 font-weight-bolder d-block font-size-lg" },
-                                                                                item.createdAtFormatted
-                                                                            )
-                                                                        ]
-                                                                    ),
-                                                                    m("td", { "class": "text-right pr-0", style: "white-space: nowrap;" },
-                                                                        m('div', { "class": "" },
-                                                                            [
-                                                                                m(editExpense, { "pricing": item }),
-                                                                                m('a', {
-                                                                                    href: "javascript:void(0);",
-                                                                                    "class": "btn btn-icon btn-light btn-hover-danger btn-sm", onclick() {
-                                                                                        const options = {
-                                                                                            method: 'DELETE',
-                                                                                            url: `${url}/expenses/${item._id}`,
-                                                                                            headers: {
-                                                                                                'Content-Type': 'application/json',
-                                                                                                'authorization': localStorage.getItem('token')
-                                                                                            },
-                                                                                        };
-
-                                                                                        axios.request(options).then(function (response) {
-                                                                                            console.log(response.data);
-                                                                                            // window.location.reload()
-                                                                                            vnode.state.expenses = vnode.state.expenses.filter(p => p._id != item._id)
-                                                                                            m.redraw()
-                                                                                        }).catch(function (error) {
-                                                                                            console.error(error);
-                                                                                        });
-                                                                                    }
-                                                                                },
-                                                                                    m('icon', { "class": "flaticon2-rubbish-bin-delete-button" })
-                                                                                )
-                                                                            ])
-                                                                    )
-                                                                ]
-                                                            )
-                                                        })
-                                                ]
-                                            )
-                                        ]
-                                    ) : m(loader)
-                                )
-                            )
-                        ]
-                    )
+                        m("tbody",
+                            expenses.length === 0 
+                            ? this.renderEmptyState(vnode, businessDate)
+                            : expenses.map(item => m("tr", { key: item._id }, [
+                                !storeId && m("td.ps-4", m("span.text-dark.fw-bold.d-block.mb-1.fs-6", getStoreName(item.storeId))),
+                                m(`td.${storeId ? 'ps-4' : ''}`, m("span.text-dark.fw-bold.d-block.mb-1.fs-6", item.title)),
+                                m("td.text-end", m("span.text-dark.fw-bold.d-block.mb-1.fs-6", `Ksh ${formatCurrency(item.cost)}`)),
+                                m("td.text-end", m("span.text-muted.fw-semibold", item.userTitle || 'N/A')),
+                                m("td.text-end", m("span.text-muted.fw-semibold", item.createdAtFormatted)),
+                                m("td.text-end", [
+                                    m(editExpense, { expense: item, onUpdate }), 
+                                    m("a.btn.btn-icon.btn-light-danger.btn-sm.ms-2", {
+                                        onclick: () => {
+                                            if (confirm("Are you sure you want to delete this expense?")) {
+                                                axios.delete(`${url}/expenses/${item._id}`, { headers: { 'authorization': localStorage.getItem('token') } })
+                                                .then(() => onUpdate())
+                                                .catch(err => console.error(err));
+                                            }
+                                        }
+                                    }, m("i.fa.fa-trash"))
+                                ])
+                            ]))
+                        )
+                    ])
                 )
-            ]
-        )
-    }
-}
-
-const pricingWrapper = {
-    oninit(vnode) {
-        vnode.state.stores = []
-        vnode.state.pricings = []
-        vnode.state.loading = true
+            )
+        ]);
     },
-    view(vnode) {
-        return m("div", { "class": "card card-custom gutter-b" }, [
-            // m(categories),
-            m(pricing)
-        ])
-    }
-}
 
-export default pricingWrapper
+    view(vnode) {
+        if (vnode.state.loading) {
+            return m(loader);
+        }
+
+        const brandId = localStorage.getItem("brand");
+        const storeId = localStorage.getItem("storeId");
+        const businessDate = moment(localStorage.getItem("businessDate"));
+        const storesById = new Map(vnode.state.stores.map(s => [s._id, s]));
+
+        const isVisible = (expense) => {
+            const store = storesById.get(expense.storeId);
+            if (!store || store.brand !== brandId) return false;
+            if (storeId && expense.storeId !== storeId) return false;
+            return true;
+        };
+        
+        const filteredRecurrent = vnode.state.expenses.filter(e => e.recurrent && isVisible(e));
+        const filteredEmergent = vnode.state.expenses.filter(e => 
+            !e.recurrent && isVisible(e) && moment(e.businessDate).isSame(businessDate, 'day')
+        );
+
+        return m(".container-xxl.py-5", [ // Added a container for better spacing
+            this.renderTable(vnode, "Emergent Expenses", filteredEmergent, false),
+            this.renderTable(vnode, "Recurrent Expenses", filteredRecurrent, true)
+        ]);
+    }
+};
+
+export default expensesPage;
