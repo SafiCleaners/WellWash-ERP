@@ -54,6 +54,9 @@ const AddPricingForm = {
         // Handle form submission logic here
         console.log('Form Submitted:', this.formData);
 
+        let brand = localStorage.getItem('brand')
+        this.formData.brand = brand
+
         const options = {
             method: 'POST',
             url: `${url}/categories/`,
