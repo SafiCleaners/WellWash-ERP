@@ -7,27 +7,3 @@
 
 [build]
   functions = "netlify/functions"
-
-
-# RULE 1: API PROXY (Most Specific)
-# This rule must be first. It intercepts any request for /api/...
-# and proxies it to the backend before the SPA rule can catch it.
-[[redirects]]
-  from = "/api/*"
-  to = "https://wellwash-erp-rtsgo.sevalla.app/:splat"
-  status = 200
-  force = true # Important: Ensures this rule runs even if an /api folder exists
-  [redirects.headers]
-    X-Forwarded-Host = ":host"
-    X-Forwarded-For = ":ip"
-    X-Forwarded-Proto = "https"
-
-
-# RULE 2: SINGLE-PAGE APP (SPA) FALLBACK (Least Specific)
-# This is the "catch-all" rule. It will only be applied if the request
-# does not match any static files in your build output AND did not match
-# any of the more specific rules defined above.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
